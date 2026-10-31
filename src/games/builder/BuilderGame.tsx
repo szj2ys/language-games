@@ -343,7 +343,7 @@ function StoneCard({
           {keyHint}
         </kbd>
       )}
-      <span className="relative h-16 w-24 sm:h-14 sm:w-20">
+      <span className="relative h-16 w-full max-w-24 sm:h-14 sm:max-w-20">
         <Image src={`/art/builder/${stone}.webp`} alt="" fill sizes="80px" className="object-contain" />
       </span>
       <span className={cn("text-[17px] font-bold", !label && "sr-only")}>{label ?? ""}</span>
@@ -394,7 +394,7 @@ function FetchPlay({
     const r = markDelivery(round.want, delivery);
     setOutcome({ delivery, ...r });
     if (r.score === 3) {
-      onDone(misses === 0 && !hint, firstMiss ?? undefined);
+      onDone(misses === 0, firstMiss ?? undefined);
       speak("Good.");
     } else {
       setMisses((m) => m + 1);
@@ -454,7 +454,7 @@ function FetchPlay({
         )}
       </div>
 
-      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         <fieldset disabled={solved}>
           <legend className="sr-only">Which stone?</legend>
           <div className={cn("grid gap-2 lg:grid-cols-2", advanced ? "grid-cols-4" : "grid-cols-2 sm:grid-cols-4")}>
@@ -656,7 +656,7 @@ function CallPlay({
       const m = markDelivery(round.goal, r.delivery);
       setOutcome({ delivery: r.delivery, ...m });
       if (m.score === 3) {
-        const firstTry = tries === 0 && !hint;
+        const firstTry = tries === 0;
         // The outcome is scored; the English note is coaching and costs nothing (DECISIONS D5).
         onDone(firstTry, said, firstTry ? 3 : 2, firstMiss ?? undefined);
       } else {
@@ -701,7 +701,7 @@ function CallPlay({
         </p>
       </div>
 
-      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         {round.thisWord && !outcome && (
           <div>
             <p className="mb-1 text-[15px] text-muted-foreground lg:text-[18px]">The yard — choose a stone to point at it</p>
@@ -913,7 +913,7 @@ function UsePlay({
           ))}
         </ul>
       </div>
-      <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-2 px-3 pb-4 lg:px-0">
         {!solved ? (
           <>
             <p className="text-[15px] text-muted-foreground lg:text-[18px]">

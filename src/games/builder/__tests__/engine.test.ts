@@ -29,6 +29,10 @@ describe("assistant interprets the player's call", () => {
     const r = interpret({ tiles: [...tiles], pointAt: "left" }, yard);
     expect(r).toMatchObject({ kind: "acts", delivery: { stone: "pillar", count: 2, place: "left" }, said: "Two pillar there!" });
   });
+  it("asks when you point at a platform but do not say 'there'", () => {
+    const r = interpret({ tiles: [{ kind: "stone", value: "slab" }], pointAt: "right" }, yard);
+    expect(r).toMatchObject({ kind: "asks", question: expect.stringContaining("there") });
+  });
   it("resolves 'this' by what is pointed at", () => {
     const r = interpret({ tiles: [{ kind: "this" }], pointAt: { stoneIndex: 2 } }, yard);
     expect(r).toMatchObject({ kind: "acts", delivery: { stone: "beam", count: 1 } });

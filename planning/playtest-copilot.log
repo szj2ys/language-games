@@ -1,0 +1,1300 @@
+● skill(journey-test)
+
+Starting by reading the decision log and project layout so I don't re-report fixed items.
+
+● Size of DECISIONS.md (shell)
+  │ (Get-Item planning\DECISIONS.md).Length; (Get-Content planning\DECISIONS.md).Count
+  └ 2 lines…
+
+● List planning, games, e2e, git state (shell)
+  │ Get-ChildItem -Name planning; Get-ChildItem -Name src\games; Get-ChildItem -Name e2e;
+  │ Get-ChildItem -Name qa -ErrorAction SilentlyContinue; git --no-pager log --oneline -15; git
+  │ --no-pager status --short | Select-Object -First 30
+  └ 78 lines…
+
+● Read DECISIONS.md
+  │ planning\DECISIONS.md
+  └ 68 lines read
+
+● Read playtest-codex-2.md
+  │ planning\playtest-codex-2.md
+  └ 31 lines read
+
+● Read playtest-codex.md
+  │ planning\playtest-codex.md
+  └ 50 lines read
+
+● Check sizes and the existing copilot log (shell)
+  │ (Get-Item planning\content-review-copilot.md).Length; (Get-Item planning\ACCEPTANCE.md).Length;
+  │ Get-Content planning\playtest-copilot.log -TotalCount 20; (Get-Item
+  │ planning\playtest-copilot.log).Length; (Get-Item planning\playtest-copilot.log).LastWriteTime
+  └ 25 lines…
+
+● Check server and list source layout (shell)
+  │ try { $r = Invoke-WebRequest -Uri http://localhost:3417/ -UseBasicParsing -TimeoutSec 10;
+  │ "status $($r.StatusCode) len $($r.Content.Length)" } catch { "ERR $_" }; (Get-Item
+  │ e2e\play_all.py).Length; (Get-Item e2e\a11y.py).Length; Get-ChildItem -Recurse -Name src\games |
+  │ Select-Object -First 80; Get-ChildItem -Name src\content; Get-ChildItem -Name src\app -Recurse |
+  │ Select-Object -First 50
+  └ 61 lines…
+
+Server is up. Launching the independent acceptor (harness rule) to set done-criteria while I study the e2e selectors.
+
+● Read play_all.py
+  │ e2e\play_all.py
+  └ 423 lines read
+
+● Rubber-duck (model: gpt-5.6-sol) Acceptor: playtest done-criteria
+  └ Agent started in background with agent_id: 783f0e5e-0272-4d8f-a7af-6a35ee7fa3...
+
+Now the authored content (needed to judge English and answer fairness across every round).
+
+● Sizes of content and game files (shell)
+  │ Get-ChildItem src\games\*\*.ts, src\games\*\*.tsx, src\content\*.ts | Select-Object
+  │ @{n='f';e={$_.FullName.Replace('D:\githubprojects\language-games\','')}}, Length | Format-Table
+  │ -AutoSize | Out-String -Width 200
+  └ 20 lines…
+
+● Check gitignore and Python deps (shell)
+  │ Get-Content .gitignore; git check-ignore -v qa/playtest-copilot/x.png; python -c "import
+  │ playwright, sys; print(sys.version); from playwright.sync_api import sync_playwright;
+  │ print('ok')"; python -c "import PIL; print('PIL', PIL.__version__)"
+  └ 56 lines…
+
+Building a small persistent Playwright driver (phone + desktop contexts kept alive) so I can play step by step like a learner, one tool call per move.BUILD — catches live B1-learning regressions across all sessions/devices; cheaper smoke tests cannot provide equivalent coverage.
+
+- Report order: verdict, findings, then “Not covered:”.
+- Verdict states release disposition and severity counts.
+- Every authored round is completed at 390×844 touch and 1280×860 desktop.
+- Coverage includes wrong answers, hints/Ask first, mid-round reloads, `/notebook`, and `/sources`.
+- Each finding has blocker/major/minor severity.
+- Each finding cites URL plus round ID, or an existing image under `qa\playtest-copilot\`.
+- Evidence visibly supports the exact claimed state/device.
+- Each finding gives a concrete, implementable fix.
+- Blocker means completion/progress is prevented; major means material mis-teaching, misgrading, or interaction failure.
+- R1–R31 and both earlier reports are treated as fixed; recurrence is labelled regression with current evidence.
+- English findings identify objective errors, not stylistic preferences, and propose correct English.
+- Grading findings quote the disputed answer and explain why a B1 learner could reasonably defend or reject
+
+ it.
+- Content claims agree with the relevant `rounds.ts`, `levels.ts`, or `sources.ts`.
+- No fabricated findings, praise, test diary, or fixed-issue recap.
+- “Not covered:” honestly names remaining platforms, paths, or judgments without contradicting claimed coverage.
+- Existing server is neither started, stopped, nor rebuilt; protected source directories remain unedited.✗ Create driver.py
+  │ qa\playtest-copilot\driver.py
+  └ Parent directory does not exist
+
+✗ Create run.py
+  │ qa\playtest-copilot\run.py
+  └ Parent directory does not exist
+
+● Read (Rubber-duck agent — Acceptor: playtest done-criteria)
+  └ idle
+
+Acceptor criteria in hand (every authored round on both devices; wrong answers, hints, reloads, notebook, sources). Creating the driver.
+
+● Create qa/playtest-copilot dirs (shell)
+  │ New-Item -ItemType Directory -Force qa\playtest-copilot\cmd | Out-Null; "ok"
+  └ 1 line…
+
+● Create driver.py +177
+  └ qa\playtest-copilot\driver.py
+
+● Create run.py +21
+  └ qa\playtest-copilot\run.py
+
+● Start persistent Playwright driver (shell)
+  │ python qa\playtest-copilot\driver.py
+  └ 1 line…
+
+Driver running. Blind walk starts where a learner starts: the home page on the phone.
+
+● Phone: open home page (shell)
+  │ @'
+  │ go(P, "/")
+  │ shot(P, "00-home")
+  │ shot(P, "00-home-full", full=True)
+  │ print(txt(P, "body")[:3000])…
+  └ 48 lines…
+
+● Read 00-home.png
+  │ qa\playtest-copilot\phone\00-home.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\phone\00-home.png
+  [image/png] 390x844]
+
+Landing shows a playable call. As a learner I'll first tap a wrong stone, then the right one.
+
+● Phone: home wrong then right stone (shell)                                                      5s
+  │ @'
+  │ tap(P, "button", "block")
+  │ P.wait_for_timeout(800)
+  │ shot(P, "00-home-wrong")
+  │ print(txt(P, "body")[:500])…
+  └ 55 lines…
+
+● Read 00-home-right.png
+  │ qa\playtest-copilot\phone\00-home-right.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\00-home-right.png [image/png] 390x844]
+
+● Phone: open Slab! game (shell)
+  │ @'
+  │ tap(P, "link", "Play Slab!", exact=False)
+  │ P.wait_for_load_state("networkidle"); settle(P)
+  │ print(P.url)
+  │ shot(P, "b1-1-start")…
+  └ 57 lines…
+
+● Read b1-1-start.png
+  │ qa\playtest-copilot\phone\b1-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b1-1-start.png [image/png] 390x844]
+
+● Phone: Slab! wrong stone (shell)
+  │ @'
+  │ tap(P, "button", "beam")
+  │ P.wait_for_timeout(1200)
+  │ shot(P, "b1-1-wrong")
+  │ print(txt(P, "main")[:600])…
+  └ 29 lines…
+
+● Read b1-1-wrong.png
+  │ qa\playtest-copilot\phone\b1-1-wrong.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b1-1-wrong.png [image/png] 390x844]
+
+● Phone: tap right stone after wrong (shell)
+  │ @'
+  │ tap(P, "button", "slab")
+  │ P.wait_for_timeout(500)
+  │ shot(P, "b1-1-retry-direct")
+  │ print(txt(P, "main")[:300])…
+  └ 31 lines…
+
+● Phone: list controls on round 2 (shell)
+  │ @'
+  │ ctl(P)
+  │ '@ | python qa\playtest-copilot\run.py
+  └ 14 lines…
+
+● Phone: tap Hint in Slab! (shell)
+  │ @'
+  │ tap(P, "button", "Hint")
+  │ P.wait_for_timeout(500)
+  │ shot(P, "b1-2-hint")
+  │ print(txt(P, "main")[:500])…
+  └ 15 lines…
+
+● Read b1-2-hint.png
+  │ qa\playtest-copilot\phone\b1-2-hint.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b1-2-hint.png [image/png] 390x844]
+
+● Phone: play rest of Slab! session 1 (shell)
+  │ @'
+  │ import re
+  │ for i in range(2, 7):
+  │ call = P.locator("p[aria-live=polite]").first.inner_text().strip()
+  │ names = [b.inner_text().strip() for b in …
+  └ 28 lines…
+
+● Read b1-3-start.png
+  │ qa\playtest-copilot\phone\b1-3-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b1-3-start.png [image/png] 390x844]
+
+● Phone: finish Slab! session 1 (shell)                                                          10s
+  │ @'
+  │ shapes = {"block": "A solid cube of stone", "pillar": "A tall round stone", "slab": "A broad
+  │ flat stone", "beam": "A long narrow stone"}
+  │ for i in range(3, 8):
+  │ if P.get_by_role("heading", name=re.compile("Done")).count():…
+  └ 56 lines…
+
+● Read b1-end.png
+  │ qa\playtest-copilot\phone\b1-end.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\phone\b1-end.png
+  [image/png] 390x844]
+
+Session 1 walked blind. Now reading the authored rounds so I can cover every session on both devices and judge content.
+
+● Read rounds.ts
+  │ src\games\builder\rounds.ts
+  └ 313 lines read
+
+● Read engine.ts
+  │ src\games\builder\engine.ts
+  └ 147 lines read
+
+● Read engine.ts
+  │ src\games\scene\engine.ts
+  └ 178 lines read
+
+● Read rounds.ts
+  │ src\games\scene\rounds.ts
+  └ 284 lines read
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L1:200 (200 lines read)
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L200:470 (237 lines read)
+
+● Read levels.ts
+  │ src\games\pupil\levels.ts
+  └ 347 lines read
+
+● Read engine.ts
+  │ src\games\pupil\engine.ts
+  └ 229 lines read
+
+● Read rounds.ts
+  │ src\games\family\rounds.ts
+  └ 185 lines read
+
+● Read engine.ts
+  │ src\games\family\engine.ts
+  └ 82 lines read
+
+● Read games.ts
+  │ src\content\games.ts
+  └ 102 lines read
+
+● Read sources.ts
+  │ src\content\sources.ts
+  └ 311 lines read
+
+/ Search (grep)
+  │ "spelling rule|Don't think — look|Five short games" (src)
+  └ 6 lines found
+
+The running build differs from the source (home says "spelling rule"; source says "a rule of English"). Checking build age vs. commits so findings are attributed correctly.
+
+● Compare build time with commits (shell)
+  │ Get-Item .next\BUILD_ID | Select-Object LastWriteTime; Get-Content .next\BUILD_ID; git
+  │ --no-pager log -8 --format="%h %ad %s" --date=iso; git --no-pager status --short; Get-ChildItem
+  │ src -Recurse -File | Sort-Object LastWriteTime -Descending | Select-Object -First 8 FullName,
+  │ LastWriteTime | Format-Table -AutoSize | Out-String -Width 200
+  └ 33 lines…
+
+Another agent is committing and editing concurrently (commits at 04:05/04:07, uncommitted pupil edits). I'll pin the build I'm testing and check what the live site actually contains.
+
+● Find served build id and build folders (shell)                                                  5s
+  │ $h = (Invoke-WebRequest -Uri http://localhost:3417/play/scene -UseBasicParsing).Content;
+  │ [regex]::Matches($h, '"b":"([^"]+)"') | Select-Object -First 2 | ForEach-Object {
+  │ $_.Groups[1].Value }; [regex]::Matches($h, 'buildId[^,]{0,40}') | Select-Object -First 2 |
+  │ ForEach-Object { $_.Value }; ($h -split 'Not here').Count; Get-ChildItem -Directory -Force
+  │ -Name | Where-Object { $_ -like '.next*' -or $_ -like '*build*' }; Get-NetTCPConnection …
+  └ 8 lines…
+
+● Identify server process and build folder (shell)                                                8s
+  │ Get-CimInstance Win32_Process -Filter "ProcessId=73464" | Select-Object ProcessId,
+  │ ParentProcessId, CreationDate, CommandLine | Format-List | Out-String -Width 300; Get-Item
+  │ .next-verify\BUILD_ID -ErrorAction SilentlyContinue | Select-Object LastWriteTime; Get-Content
+  │ .next-verify\BUILD_ID -ErrorAction SilentlyContinue; $h = (Invoke-WebRequest -Uri
+  │ http://localhost:3417/play/scene -UseBasicParsing).Content; $i = $h.IndexOf('Not here'); …
+  └ 13 lines…
+
+● List live sessions per game (shell)                                                             5s
+  │ @'
+  │ for g in ["builder", "scene", "cafe", "pupil", "family"]:
+  │ go(D, f"/play/{g}")
+  │ nav = D.get_by_role("navigation", name="Sessions")
+  │ print(g, [b.inner_text().replace("\n", " ") for b in nav.get_by_role("button").all()])…
+  └ 7 lines…
+
+Live build has 4+3+4+2+3 sessions (87 rounds); Picture Theatre "Not here" and Go On! session 3 exist only in source, not on the server. Continuing the phone walk: Slab! session 2.
+
+● Phone: Slab! session 2 round 1 (shell)                                                          9s
+  │ @'
+  │ tap(P, "button", "Next: Two slabs — there!")
+  │ P.wait_for_timeout(600); settle(P)
+  │ shot(P, "b2-1-start")
+  │ print(txt(P, "main")[:700])…
+  └ 23 lines…
+
+● Edit run.py +1 -1
+  └ qa\playtest-copilot\run.py
+
+● Phone: Slab! session 2 round 1 retry (shell)
+  │ @'
+  │ print(repr("Next: Two slabs — there!"))
+  │ tap(P, "button", "Next: Two slabs — there!")
+  │ P.wait_for_timeout(600); settle(P)
+  │ shot(P, "b2-1-start")…
+  └ 40 lines…
+
+● Read b2-1-start.png
+  │ qa\playtest-copilot\phone\b2-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b2-1-start.png [image/png] 390x844]
+
+● Phone: zoom on stone cards (shell)
+  │ @'
+  │ P.screenshot(path=str(ROOT / "phone" / "b2-1-cards-zoom.png"), clip={"x": 0, "y": 580, "width":
+  │ 390, "height": 130}, scale="device")
+  │ print("ok")
+  │ '@ | python qa\playtest-copilot\run.py
+  └ 1 line…
+
+● Read b2-1-cards-zoom.png
+  │ qa\playtest-copilot\phone\b2-1-cards-zoom.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b2-1-cards-zoom.png [image/png]
+  780x260]
+
+Stone images overflow their cards in the 4-across phone row (slab and beam cross the borders). Now a typical learner slip: one slab instead of two.
+
+● Phone: b2-1 bring one slab (wrong) (shell)
+  │ @'
+  │ tap(P, "button", "slab")
+  │ ctl_names = [b.inner_text() for b in P.get_by_role("button").all() if b.is_visible()]
+  │ print([n for n in ctl_names if n.startswith("Bring") or n.startswith("Pick")])
+  │ shot(P, "b2-1-picked")…
+  └ 49 lines…
+
+● Read b2-1-wrong-count.png
+  │ qa\playtest-copilot\phone\b2-1-wrong-count.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b2-1-wrong-count.png [image/png]
+  390x844]
+
+● Phone: adjust count after wrong (shell)
+  │ @'
+  │ tap(P, "button", "One more")
+  │ P.wait_for_timeout(300)
+  │ print([b.inner_text() for b in P.get_by_role("button").all() if b.is_visible() and
+  │ (b.inner_text().startswith("Bring") or b.inner_text().startswith("Try"))])…
+  └ 4 lines…
+
+● Phone: reload mid-round then bring (shell)                                                      5s
+  │ @'
+  │ reload(P)
+  │ print([b.inner_text() for b in P.get_by_role("button").all() if b.is_visible() and
+  │ (b.inner_text().startswith("Bring") or b.inner_text().startswith("Try") or
+  │ b.inner_text().startswith("Pick"))])…
+  └ 54 lines…
+
+● Read b2-2-start.png
+  │ qa\playtest-copilot\phone\b2-2-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b2-2-start.png [image/png] 390x844]
+
+● Phone: play rest of Slab! session 2 (shell)                                                    19s
+  │ @'
+  │ words = {"one": 1, "two": 2, "three": 3, "four": 4}
+  │ for i in range(2, 8):
+  │ if P.get_by_role("heading", name=re.compile("Done")).count():
+  │ break…
+  └ 64 lines…
+
+Slab! session 2 is complete on the phone, and a reload mid-round kept the state. Next I'll build a contact sheet so I can review screenshots in batches.
+
+● Create sheet.py +26
+  └ qa\playtest-copilot\sheet.py
+
+● Contact sheet for Slab! session 2 (shell)
+  │ cd qa\playtest-copilot\phone; python ..\sheet.py ..\sheet-b2.png 4 300 b2-2-delivered.png
+  │ b2-3-start.png b2-4-start.png b2-4-delivered.png b2-5-start.png b2-5-delivered.png
+  │ b2-6-start.png b2-6-delivered.png
+  └ 1 line…
+
+● Read sheet-b2.png
+  │ qa\playtest-copilot\sheet-b2.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-b2.png
+  [image/png] 1224x1334]
+
+● Phone: start Slab! session 3 (shell)
+  │ @'
+  │ tap(P, "button", "Next: Your turn to call", exact=False)
+  │ settle(P, 800)
+  │ shot(P, "b3-1-start")
+  │ print(txt(P, "main")[:900])…
+  └ 26 lines…
+
+● Read b3-1-start.png
+  │ qa\playtest-copilot\phone\b3-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-1-start.png [image/png] 390x844]
+
+● Zoom on the pillar in b3-1 (shell)
+  │ @'
+  │ from PIL import Image
+  │ im = Image.open(r"qa\playtest-copilot\phone\b3-1-start.png")
+  │ print(im.size)
+  │ im.crop((150, 330, 330, 500)).resize((540, …
+  └ 3 lines…
+
+● Read b3-1-pillar-zoom.png
+  │ qa\playtest-copilot\phone\b3-1-pillar-zoom.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-1-pillar-zoom.png [image/png]
+  540x510]
+
+The plan pillar is drawn as a faint ghost. Now I'll try a wrong call, then the right one.
+
+● Phone: wrong call in b3-1 (shell)
+  │ @'
+  │ tap(P, "button", "slab")
+  │ settle(P, 300)
+  │ print(ctl(P))
+  │ tap(P, "button", re.compile("^Call"), exact=False)…
+  └ 33 lines…
+
+● Read b3-1-wrong.png
+  │ qa\playtest-copilot\phone\b3-1-wrong.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-1-wrong.png [image/png] 390x844]
+
+● Phone: take it back in b3-1 (shell)
+  │ @'
+  │ tap(P, "button", "Take it back")
+  │ settle(P, 600)
+  │ print(ctl(P))
+  │ shot(P, "b3-1-takeback")…
+  └ 17 lines…
+
+● Phone: right call in b3-1 (shell)
+  │ @'
+  │ tap(P, "button", "pillar")
+  │ tap(P, "button", re.compile("^Call"), exact=False)
+  │ settle(P, 1200)
+  │ shot(P, "b3-1-right")…
+  └ 24 lines…
+
+● Phone: b3-2 start (shell)
+  │ @'
+  │ tap(P, "button", "Next")
+  │ settle(P, 800)
+  │ shot(P, "b3-2-start")
+  │ print(txt(P, "main")[:600])…
+  └ 46 lines…
+
+● Read b3-2-start.png
+  │ qa\playtest-copilot\phone\b3-2-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-2-start.png [image/png] 390x844]
+
+Trying a learner slip on b3-2: "two pillar there" (singular noun) while pointing left.
+
+● Phone: b3-2 call 'two pillar there' (shell)                                                     5s
+  │ @'
+  │ tap(P, "button", "two")
+  │ tap(P, "button", "pillar")
+  │ tap(P, "button", "there")
+  │ tap(P, "button", "Point at the left platform")…
+  └ 55 lines…
+
+Accepted with an English note, as designed. On b3-3 I'll try "there" without pointing.
+
+● Phone: b3-3 'there' without pointing (shell)                                                    5s
+  │ @'
+  │ tap(P, "button", "Next")
+  │ settle(P, 800)
+  │ print(txt(P, "main")[:120])
+  │ shot(P, "b3-3-start")…
+  └ 69 lines…
+
+● Read b3-3-nopoint.png
+  │ qa\playtest-copilot\phone\b3-3-nopoint.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-3-nopoint.png [image/png] 390x844]
+
+● Zoom left platform b3-2 vs b3-3 (shell)
+  │ @'
+  │ from PIL import Image
+  │ for n in ["b3-2-two-pillar", "b3-3-start"]:
+  │ im = Image.open(rf"qa\playtest-copilot\phone\{n}.png")
+  │ im.crop((0, 230, 200, 360)).resize((600, …
+  └ 4 lines…
+
+● Read sheet-b3-left.png
+  │ qa\playtest-copilot\sheet-b3-left.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-b3-left.png
+  [image/png] 1212x408]
+
+The b3-3 picture contradicts its plan: "One beam across the pillars on the left" shows no pillars, only a ghost beam lying flat on the platform. Checking the source:
+
+/ Search (grep)
+  │ "across the pillars|plan:|ghost" (src\games\builder)
+  └ 15 lines found
+
+The plan text is unchanged in source, so this is a live finding. Continuing b3-3: point left, then call.
+
+● Phone: b3-3 right, b3-4 point without there (shell)                                             7s
+  │ @'
+  │ tap(P, "button", "Point at the left platform")
+  │ tap(P, "button", re.compile("^Call"), exact=False)
+  │ settle(P, 1300)
+  │ shot(P, "b3-3-right")…
+  └ 51 lines…
+
+● Read b3-4-point-no-there.png
+  │ qa\playtest-copilot\phone\b3-4-point-no-there.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-4-point-no-there.png [image/png]
+  390x844]
+
+Pointing right without saying "there" drops the slabs at his feet, and the only feedback is "✗ not here", with no reason given. Checking the engine for a specific message:
+
+/ Search (grep)
+  │ "Point to where|pointing|point" (src\games\builder)
+  └ 77 lines found
+
+● Read engine.ts
+  │ src\games\builder\engine.ts
+  └ L55:140 (86 lines read)
+
+Confirmed in engine.ts:87-93: a point without "there" is ignored, and the UI explains nothing. Finishing b3-4 to b3-6 with variants.
+
+● Phone: b3-4 right, b3-5 start (shell)                                                           6s
+  │ @'
+  │ tap(P, "button", "Take it back")
+  │ settle(P, 500)
+  │ c = str(ctl(P))
+  │ print("pressed after takeback:", [l for l in txt(P,"main").splitlines()][:6])…
+  └ 115 lines…
+
+● Read b3-5-start.png
+  │ qa\playtest-copilot\phone\b3-5-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-5-start.png [image/png] 390x844]
+
+On the phone, b3-5 hides the curved stone (the round's target) off-screen in a horizontal yard row, the cards look overlapped, and Call sits below the fold (y≈997). Measuring:
+
+● Measure yard row overflow in b3-5 (shell)
+  │ @'
+  │ r = P.evaluate("""() => {
+  │ const b = [...document.querySelectorAll('button')].find(x =>
+  │ (x.getAttribute('aria-label')||x.innerText).includes('curved stone'));
+  │ let el = b; const chain = [];…
+  └ 16 lines…
+
+● Read b3-5-yard-zoom.png
+  │ qa\playtest-copilot\phone\b3-5-yard-zoom.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-5-yard-zoom.png [image/png] 780x240]
+
+The cards overflow their 96 px wrappers (116 px wide, 12 px overlaps) and the "?" target sits at x=428. Now I'll play b3-5 as a learner: "this" without pointing first.
+
+● Phone: b3-5 'this' without pointing (shell)
+  │ @'
+  │ tap(P, "button", "this")
+  │ btn = P.get_by_role("button", name=re.compile("^Call"))
+  │ btn.scroll_into_view_if_needed()
+  │ tap(P, "button", re.compile("^Call"), exact=False)…
+  └ 32 lines…
+
+● Read b3-5-yard-scrolled.png
+  │ qa\playtest-copilot\phone\b3-5-yard-scrolled.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-5-yard-scrolled.png [image/png]
+  390x844]
+
+● Phone: b3-5 point at curved stone, call (shell)
+  │ @'
+  │ tap(P, "button", "Point at the curved stone")
+  │ btn = P.get_by_role("button", name=re.compile("^Call"))
+  │ btn.scroll_into_view_if_needed()
+  │ print("call label:", btn.inner_text())…
+  └ 20 lines…
+
+● Read b3-5-right-full.png
+  │ qa\playtest-copilot\phone\b3-5-right-full.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b3-5-right-full.png [image/png]
+  390x1521]
+
+● Phone: b3-6 arch there right (shell)                                                            6s
+  │ @'
+  │ tap(P, "button", "Next")
+  │ settle(P, 800)
+  │ shot(P, "b3-6-start")
+  │ print(txt(P, "main")[:200])…
+  └ 75 lines…
+
+● Phone: Slab! session 3 end card (shell)
+  │ @'
+  │ tap(P, "button", "Next")
+  │ settle(P, 1000)
+  │ shot(P, "b3-end")
+  │ print(txt(P, "main")[:900])…
+  └ 24 lines…
+
+/ Search (grep)
+  │ "You practised|english: "" (src)
+  └ 46 lines found
+
+● Read chrome.tsx
+  │ src\components\game\chrome.tsx
+  └ L95:140 (46 lines read)
+
+The end-card sentence comes from chrome.tsx:122 and yields "You practised warm-up (A2): …" in three sessions. Next is Slab! session 4, where I'll pick one wrong option per round.
+
+● Read rounds.ts
+  │ src\games\builder\rounds.ts
+  └ L194:300 (107 lines read)
+
+● Phone: start Slab! session 4 (shell)
+  │ @'
+  │ tap(P, "button", "Next: Order or report?", exact=False)
+  │ settle(P, 1000)
+  │ shot(P, "b4-1-start")
+  │ print(txt(P, "main")[:700])…
+  └ 28 lines…
+
+● Read b4-1-start.png
+  │ qa\playtest-copilot\phone\b4-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b4-1-start.png [image/png] 390x844]
+
+● Phone: wrong option in b4-1 (shell)
+  │ @'
+  │ def opt(page, text):
+  │ page.get_by_role("button", name=text, exact=True).first.scroll_into_view_if_needed()
+  │ tap(page, "button", text)
+  │ opt(P, "Write “3 slabs” on the stock list.")…
+  └ 31 lines…
+
+● Phone: right option in b4-1 (shell)
+  │ @'
+  │ opt(P, "Bring him three slabs.")
+  │ settle(P, 1200)
+  │ shot(P, "b4-1-right")
+  │ shot(P, "b4-1-right-full", full=True)…
+  └ 18 lines…
+
+● Read b4-1-right.png
+  │ qa\playtest-copilot\phone\b4-1-right.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b4-1-right.png [image/png] 390x844]
+
+Session 4 works. I'll script b4-2 to b4-6 (one wrong option, then the right one) with screenshots.
+
+● Phone: play Slab! b4-2..b4-6 (shell)                                                           22s
+  │ @'
+  │ plan = {
+  │ "b4-2": ("Carry three slabs to her.", "Write “3 slabs” on the stock list."),
+  │ "b4-3": ("Go and fetch him a slab.", "Answer: “No — it's a beam.”"),
+  │ "b4-4": ("Ask: “Which slab?”", "Jump out of the way."),…
+  └ 40 lines…
+
+● Contact sheet Slab! session 4 (shell)
+  │ cd qa\playtest-copilot\phone; python ..\sheet.py ..\sheet-b4.png 5 300 b4-2-start.png
+  │ b4-3-start.png b4-4-start.png b4-5-start.png b4-6-start.png
+  └ 1 line…
+
+● Read sheet-b4.png
+  │ qa\playtest-copilot\sheet-b4.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-b4.png
+  [image/png] 1530x667]
+
+● Compare stock-keeper art b4-2 vs b4-6 (shell)
+  │ @'
+  │ from PIL import Image
+  │ a = Image.open(r"qa\playtest-copilot\phone\b4-2-start.png").crop((90, 110, 280, 320))
+  │ b = Image.open(r"qa\playtest-copilot\phone\b4-6-start.png").crop((150, 110, 340, 320))
+  │ s = Image.new("RGB", (400, 220), "white"); s.paste(a, (0, 0)); s.paste(b, (205, 0)); s = …
+  └ No Content
+
+● Read b4-keeper-compare.png
+  │ qa\playtest-copilot\phone\b4-keeper-compare.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\b4-keeper-compare.png [image/png]
+  800x440]
+
+The pictures match their clues. Finishing Slab! and starting Picture Theatre session 1 on the phone.
+
+● Phone: Slab! session 4 end card (shell)
+  │ @'
+  │ tap(P, "button", "Next")
+  │ settle(P, 1000)
+  │ shot(P, "b4-end")
+  │ print(txt(P, "main")[:700])…
+  └ 37 lines…
+
+● Read rounds.ts
+  │ src\games\scene\rounds.ts
+  └ L1:225 (225 lines read)
+
+Next is Picture Theatre on the phone. I'll test placements in every session, including a defensible "behind the lamp" in s3-6.
+
+● Phone: open Picture Theatre (shell)
+  │ @'
+  │ tap(P, "link", "Next game: Picture Theatre")
+  │ settle(P, 1500)
+  │ print(P.url)
+  │ shot(P, "s1-1-start")…
+  └ 25 lines…
+
+● Read s1-1-start.png
+  │ qa\playtest-copilot\phone\s1-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s1-1-start.png [image/png] 390x844]
+
+● Phone: pick key in s1-1 (shell)
+  │ @'
+  │ tap(P, "button", "key")
+  │ settle(P, 300)
+  │ print([l for l in str(ctl(P)).splitlines() if "row" in l or "box" in l.lower() or "Put" in l])
+  │ shot(P, "s1-1-key-picked")…
+  └ 21 lines…
+
+● Read s1-1-key-picked.png
+  │ qa\playtest-copilot\phone\s1-1-key-picked.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s1-1-key-picked.png [image/png]
+  390x844]
+
+● Phone: wrong placement s1-1 (shell)
+  │ @'
+  │ tap(P, "button", "Put the key on the box")
+  │ settle(P, 400)
+  │ tap(P, "button", "Is it true?")
+  │ settle(P, 1200)…
+  └ 20 lines…
+
+● Read s1-1-wrong.png
+  │ qa\playtest-copilot\phone\s1-1-wrong.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s1-1-wrong.png [image/png] 390x844]
+
+● Phone: Change it in s1-1 (shell)
+  │ @'
+  │ tap(P, "button", "Change it")
+  │ settle(P, 500)
+  │ shot(P, "s1-1-change")
+  │ print([l for l in str(ctl(P)).splitlines() if "button" in l][3:])…
+  └ 12 lines…
+
+● Read s1-1-change.png
+  │ qa\playtest-copilot\phone\s1-1-change.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s1-1-change.png [image/png] 390x844]
+
+● Phone: move key into box s1-1 (shell)                                                           5s
+  │ @'
+  │ tap(P, "button", "The key")
+  │ settle(P, 400)
+  │ print([l for l in str(ctl(P)).splitlines() if "Put" in l or "row" in l][:12])
+  │ tap(P, "button", "Put the key in the box")…
+  └ 35 lines…
+
+● Contact sheet s1-1 states (shell)
+  │ cd qa\playtest-copilot\phone; python ..\sheet.py ..\sheet-s1-1.png 5 300 s1-1-start.png
+  │ s1-1-key-picked.png s1-1-wrong.png s1-1-placed-in.png s1-1-right.png
+  └ 1 line…
+
+● Read sheet-s1-1.png
+  │ qa\playtest-copilot\sheet-s1-1.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-s1-1.png
+  [image/png] 1530x667]
+
+/ Search (grep)
+  │ "^#+ |R22|R30|R31|band" (planning\DECISIONS.md)
+  └ 8 lines found
+
+R30 settled the band question for Café and Family only; Slab! still shows 70–150 px gaps on the phone. Continuing Picture Theatre s1-2 to s1-6 with a reload and a "next to" slip.
+
+● Phone: Picture Theatre s1-2, s1-3 (shell)                                                       9s
+  │ @'
+  │ def put(page, thing, place):
+  │ tap(page, "button", thing)
+  │ settle(page, 250)
+  │ tap(page, "button", place)…
+  └ 23 lines…
+
+● Phone: s1-4 place ball, reload mid-round (shell)                                                6s
+  │ @'
+  │ tap(P, "button", "Next"); settle(P, 900)
+  │ shot(P, "s1-4-start")
+  │ put(P, "ball", "Front row, place 4 from the left")
+  │ shot(P, "s1-4-ball-placed")…
+  └ 31 lines…
+
+The reload kept the half-built scene. Continuing:
+
+● Phone: s1-4 finish, s1-5 wrong (shell)                                                          9s
+  │ @'
+  │ put(P, "key", "Put the key in the box")
+  │ print("s1-4", check(P, "s1-4-right"))
+  │ tap(P, "button", "Next"); settle(P, 900)
+  │ shot(P, "s1-5-start")…
+  └ 9 lines…
+
+● Read s1-5-wrong.png
+  │ qa\playtest-copilot\phone\s1-5-wrong.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s1-5-wrong.png [image/png] 390x844]
+
+Clear feedback. Next I'll test whether moving the book carries the ball on it.
+
+● Phone: s1-5 move book with ball (shell)                                                         5s
+  │ @'
+  │ tap(P, "button", "Change it"); settle(P, 500)
+  │ print([l for l in str(ctl(P)).splitlines() if "The " in l])
+  │ tap(P, "button", "The book"); settle(P, 300)
+  │ tap(P, "button", "Front row, place 3 from the left"); settle(P, 400)…
+  └ 24 lines…
+
+● Phone: s1-6 and end card (shell)                                                               11s
+  │ @'
+  │ tap(P, "button", "Next"); settle(P, 900)
+  │ shot(P, "s1-6-start")
+  │ print(txt(P, "main")[:300])
+  │ put(P, "box", "Front row, place 2 from the left")…
+  └ 49 lines…
+
+● Phone: Picture Theatre s2-1 start (shell)
+  │ @'
+  │ tap(P, "button", "Next: True or false?", exact=False); settle(P, 1200)
+  │ shot(P, "s2-1-start")
+  │ print(txt(P, "main")[:500])
+  │ print([l for l in str(ctl(P)).splitlines() if "button" in l][3:])…
+  └ 29 lines…
+
+● Read s2-1-start.png
+  │ qa\playtest-copilot\phone\s2-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s2-1-start.png [image/png] 390x844]
+
+● Phone: s2-1 check without changes (shell)
+  │ @'
+  │ tap(P, "button", "Check against the stage"); settle(P, 1100)
+  │ shot(P, "s2-1-wrong")
+  │ t = txt(P, "main"); i = t.find("The report"); print(t[i:i+500])
+  │ print([l for l in str(ctl(P)).splitlines() if "button" in l or "select" in l][3:])…
+  └ 20 lines…
+
+● Phone: s2-1 fix and check (shell)
+  │ @'
+  │ tap(P, "button", "Change it"); settle(P, 500)
+  │ sels = P.get_by_role("combobox", name="Change the position word")
+  │ print(sels.count())
+  │ sels.nth(0).select_option(label="in"); settle(P, 300)…
+  └ 15 lines…
+
+● Phone: s2-2 wrong fix then right (shell)                                                        7s
+  │ @'
+  │ def fix(page, idx, label):
+  │ page.get_by_role("combobox", name="Change the position
+  │ word").nth(idx).select_option(label=label)
+  │ settle(page, 250)…
+  └ 18 lines…
+
+● Phone: s2-3..s2-6 (shell)                                                                      13s
+  │ @'
+  │ for rid, fixes in [("s2-3", [(0, "on")]), ("s2-4", [(0, "in front of")]), ("s2-5", [(1,
+  │ "on")]), ("s2-6", [(1, "to the left of")])]:
+  │ tap(P, "button", "Next"); settle(P, 900)
+  │ shot(P, f"{rid}-start")…
+  └ 26 lines…
+
+● Contact sheet Picture Theatre session 2 (shell)
+  │ cd qa\playtest-copilot\phone; python ..\sheet.py ..\sheet-s2.png 5 300 s2-2-start.png
+  │ s2-3-start.png s2-4-start.png s2-5-start.png s2-6-start.png
+  └ 1 line…
+
+● Read sheet-s2.png
+  │ qa\playtest-copilot\sheet-s2.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-s2.png
+  [image/png] 1530x667]
+
+On the phone, objects at the far-left and far-right spots look cut off by the screen edge (s2-3, s2-5, s2-6). Zooming in:
+
+● Zoom stage edges for clipping (shell)
+  │ @'
+  │ from PIL import Image
+  │ ims = []
+  │ for n, box in [("s2-3-start", (0, 330, 130, 450)), ("s2-5-start", (0, 330, 130, 450)),
+  │ ("s2-6-start", (260, 230, 390, 450)), ("s2-4-start", (0, 330, 130, 450))]:…
+  └ 8 lines…
+
+● Read s2-edge-clip.png
+  │ qa\playtest-copilot\phone\s2-edge-clip.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s2-edge-clip.png [image/png] 1590x660]
+
+Only the far-left box loses a few pixels, which isn't worth reporting. On to Picture Theatre session 3 (tell rounds).
+
+● Phone: s2 end, s3-1 start (shell)
+  │ @'
+  │ tap(P, "button", "Next"); settle(P, 1200)
+  │ shot(P, "s2-end")
+  │ t = txt(P, "main"); print(t[:200])
+  │ tap(P, "button", "Next: Say where it is", exact=False); settle(P, 1200)…
+  └ 41 lines…
+
+● Phone: s3-1 wrong tell (shell)
+  │ @'
+  │ def tell(page, rel, thing, name):
+  │ page.get_by_role("combobox", name="Change the position word").select_option(label=rel)
+  │ page.get_by_role("combobox", name="Which thing").select_option(label=thing)
+  │ settle(page, 250)…
+  └ 18 lines…
+
+● Phone: full-page shot s3-1 wrong (shell)
+  │ @'
+  │ P.evaluate("scrollTo(0,0)")
+  │ shot(P, "s3-1-wrong-full", full=True)
+  │ '@ | python qa\playtest-copilot\run.py
+  └ 1 line…
+
+● Read s3-1-wrong-full.png
+  │ qa\playtest-copilot\phone\s3-1-wrong-full.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s3-1-wrong-full.png [image/png]
+  390x1879]
+
+● Read s3-1-wrong.png
+  │ qa\playtest-copilot\phone\s3-1-wrong.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s3-1-wrong.png [image/png] 390x844]
+
+On the phone, "Tell your partner" leaves the viewport at the top: the verdict and the Change it/Next button end up 200–430 px below the fold. Checking whether the earlier reports covered this:
+
+/ Search (grep)
+  │ "partner|scroll|fold" (planning\playtest-codex.md, planning\playtest-codex-2.md,
+  │ planning\DECISIONS.md)
+  └ 1 line found
+
+/ Search (grep)
+  │ "scrollIntoView|scrollTo\(" (src)
+  └ 1 line found
+
+● Recent commits and working changes (shell)
+  │ git --no-pager log --since="2026-10-31" --format="%h %ad %s" --date=format:"%m-%d %H:%M" --
+  │ src/games/scene src/games/builder src/games/cafe src/games/family src/games/pupil src/components
+  │ src/content | Select-Object -First 30; git --no-pager status --short | Select-Object -First 40
+  └ 32 lines…
+
+The source moved on again (commits up to 04:32). Checking whether the running server is still the 03:55 build:
+
+● Check server process and build ids (shell)                                                      6s
+  │ Get-Process -Id 73464 -ErrorAction SilentlyContinue | Select-Object Id, StartTime;
+  │ Get-NetTCPConnection -LocalPort 3417 -State Listen -ErrorAction SilentlyContinue | Select-Object
+  │ OwningProcess; Get-Item .next\BUILD_ID, .next-verify\BUILD_ID -ErrorAction SilentlyContinue |
+  │ Select-Object FullName, LastWriteTime; Get-Content .next\BUILD_ID; Get-Date
+  └ 7 lines…
+
+Still the same server and build. Continuing s3-1 to s3-6, including the defensible "behind the lamp" in s3-6.
+
+● Phone: s3-1 right, s3-2, s3-3 (shell)                                                          11s
+  │ @'
+  │ tap(P, "button", "Change it"); settle(P, 500)
+  │ print("s3-1:", tell(P, "in", "box", "s3-1-right"))
+  │ for rid, (rel, thing) in {"s3-2": ("on", "book"), "s3-3": ("behind", "cup")}.items():
+  │ tap(P, "button", "Next"); settle(P, 900)…
+  └ 19 lines…
+
+● Phone: s3-4..s3-6 with defensible tries (shell)                                                19s
+  │ @'
+  │ for rid, tries in {"s3-4": [("to the right of", "box"), ("next to", "box")], "s3-5": [("next
+  │ to", "book"), ("in front of", "cup")], "s3-6": [("behind", "lamp"), ("in", "box")]}.items():
+  │ tap(P, "button", "Next"); settle(P, 900)
+  │ P.evaluate("scrollTo(0,0)")…
+  └ 31 lines…
+
+● Contact sheet s3 ambiguous tries (shell)
+  │ @'
+  │ P.evaluate("scrollTo(0,0)")
+  │ '@ | python qa\playtest-copilot\run.py; cd qa\playtest-copilot\phone; python ..\sheet.py
+  │ ..\sheet-s3.png 4 300 s3-4-start.png s3-4-try1.png s3-5-try1.png s3-6-try1.png
+  └ 1 line…
+
+● Read sheet-s3.png
+  │ qa\playtest-copilot\sheet-s3.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-s3.png
+  [image/png] 1224x667]
+
+● Read s3-4-start.png
+  │ qa\playtest-copilot\phone\s3-4-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s3-4-start.png [image/png] 390x844]
+
+● Read s3-1-start.png
+  │ qa\playtest-copilot\phone\s3-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\s3-1-start.png [image/png] 390x844]
+
+● Inspect band-fix commit (shell)
+  │ git --no-pager show 8e0226c --stat --format="%h %ad %s" --date=iso | Select-Object -First 30;
+  │ git --no-pager log -3 --format="%h %ad %s" --date=iso -- src/games/scene/SceneGame.tsx
+  └ 32 lines…
+
+● Show band-fix diff for scene and cafe (shell)
+  │ git --no-pager show 8e0226c -- src/games/scene/SceneGame.tsx src/games/cafe/CafeGame.tsx |
+  │ Select-Object -First 120
+  └ 120 lines…
+
+● Rest of scene band diff and current layout (shell)
+  │ git --no-pager show 8e0226c -- src/games/scene/SceneGame.tsx | Select-Object -Skip 75 -First 60;
+  │ Select-String -Path src\games\scene\SceneGame.tsx -Pattern "mt-auto|max-sm:flex-1|function
+  │ TellPlay|function CheckPlay|function BuildPlay" | ForEach-Object { "$($_.LineNumber):
+  │ $($_.Line.Trim())" }
+  └ 31 lines…
+
+● Read SceneGame.tsx
+  │ src\games\scene\SceneGame.tsx
+  └ L536:560 (25 lines read)
+
+● Read SceneGame.tsx
+  │ src\games\scene\SceneGame.tsx
+  └ L610:645 (36 lines read)
+
+● Phone: Picture Theatre session 3 end (shell)
+  │ @'
+  │ tap(P, "button", "Next"); settle(P, 1200)
+  │ P.evaluate("scrollTo(0,0)")
+  │ shot(P, "s3-end")
+  │ print(txt(P, "main")[:400])…
+  └ 31 lines…
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L40:135 (96 lines read)
+
+● Phone: open the Café (shell)
+  │ @'
+  │ tap(P, "link", "Next game: The Café"); settle(P, 1500)
+  │ print(P.url)
+  │ shot(P, "c1-1-start")
+  │ print(txt(P, "main")[:500])…
+  └ 31 lines…
+
+● Read c1-1-start.png
+  │ qa\playtest-copilot\phone\c1-1-start.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\c1-1-start.png [image/png] 390x844]
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L135:330 (196 lines read)
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L330:430 (101 lines read)
+
+I'll script all 24 Café rounds on the phone: a wrong option, then "Ask first" where offered, then the right option.
+
+● Phone: Café session 1 scripted (shell)                                                         31s
+  │ @'
+  │ CAFE = {
+  │ "c1-1": ("Bring her a fresh hot tea.", "Close the window."),
+  │ "c1-2": ("Close the window.", "Offer her another pot of tea."),
+  │ "c1-3": ("“Yes, I can.”", "Pass him the sugar."),…
+  └ 63 lines…
+
+● Read shell output Waiting up to 60 seconds for command output                                  28s
+  └ 81 lines…
+
+The option buttons' accessible names don't match their text. Inspecting them:
+
+● Inspect Café option accessible names (shell)
+  │ @'
+  │ for b in P.locator("main button").all():
+  │ if b.is_visible():
+  │ print(repr(b.inner_text()), "| aria-label:", b.get_attribute("aria-label"), "| role:",
+  │ b.get_attribute("role"), "| pressed:", b.get_attribute("aria-pressed"))…
+  └ 7 lines…
+
+● Inspect Café button HTML and a11y name (shell)
+  │ @'
+  │ b = P.locator("main button", has_text="Close the window.").first
+  │ print(b.evaluate("e => e.outerHTML.slice(0, 600)"))
+  │ snap = P.accessibility.snapshot()
+  │ def walk(n, d=0):…
+  └ 12 lines…
+
+The option names carry an icon label ("Do …" / "Say …"). I'll switch to suffix matching and rerun the Café session 1 script.
+
+● Phone: Café session 1 scripted (retry) (shell)                                                 25s
+  │ @'
+  │ def opt(page, text):
+  │ b = page.get_by_role("button", name=re.compile(re.escape(text) + "$")).first
+  │ b.scroll_into_view_if_needed()
+  │ if page is P: b.tap()…
+  └ 69 lines…
+
+● Contact sheets Café session 1 (shell)
+  │ cd qa\playtest-copilot\phone; python ..\sheet.py ..\sheet-c1-start.png 6 260 c1-1-start.png
+  │ c1-2-start.png c1-3-start.png c1-4-start.png c1-5-start.png c1-6-start.png; python ..\sheet.py
+  │ ..\sheet-c1-right.png 6 260 c1-1-right.png c1-2-right.png c1-3-right.png c1-4-right.png
+  │ c1-5-right.png c1-6-right.png
+  └ 2 lines…
+
+● Read sheet-c1-right.png
+  │ qa\playtest-copilot\sheet-c1-right.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-c1-right.png
+  [image/png] 1596x580]
+
+● Read sheet-c1-start.png
+  │ qa\playtest-copilot\sheet-c1-start.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\sheet-c1-start.png
+  [image/png] 1596x580]
+
+● Zoom c1-2 teapot and c1-6 clock (shell)
+  │ @'
+  │ from PIL import Image
+  │ a = Image.open(r"qa\playtest-copilot\phone\c1-2-start.png").crop((0, 112, 390, 405))
+  │ b = Image.open(r"qa\playtest-copilot\phone\c1-6-start.png").crop((0, 112, 200, 300))
+  │ s = Image.new("RGB", (390 + 10 + 400, 293), "white"); s.paste(a, (0, 0)); …
+  └ No Content
+
+● Read c1-2-c1-6-zoom.png
+  │ qa\playtest-copilot\phone\c1-2-c1-6-zoom.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\c1-2-c1-6-zoom.png [image/png]
+  1200x440]
+
+The Café session 1 pictures match their clues. Next: Café sessions 2–4 on the phone. First I'll check that the driver is still alive.
+
+● List shells
+  └ Output too large to read at once (45.5 KB). Saved to: C:\Users\ADMINI~1\AppDa...
+
+● Check driver state on phone (shell)
+  │ @'
+  │ print(P.url)
+  │ print(txt(P)[:600])
+  │ '@ | python qa\playtest-copilot\run.py 30
+  └ 22 lines…
+
+Driver is alive. Moving to Café session 2.
+
+● Go to Café session 2 (shell)
+  │ @'
+  │ b = P.get_by_role("button", name=re.compile("^Next: Which one")).first
+  │ if b.count()==0: b = P.get_by_role("link", name=re.compile("^Next: Which one")).first
+  │ b.scroll_into_view_if_needed(); b.tap(); settle(P, 1200)
+  │ print(P.url); print(txt(P)[:500])…
+  └ 18 lines…
+
+● Play Café c2-1 on phone (shell)                                                                 6s
+  │ @'
+  │ for rid in ["c2-1"]:
+  │ print(rid, CAFE[rid])
+  │ cafe_round(P, rid, "p")
+  │ print(txt(P)[:900])…
+  └ 21 lines…
+
+● Read c2-1-wrong.png
+  │ qa\playtest-copilot\phone\c2-1-wrong.png
+  └ 1 line read
+
+  [Image: Image file at path
+  D:\githubprojects\language-games\qa\playtest-copilot\phone\c2-1-wrong.png [image/png] 390x844]
+
+● Read c2-1-ask.png
+  │ qa\playtest-copilot\phone\c2-1-ask.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\phone\c2-1-ask.png
+  [image/png] 390x844]
+
+● Read c1-2-ask.png
+  │ qa\playtest-copilot\phone\c1-2-ask.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\qa\playtest-copilot\phone\c1-2-ask.png
+  [image/png] 390x844]
+
+/ Search (grep)
+  │ "Not quite what|Ask first|asked|askReply|clarif" in *.tsx (src\games\cafe)
+  └ 5 lines found
+
+● Read CafeGame.tsx
+  │ src\games\cafe\CafeGame.tsx
+  └ L60:215 (156 lines read)
+

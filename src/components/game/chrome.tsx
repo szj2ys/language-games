@@ -74,6 +74,13 @@ export function MarginNote({ id, className }: { id: SourceId; className?: string
   );
 }
 
+/** "You practised …" from a session's English summary: no level tag inside the sentence, no doubled end mark. */
+function practisedSentence(english: string): string {
+  const what = english.replace(/^warm-up \([A-C][12]\):\s*/i, "");
+  const end = /[.?!][’'”"]?$/.test(what) ? "" : ".";
+  return `You practised ${what.charAt(0).toLowerCase()}${what.slice(1)}${end}`;
+}
+
 export function SessionEnd({
   title,
   english,
@@ -119,7 +126,7 @@ export function SessionEnd({
         <h2 className="font-heading text-3xl font-semibold">
           <span className="text-sage">Done</span> · {title}
         </h2>
-        <p className="text-[17px] lg:text-[18px]">You practised {english.charAt(0).toLowerCase() + english.slice(1)}.</p>
+        <p className="text-[17px] lg:text-[18px]">{practisedSentence(english)}</p>
         <div className="flex flex-col gap-2 sm:flex-row">
           {nextTitle ? (
             <Button size="lg" className="h-12 text-lg sm:flex-1" onClick={onNext} autoFocus>

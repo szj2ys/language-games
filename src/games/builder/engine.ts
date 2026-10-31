@@ -90,6 +90,9 @@ export function interpret(u: Utterance, yard: Stone[]): AssistantResponse {
       return { kind: "asks", question: "There? Point to where." };
     }
     place = u.pointAt;
+  } else if (typeof u.pointAt === "string" && u.pointAt !== "builder") {
+    // Pointing at a platform without "there": the gesture alone leaves the assistant unsure.
+    return { kind: "asks", question: "Here, or over there? Say “there” when you point." };
   }
 
   const count = numbers[0]?.value ?? 1;

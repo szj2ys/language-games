@@ -204,7 +204,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
     onDone(
       1 + (strongestToo ? 1 : 0) + (misses === 0 ? 1 : 0),
       3,
-      misses === 0 && strongestToo && !hint,
+      misses === 0 && strongestToo,
       [claimText(claim, session.kind, feature)],
       firstMiss ?? undefined,
     );
@@ -334,7 +334,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
         onDone(
           1 + (r.fibres >= 3 ? 1 : 0) + (misses === 0 ? 1 : 0),
           3,
-          misses === 0 && !hint,
+          misses === 0,
           next.slice(1).map((s, i) => `Both ${next[i].card.name} and ${s.card.name} ${feature(s.link)!.plural}.`),
         );
         setDone(true);
@@ -473,7 +473,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
       else why = `Not true: ${n.name} ${n.plural ? f.plural : f.singular}.`;
     }
     setResult({ ok, why });
-    if (ok) onDone(2 + (misses === 0 ? 1 : 0), 3, misses === 0 && !hint, [mode === "both" ? sentence : unlikeText]);
+    if (ok) onDone(2 + (misses === 0 ? 1 : 0), 3, misses === 0, [mode === "both" ? sentence : unlikeText]);
     else {
       setMisses((m) => m + 1);
       track("repair_used", { game: GAME, round: round.id });

@@ -148,7 +148,7 @@ export const SESSIONS: Session[] = [
         numbers: true,
         there: true,
         thisWord: false,
-        plan: "One beam across the pillars on the left.",
+        plan: "One beam on the left platform.",
         hint: "One beam — there, pointing left.",
       },
       {

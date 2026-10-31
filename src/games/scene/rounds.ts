@@ -107,7 +107,7 @@ export const SESSIONS: Session[] = [
     id: "scene-2",
     title: "True or false?",
     blurb: "A report can be perfectly clear and still false. Compare it with the stage.",
-    english: "behind, in front of, 'is not'; checking a description against the facts",
+    english: "'behind', 'in front of' and 'is not'; checking a description against the facts",
     source: "tlp-2.21",
     rounds: [
       {

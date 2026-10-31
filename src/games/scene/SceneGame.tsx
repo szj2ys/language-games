@@ -389,7 +389,7 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
     const r = round.message.map((c) => holds(scene, c));
     setChecked(r);
     setTries((n) => n + 1);
-    if (r.every(Boolean)) onDone(r.length, r.length, tries === 0 && !hint, round.message.map(say), firstMiss ?? undefined);
+    if (r.every(Boolean)) onDone(r.length, r.length, tries === 0, round.message.map(say), firstMiss ?? undefined);
     else {
       const wrong = round.message.find((c) => !holds(scene, c));
       if (!firstMiss && wrong) setFirstMiss(builtSentence(scene, wrong));
@@ -527,7 +527,7 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
     const r = report.map((c) => holds(round.scene, c));
     setChecked(r);
     setTries((n) => n + 1);
-    if (r.every(Boolean)) onDone(r.length, r.length, tries === 0 && !hint, report.map(say), firstMiss ?? undefined);
+    if (r.every(Boolean)) onDone(r.length, r.length, tries === 0, report.map(say), firstMiss ?? undefined);
     else {
       const wrong = report.find((c) => !holds(round.scene, c));
       if (!firstMiss && wrong) setFirstMiss(say(wrong));
@@ -608,7 +608,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
     setResult({ clause, truth, places });
     setTries((n) => n + 1);
     const ok = truth && places.length === 1;
-    if (ok) onDone(2, 2, tries === 0 && !hint, [say(clause)]);
+    if (ok) onDone(2, 2, tries === 0, [say(clause)]);
     else track("repair_used", { game: GAME, round: round.id });
   };
 
@@ -625,7 +625,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div className="flex flex-1 flex-col gap-2 lg:block">
+      <div className="flex flex-col gap-2 lg:block">
         <Stage scene={round.scene} label="Your stage, which your partner cannot see" />
         {result && (
           <div className="px-3 lg:px-0">
@@ -671,11 +671,16 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
               <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-cobalt" aria-hidden />
             )}
           </span>
-          .
+          <span className="-ml-1.5">.</span>
         </p>
         {result && (
           <>
-            <p role="status" className="flex items-start gap-2 rounded-lg bg-paper-deep px-3 py-2 text-[17px]">
+            <p
+              role="status"
+              // On a phone the partner's stage pushes the verdict below the fold: bring it into view.
+              ref={(el) => el?.scrollIntoView({ block: "nearest" })}
+              className="flex items-start gap-2 rounded-lg bg-paper-deep px-3 py-2 text-[17px]"
+            >
               <MessageCircleQuestion className="mt-0.5 size-5 shrink-0" aria-hidden /> {partnerSays}
             </p>
             <ul className="flex flex-col gap-1.5">
