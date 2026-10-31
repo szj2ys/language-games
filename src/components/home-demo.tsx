@@ -1,10 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const STONES = ["block", "pillar", "slab", "beam"] as const;
@@ -38,9 +35,6 @@ export function HomeDemo() {
             You just played Wittgenstein&apos;s first language-game: one word, and an action that gives it its meaning (
             <em>Philosophical Investigations</em> §2).
           </p>
-          <Link href="/play/builder" className={cn(buttonVariants({ size: "lg" }), "h-12 self-start px-5 text-lg")}>
-            Keep playing Slab! <ArrowRight className="size-5" aria-hidden />
-          </Link>
         </div>
       ) : (
         <div>

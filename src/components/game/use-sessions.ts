@@ -47,8 +47,8 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[]) 
     replay: () => goTo(sessionIndex, 0),
     goToSession: (s: number) => goTo(s, 0),
     sessions,
-    complete: (marks: number, max: number, firstTry: boolean, phrases: string[]) => {
-      update((s) => recordRound(s, round.id, { marks, max, firstTry }, phrases));
+    complete: (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => {
+      update((s) => recordRound(s, round.id, { marks, max, firstTry, ...(missed ? { missed } : {}) }, phrases));
       track("round_completed", { game, round: round.id, firstTry, marks });
     },
   };

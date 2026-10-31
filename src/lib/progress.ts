@@ -12,6 +12,8 @@ export type RoundRecord = {
   firstTry: boolean;
   /** The English the player used or met in this round, for the notebook. */
   said?: string[];
+  /** What the player tried first, when it was wrong: the correction worth revisiting. */
+  missed?: string;
 };
 
 export type Save = {
@@ -61,6 +63,7 @@ export function parseSave(raw: string | null): LoadResult {
           max: r.max,
           firstTry: Boolean(r.firstTry),
           said: Array.isArray(r.said) ? r.said.filter((x) => typeof x === "string") : undefined,
+          missed: typeof r.missed === "string" ? r.missed : undefined,
         };
       }
     }
@@ -93,9 +96,14 @@ function parsePositions(raw: unknown): Record<string, Position> {
 export function recordRound(save: Save, id: string, rec: RoundRecord, phrases: string[] = []): Save {
   const prev = save.rounds[id];
   const said = phrases.length ? phrases : (rec.said ?? prev?.said);
-  const best: RoundRecord = prev
-    ? { marks: Math.max(prev.marks, rec.marks), max: rec.max, firstTry: prev.firstTry || rec.firstTry, ...(said ? { said } : {}) }
-    : { ...rec, ...(said ? { said } : {}) };
+  const missed = prev?.missed ?? rec.missed;
+  const best: RoundRecord = {
+    marks: Math.max(prev?.marks ?? 0, rec.marks),
+    max: rec.max,
+    firstTry: Boolean(prev?.firstTry) || rec.firstTry,
+    ...(said ? { said } : {}),
+    ...(missed ? { missed } : {}),
+  };
   const seen = new Set(save.phrases);
   const added = phrases.filter((p) => !seen.has(p));
   return {

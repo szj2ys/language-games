@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { cn } from "@/lib/utils";
+import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
 import { bestCards, explain, showExample, sitExam, startPupil, type Level, type Pupil } from "./engine";
 import { SESSIONS } from "./levels";
@@ -21,6 +22,7 @@ export function PupilGame() {
     <GameFrame game="Go On!" g={g}>
       {finished ? (
         <SessionEnd
+          nextGame={nextGame("pupil")}
           said={g.saidInSession()}
           title={session.title}
           english={session.english}
@@ -85,8 +87,9 @@ function Lesson({
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div>
+      <div className="flex flex-1 flex-col lg:block">
         <SceneCanvas
+          tall="/art/tall/classroom.webp"
           overlay={
             <>
               {/* The pupil's slate: what it writes is all we can see of its rule. */}
@@ -133,7 +136,7 @@ function Lesson({
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {phase === "teach" && !exam.passed && (
           <>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[15px] text-muted-foreground lg:text-[17px]">
               Show the pupil an example. It will re-sit the test using whatever way of going on fits everything it has seen.
             </p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label="Example cards">
@@ -173,8 +176,8 @@ function Lesson({
                   : "The pupil nods — and reads your sentence its own way. An explanation is one more sign to interpret (§198)."}
               </p>
             )}
-            <p className="text-sm text-muted-foreground" aria-live="polite">
-              Cards used: {cards}. Fewest possible: {best}.
+            <p className="text-[15px] text-muted-foreground lg:text-[17px]" aria-live="polite">
+              Cards used: {cards}.
             </p>
           </>
         )}
@@ -217,7 +220,7 @@ function Lesson({
                   <span className="font-bold">{call === level.twist.answer ? "Good call. " : "Not this time. "}</span>
                   {level.twist.why}
                 </p>
-                <p className="text-sm text-muted-foreground">English practised: {level.english}.</p>
+                <p className="text-[15px] text-muted-foreground lg:text-[17px]">English practised: {level.english}.</p>
                 <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
                   Next
                 </Button>

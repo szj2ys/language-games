@@ -67,6 +67,11 @@ export function Notebook() {
                               {line}
                             </p>
                           ))}
+                          {rec.missed && (
+                            <p className="text-[15px] text-terracotta">
+                              You first tried: <span className="font-heading">{rec.missed}</span>
+                            </p>
+                          )}
                           <p className="text-sm text-muted-foreground">
                             {r.did.charAt(0).toUpperCase() + r.did.slice(1)}
                             {rec.firstTry ? " · first try" : ""}

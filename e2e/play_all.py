@@ -58,7 +58,7 @@ def play_builder(page: Page) -> None:
         shot(page, f"builder-fetch-{stone}")
         advance(page, call)
     shot(page, "builder-session-1-end")
-    expect(page.get_by_text("Four words: done")).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Four words"))).to_be_visible()
     page.get_by_role("button", name="Next: Two slabs — there!").click()
 
     # Session 2: numbers and "there". Read the call and the pointing direction.
@@ -116,7 +116,7 @@ def play_builder(page: Page) -> None:
     page.get_by_role("button", name="Point at the right platform").click()
     page.get_by_role("button", name=re.compile(r"^Call")).click()
     next_round(page)
-    expect(page.get_by_text("Your turn to call: done")).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Your turn to call"))).to_be_visible()
     shot(page, "builder-done")
 
 
@@ -163,7 +163,7 @@ def play_scene(page: Page) -> None:
     page.get_by_role("button", name="Is it true?").click()
     shot(page, "scene-6")
     next_round(page)
-    expect(page.get_by_text("Make it true: done")).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Make it true"))).to_be_visible()
 
 
 # --- The Café -----------------------------------------------------------------
@@ -190,7 +190,7 @@ def play_cafe(page: Page) -> None:
         expect(page.get_by_text("What the words were doing here")).to_be_visible()
         next_round(page)
     shot(page, "cafe-session-end")
-    expect(page.get_by_text("Same words, new job: done")).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Same words, new job"))).to_be_visible()
 
 
 # --- Go On! -------------------------------------------------------------------
@@ -225,7 +225,7 @@ def play_pupil(page: Page) -> None:
         expect(page.get_by_text("Good call.")).to_be_visible()
         shot(page, f"pupil-{card.replace(' ', '-')}")
         next_round(page)
-    expect(page.get_by_text("Teach the pupil: done")).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Teach the pupil"))).to_be_visible()
 
 
 # --- Family Threads -------------------------------------------------------------
@@ -268,7 +268,7 @@ def play_family(page: Page) -> None:
     expect(page.get_by_text("sits at the edge")).to_be_visible()
     shot(page, "family-edge")
     next_round(page)
-    expect(page.get_by_text("What is a game?: done")).to_be_visible()
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a game\?"))).to_be_visible()
 
 
 def main() -> int:

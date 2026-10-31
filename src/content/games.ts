@@ -101,3 +101,10 @@ export const GAMES: GameInfo[] = [
     minutes: "2 × 4 min",
   },
 ];
+
+/** The game after this one, for the end of a game's last session. */
+export function nextGame(slug: GameInfo["slug"]): { title: string; href: string } {
+  const i = GAMES.findIndex((g) => g.slug === slug);
+  const g = GAMES[(i + 1) % GAMES.length];
+  return { title: g.title, href: `/play/${g.slug}` };
+}

@@ -8,6 +8,7 @@ import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/ga
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import { nextGame } from "@/content/games";
 import type { SourceId } from "@/content/sources";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
@@ -32,6 +33,7 @@ export function CafeGame() {
     <GameFrame game="The Café" g={g} withSpeech>
       {finished ? (
         <SessionEnd
+          nextGame={nextGame("cafe")}
           said={g.saidInSession()}
           title={session.title}
           english={session.english}
@@ -57,12 +59,13 @@ function Round({
 }: {
   round: CafeRound;
   speak: (t: string) => void;
-  onDone: (marks: number, max: number, firstTry: boolean, phrases: string[]) => void;
+  onDone: (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
   onNext: () => void;
 }) {
   const [chosen, setChosen] = useDraft<number | null>(round.id, "chosen", null);
   const [asked, setAsked] = useDraft(round.id, "asked", false);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const pick = chosen === null ? null : round.options[chosen];
   const solved = !!pick?.fits;
 
@@ -75,9 +78,10 @@ function Round({
     const o = round.options[i];
     setChosen(i);
     speak(o.reaction.replace(/\([^)]*\)/g, ""));
-    if (o.fits) onDone(misses === 0 ? 2 : 1, 2, misses === 0, [round.says]);
+    if (o.fits) onDone(misses === 0 ? 2 : 1, 2, misses === 0, [round.says], firstMiss ?? undefined);
     else {
       setMisses((m) => m + 1);
+      if (!firstMiss) setFirstMiss(o.text);
       track("repair_used", { game: GAME, round: round.id });
     }
   };
@@ -144,7 +148,7 @@ function Round({
       <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
         {!solved && (
           <>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[15px] text-muted-foreground lg:text-[17px]">
               {NAME[round.speaker]} says “{round.says}” What do you do?
             </p>
             {round.options.map((o, i) => {

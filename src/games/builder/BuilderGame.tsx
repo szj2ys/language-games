@@ -8,6 +8,7 @@ import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/c
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
 import {
@@ -67,6 +68,7 @@ export function BuilderGame() {
     <GameFrame game="Slab!" g={g} withSpeech>
       {finished ? (
         <SessionEnd
+          nextGame={nextGame("builder")}
           said={g.saidInSession()}
           title={session.title}
           english={session.english}
@@ -84,7 +86,7 @@ export function BuilderGame() {
           sessionIndex={sessionIndex}
           roundIndex={g.roundIndex}
           speak={speak}
-          onDone={(firstTry) => g.complete(3, 3, firstTry, [callFor(round.want)])}
+          onDone={(firstTry, missed) => g.complete(3, 3, firstTry, [callFor(round.want)], missed)}
           onNext={g.next}
         />
       ) : round.role === "use" ? (
@@ -92,7 +94,7 @@ export function BuilderGame() {
           key={round.id}
           round={round}
           speak={speak}
-          onDone={(firstTry) => g.complete(firstTry ? 3 : 2, 3, firstTry, [round.says])}
+          onDone={(firstTry, missed) => g.complete(firstTry ? 3 : 2, 3, firstTry, [round.says], missed)}
           onNext={g.next}
         />
       ) : (
@@ -142,6 +144,7 @@ function Site({
 }) {
   return (
     <SceneCanvas
+      tall="/art/tall/site.webp"
       overlay={
         bubble && (
           <div
@@ -225,7 +228,10 @@ function StonePile({ delivery, offset = 0, ghost }: { delivery: Delivery; offset
   const at = SPOT[delivery.place];
   return (
     <div
-      className={cn("absolute flex -translate-x-1/2 -translate-y-full items-end", ghost && "opacity-40 grayscale")}
+      className={cn(
+        "absolute flex -translate-x-1/2 -translate-y-full items-end",
+        ghost ? "opacity-30 grayscale" : "animate-in duration-700 fade-in slide-in-from-right-8",
+      )}
       style={{
         left: `${at.x + (delivery.place === "builder" ? offset * 6 : 0)}%`,
         top: `${at.y - (delivery.place === "builder" ? 0 : offset * 7)}%`,
@@ -311,7 +317,7 @@ function FetchPlay({
   sessionIndex: number;
   roundIndex: number;
   speak: (t: string) => void;
-  onDone: (firstTry: boolean) => void;
+  onDone: (firstTry: boolean, missed?: string) => void;
   onNext: () => void;
 }) {
   const call = callFor(round.want);
@@ -321,6 +327,7 @@ function FetchPlay({
   const [place, setPlace] = useDraft<Place>(round.id, "place", "builder");
   const [outcome, setOutcome] = useDraft<Outcome | null>(round.id, "outcome", null);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const [hint, setHint] = useDraft(round.id, "hint", false);
   const labelled = advanced || roundIndex < 2 || hint || outcome !== null;
 
@@ -337,10 +344,11 @@ function FetchPlay({
     const r = markDelivery(round.want, delivery);
     setOutcome({ delivery, ...r });
     if (r.score === 3) {
-      onDone(misses === 0 && !hint);
+      onDone(misses === 0 && !hint, firstMiss ?? undefined);
       speak("Good.");
     } else {
       setMisses((m) => m + 1);
+      if (!firstMiss) setFirstMiss(`brought ${NUMBER_WORDS[delivery.count - 1]} ${plural(delivery.stone, delivery.count)}`);
       track("repair_used", { game: GAME, round: round.id });
       setTimeout(() => speak(call), 600);
     }
@@ -377,7 +385,7 @@ function FetchPlay({
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div>
+      <div className="flex flex-1 flex-col lg:block">
         <Site
           facing={facing}
           pointing={!!round.points}
@@ -476,7 +484,7 @@ function FetchPlay({
         <div className="flex gap-2">
           {!outcome && <HintButton used={hint} onUse={() => setHint(true)} />}
           {!outcome && !advanced ? (
-            <p className="flex h-12 flex-1 items-center text-[16px] text-muted-foreground">Tap the stone he is calling for.</p>
+            <p className="flex h-12 flex-1 items-center text-[16px] text-muted-foreground">Choose the stone he is calling for.</p>
           ) : !outcome ? (
             <Button size="lg" className="h-12 flex-1 text-lg" onClick={() => bring()} disabled={!stone}>
               {stone ? `Bring ${NUMBER_WORDS[count - 1]} ${plural(stone, count)}` : "Pick a stone"}
@@ -613,7 +621,7 @@ function CallPlay({
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div>
+      <div className="flex flex-1 flex-col lg:block">
         <Site
           facing={pointAt === "left" ? "left" : "right"}
           pointing={typeof pointAt === "string"}
@@ -634,7 +642,7 @@ function CallPlay({
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {round.thisWord && !outcome && (
           <div>
-            <p className="mb-1 text-sm text-muted-foreground">The yard — tap a stone to point at it</p>
+            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[17px]">The yard — choose a stone to point at it</p>
             <div className="flex gap-2 overflow-x-auto pb-1">
               {yardKinds.map((k) => {
                 const known = round.words.includes(k.stone);
@@ -662,7 +670,7 @@ function CallPlay({
           aria-live="polite"
         >
           {tiles.length === 0 ? (
-            <span className="px-1 text-muted-foreground">Tap words to make your call</span>
+            <span className="px-1 text-muted-foreground">Choose words to make your call</span>
           ) : (
             tiles.map((t, i) => (
               <button
@@ -756,11 +764,12 @@ function UsePlay({
 }: {
   round: UseRound;
   speak: (t: string) => void;
-  onDone: (firstTry: boolean) => void;
+  onDone: (firstTry: boolean, missed?: string) => void;
   onNext: () => void;
 }) {
   const [chosen, setChosen] = useDraft<number | null>(round.id, "chosen", null);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const pick = chosen === null ? null : round.options[chosen];
   const solved = !!pick?.fits;
 
@@ -773,9 +782,10 @@ function UsePlay({
     const o = round.options[i];
     setChosen(i);
     speak(o.reaction);
-    if (o.fits) onDone(misses === 0);
+    if (o.fits) onDone(misses === 0, firstMiss ?? undefined);
     else {
       setMisses((m) => m + 1);
+      if (!firstMiss) setFirstMiss(o.text);
       track("repair_used", { game: GAME, round: round.id });
     }
   };
@@ -789,11 +799,12 @@ function UsePlay({
   const keeper = round.speaker === "keeper";
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div>
+      <div className="flex flex-1 flex-col lg:block">
         <Site
           facing="right"
           pointing={!keeper && round.says.startsWith("Slab!")}
-          delivered={[]}
+          delivered={pick?.shows ? [pick.shows] : []}
+          walking={pick?.shows?.place ?? null}
           bubble={pick ? pick.reaction : round.says}
           bubbleFrom={keeper ? "assistant" : "builder"}
           onSpeak={() => speak(pick ? pick.reaction : round.says)}
@@ -811,7 +822,7 @@ function UsePlay({
       <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
         {!solved ? (
           <>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[15px] text-muted-foreground lg:text-[17px]">
               {keeper ? "The stock-keeper" : "The builder"} says “{round.says}” What do you do?
             </p>
             {round.options.map((o, i) => {

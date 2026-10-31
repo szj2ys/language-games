@@ -8,6 +8,7 @@ import { GameFrame, GameLoading, HintButton, SessionEnd } from "@/components/gam
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
 import {
@@ -24,7 +25,7 @@ import {
 import { SESSIONS, type ClaimRound, type NewcomerRound, type Session, type ThreadRound } from "./rounds";
 
 const GAME = "family";
-type Done = (marks: number, max: number, firstTry: boolean, phrases: string[]) => void;
+type Done = (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
 
 export function FamilyGame() {
   const g = useSessions(GAME, SESSIONS);
@@ -35,6 +36,7 @@ export function FamilyGame() {
     <GameFrame game="Family Threads" g={g}>
       {finished ? (
         <SessionEnd
+          nextGame={nextGame("family")}
           said={g.saidInSession()}
           title={session.title}
           english={session.english}
@@ -134,6 +136,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
   const [q, setQ] = useDraft<Quantifier | null>(round.id, "q", null);
   const [looked, setLooked] = useDraft<Quantifier | null>(round.id, "looked", null);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const [hint, setHint] = useDraft(round.id, "hint", false);
   const truth = looked ? claimHolds(session.cards, feature.id, looked) : null;
   const best = strongest(session.cards, feature.id);
@@ -146,6 +149,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
     const ok = claimHolds(session.cards, feature.id, q);
     if (!ok) {
       setMisses((m) => m + 1);
+      if (!firstMiss) setFirstMiss(claimText(q, session.kind, feature));
       track("repair_used", { game: GAME, round: round.id });
     } else if (q === best) finish(q);
   };
@@ -179,9 +183,13 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
 
   function finish(claim: Quantifier) {
     const strongestToo = claim === best;
-    onDone(1 + (strongestToo ? 1 : 0) + (misses === 0 ? 1 : 0), 3, misses === 0 && strongestToo && !hint, [
-      claimText(claim, session.kind, feature),
-    ]);
+    onDone(
+      1 + (strongestToo ? 1 : 0) + (misses === 0 ? 1 : 0),
+      3,
+      misses === 0 && strongestToo && !hint,
+      [claimText(claim, session.kind, feature)],
+      firstMiss ?? undefined,
+    );
     setDone(true);
   }
   const blurred = session.cards.filter((c) => c.features[feature.id] === "blurred");
@@ -194,7 +202,9 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
         ))}
       </div>
       <div className="mt-auto flex flex-col gap-3 lg:mt-0">
-        <p className="text-sm text-muted-foreground">Make the strongest claim that is true of these {session.kind}. Then look.</p>
+        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+          Make the strongest claim that is true of these {session.kind}. Then look.
+        </p>
         <p className="font-heading text-[21px] leading-snug">
           {q ? claimText(q, session.kind, feature) : `… of these ${session.kind} ${feature.plural}.`}
         </p>
@@ -293,10 +303,10 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   const feature = (id?: string) => session.features.find((f) => f.id === id);
 
   function threadPrompt(): string {
-    if (chain.length === 0) return "Tap a card to start the thread.";
+    if (chain.length === 0) return "Choose a card to start the thread.";
     if (pending) return `What do ${last?.name} and ${pending.name} have in common?`;
     if (complete) return "The thread is complete.";
-    return `Tap a card that shares something with ${last?.name}.`;
+    return `Choose a card that shares something with ${last?.name}.`;
   }
 
   const pick = (c: Card) => {
@@ -330,7 +340,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   return (
     <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-muted-foreground">{threadPrompt()}</p>
+        <p className="text-[15px] text-muted-foreground lg:text-[17px]">{threadPrompt()}</p>
         <div className="grid grid-cols-3 gap-2">
           {session.cards.map((c) => (
             <CardTile
@@ -467,7 +477,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
         </div>
       </div>
       <div className="mt-auto flex flex-col gap-3 lg:mt-0">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
           {agree(n, "Does", "Do")} {n.name} belong with these {session.kind}? Say one true sentence.
         </p>
         <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Kind of sentence">

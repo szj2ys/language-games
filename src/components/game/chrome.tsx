@@ -82,6 +82,7 @@ export function SessionEnd({
   said = [],
   sources,
   nextTitle,
+  nextGame,
   onNext,
   onReplay,
 }: {
@@ -94,13 +95,17 @@ export function SessionEnd({
   sources: SourceId[];
   /** Absent on a game's last session. */
   nextTitle?: string;
+  /** After a game's last session: the next game to play. */
+  nextGame?: { title: string; href: string };
   onNext: () => void;
   onReplay: () => void;
 }) {
   const [lead, ...more] = sources;
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 py-6">
-      <h2 className="font-heading text-3xl font-semibold">{title}: done</h2>
+      <h2 className="font-heading text-3xl font-semibold">
+        <span className="text-sage">Done</span> · {title}
+      </h2>
       <p className="text-[18px]">
         <span className="font-bold">
           {firstTry} of {total}
@@ -113,8 +118,8 @@ export function SessionEnd({
             Next: {nextTitle}
           </Button>
         ) : (
-          <Link href="/" className={cn(buttonVariants({ size: "lg" }), "h-12 text-lg sm:flex-1")}>
-            Choose another game
+          <Link href={nextGame?.href ?? "/"} className={cn(buttonVariants({ size: "lg" }), "h-12 text-lg sm:flex-1")}>
+            {nextGame ? `Next game: ${nextGame.title}` : "Choose another game"}
           </Link>
         )}
         <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
@@ -214,7 +219,7 @@ export function GameFrame({
       />
       {g.sessions.length > 1 && (
         <nav aria-label="Sessions" className="px-3 pb-2">
-          <ol className="flex gap-1.5 overflow-x-auto">
+          <ol className="flex gap-1.5 overflow-x-auto [mask-image:linear-gradient(to_right,black_85%,transparent)] sm:[mask-image:none]">
             {g.sessions.map((s, i) => {
               const current = i === g.sessionIndex;
               return (
@@ -224,7 +229,7 @@ export function GameFrame({
                     onClick={() => g.goToSession(i)}
                     aria-current={current ? "step" : undefined}
                     className={cn(
-                      "flex h-10 items-center gap-1.5 rounded-full border px-3 text-sm font-bold whitespace-nowrap",
+                      "flex h-11 items-center gap-1.5 rounded-full border px-3.5 text-sm font-bold whitespace-nowrap",
                       current ? "border-ink bg-ink text-paper" : "border-border bg-card hover:bg-paper-deep",
                     )}
                   >
@@ -270,18 +275,39 @@ export function SceneCanvas({
   overlay,
   label,
   className,
+  tall,
 }: {
   children: React.ReactNode;
   overlay?: React.ReactNode;
   label?: string;
   className?: string;
+  /**
+   * A taller version of the backdrop (image-model outpainting of the same art).
+   * With it, the phone stage grows to fill the screen down to the controls: the
+   * tall art fills the frame and the 16:9 game canvas sits at its foot, faded in.
+   */
+  tall?: string;
 }) {
   return (
     <figure
       aria-label={label}
-      className={cn("relative aspect-[4/3] w-full overflow-hidden bg-paper-deep sm:aspect-[16/9] sm:rounded-2xl", className)}
+      className={cn(
+        "relative w-full overflow-hidden bg-paper-deep sm:aspect-[16/9] sm:flex-none sm:rounded-2xl",
+        tall ? "min-h-[75vw] flex-1" : "aspect-[4/3]",
+        className,
+      )}
     >
-      <div className="absolute inset-y-0 left-[-16.667%] w-[133.333%] sm:left-0 sm:w-full">{children}</div>
+      {tall && <Image src={tall} alt="" fill priority sizes="100vw" className="object-cover object-bottom sm:hidden" />}
+      <div
+        className={cn(
+          "absolute left-[-16.667%] w-[133.333%] sm:inset-y-0 sm:left-0 sm:w-full",
+          tall
+            ? "bottom-0 aspect-[16/9] [mask-image:linear-gradient(to_bottom,transparent,black_16%)] sm:aspect-auto sm:[mask-image:none]"
+            : "inset-y-0",
+        )}
+      >
+        {children}
+      </div>
       {overlay}
     </figure>
   );
