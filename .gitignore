@@ -44,3 +44,9 @@ logs/
 # QA captures
 qa/
 __pycache__/
+
+# web-check cache
+.web-check/
+
+# review screenshots and recordings (large); only the verdict log is tracked
+reports/**/round-*/

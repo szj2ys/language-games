@@ -1,0 +1,1012 @@
+{
+  "url": "http://localhost:3417/",
+  "rounds": [
+    {
+      "reviewer": "fresh subagent (Jobs reviewer, round 1)",
+      "log": "round-1/actions.jsonl",
+      "used": [
+        {
+          "feature": "Landing (phone)",
+          "did": "Opened /, read the first screen",
+          "result": "Clear in 5 s: five short Wittgenstein-themed English games for intermediate learners; one blue 'Play Slab!' button. Hero illustration takes the top quarter."
+        },
+        {
+          "feature": "Slab! session 1",
+          "did": "Tapped beam when the builder called 'Slab!' (deliberate mistake), Try again, then slab, then played all 6 calls",
+          "result": "'No - Slab!' plus 'not a beam' chip, the wrong stone dropped on the ground; labels fade from the stones after round 2; end card '5 of 6 right first time' with the PI 2 quote."
+        },
+        {
+          "feature": "Slab! jump ahead / give orders",
+          "did": "Looked for a way to skip to the order-giving session from the end card, the home card (6/18), the progress dots and the About section; tried a second tap on a stone as a shortcut",
+          "result": "No way to jump ahead; the order-giving role is 12+ rounds away and could not be reached. A second tap on a stone does nothing; every round is pick, Bring, Next = 3 taps."
+        },
+        {
+          "feature": "Slab! session 2 + reload",
+          "did": "Two slabs (slab, +), reloaded mid-session, then 'Pillar - there!' (pillar, Left)",
+          "result": "Progress survived the reload. The new session opened scrolled 101 px down with the call bubble cut off; the 'To him' segment wraps onto two lines and is clipped."
+        },
+        {
+          "feature": "Picture Theatre: make it true",
+          "did": "Put the key ON the box for 'The key is in the box' (mistake), Change it, moved it IN; then 5 more scenes incl. a 3-sentence message",
+          "result": "Red X on the sentence, the stage shows the key on the box; fixing works. Drop zones are overlapping dashed boxes of 59x24 px."
+        },
+        {
+          "feature": "Picture Theatre: fix a false report",
+          "did": "Pressed 'Check against the stage' without changing anything (mistake), then changed 'on' to 'in' in the dropdown",
+          "result": "False line marked red, true one green; after the fix, Next. The locked line leaves a gap where the dropdown was."
+        },
+        {
+          "feature": "The Cafe, two rounds",
+          "did": "Round 1 answered 'Yes, it's November.' (mistake) then 'Close the window.'; round 2 used 'Ask first' then 'Offer her another pot of tea.'",
+          "result": "Good replies from Rosa and a clear 'What the words were doing here: a request / a hint'. The illustration is identical in both rounds; the clues that decide the answer exist only as text."
+        },
+        {
+          "feature": "Go On! a/an",
+          "did": "Showed 'an egg' (pupil over-generalised to 'an university'), then 'an honest man'; teacher's call on 'an one-way ticket': Correct it",
+          "result": "All five right with 2 cards; 'It can be done with 1' but it never says which card. Teacher's call explained well (/w/ sound)."
+        },
+        {
+          "feature": "Family Threads",
+          "did": "Claimed 'All of these games have a winner' (mistake), then 'Most'",
+          "result": "'Objection! What about ball against a wall?', then the cards were checked, crossed or blurred; 'Most' accepted as the strongest true claim."
+        },
+        {
+          "feature": "Notebook and Sources",
+          "did": "Opened /notebook and /sources from the footer",
+          "result": "Notebook: per-game progress pills and a flat list of every sentence shown, no grouping or meaning; Family Threads missing. Sources: long, clean reference page."
+        },
+        {
+          "feature": "Desktop 1440",
+          "did": "Home, then Slab! 'Three blocks!' (block, +, +, Bring); pressed key '3' looking for a shortcut",
+          "result": "Home looks good. The game uses the top ~45% of the screen (scene 570x320), everything below is empty; no keyboard shortcuts."
+        },
+        {
+          "feature": "Benchmark NYT Connections",
+          "did": "goto https://www.nytimes.com/games/connections twice",
+          "result": "Did not load: net::ERR_CONNECTION_TIMED_OUT (shots/183-goto-error.png, shots/184-goto-error.png). From the comparison it was meant for: Connections fills the viewport with the board and answers in one action per decision; this product loses on both counts (J1-2, J1-3)."
+        }
+      ],
+      "findings": [
+        {
+          "id": "J1-1",
+          "severity": "major",
+          "page": "/play/builder",
+          "critique": "The promised payoff of Slab! - 'then give the orders yourself' - is locked behind 12+ fetch rounds with no way to see or choose it. The home card sells it and the About text describes it, yet a curious adult cannot reach it in a few minutes. Make the sessions a visible, tappable row (Four words / Two slabs - there! / Your orders) on the game and its end card; unlock freely or after one session.",
+          "screenshot": "shots/043-look.png"
+        },
+        {
+          "id": "J1-2",
+          "severity": "major",
+          "page": "/play/* (phone and desktop)",
+          "critique": "Every game screen stops half-way down: on the phone the bottom 40-50% is blank paper before 'About ...' starts, on desktop the game is a 570 px strip with 55% empty below. That is emptiness, not restraint. Let the scene grow to fill the viewport (taller stage on phone; scene and controls at full height on desktop) with controls in thumb reach.",
+          "screenshot": "shots/003-click.png"
+        },
+        {
+          "id": "J1-3",
+          "severity": "major",
+          "page": "/play/builder",
+          "critique": "Three taps per call (pick, 'Bring the ...', 'Next') for a one-word order. In session 1 the stone tap should bring it (there is nothing else to set), and feedback should advance on its own or on any tap. A second tap on the selected stone does nothing - it should bring it.",
+          "screenshot": "shots/018-look.png"
+        },
+        {
+          "id": "J1-4",
+          "severity": "major",
+          "page": "/play/builder (session 2)",
+          "critique": "The new session opens scrolled 101 px down, so the builder's call bubble - the whole task - is cut off at the top. Scroll to top on every new session and round.",
+          "screenshot": "shots/051-look.png"
+        },
+        {
+          "id": "J1-5",
+          "severity": "major",
+          "page": "/play/builder (session 2)",
+          "critique": "'To him' in the place switch wraps to two lines and is clipped inside its pill on a 390 px phone. Shorten it ('Here') or give the control its own full-width row.",
+          "screenshot": "shots/058-look.png"
+        },
+        {
+          "id": "J1-6",
+          "severity": "major",
+          "page": "/play/cafe",
+          "critique": "The game is 'read the room', but the room never changes: the same picture appears for the open-window round and the empty-cup round, and Rosa smiles while 'she pulls her cardigan tighter'. The clues live only in an eye-icon text list. Show the open window, the empty cup and her glance at the teapot in the picture; the text should be the fallback, not the game.",
+          "screenshot": "shots/138-click.png"
+        },
+        {
+          "id": "J1-7",
+          "severity": "major",
+          "page": "/play/scene",
+          "critique": "Stage drop zones are 59x24 px dashed boxes that overlap each other (front and back rows touch), and a placed object is a 35-39 px target. Too small and messy for a thumb. Use larger, non-overlapping spots (44 px or more) with clear gaps.",
+          "screenshot": "shots/067-click.png"
+        },
+        {
+          "id": "J1-8",
+          "severity": "major",
+          "page": "/play/pupil",
+          "critique": "After success the pupil writes 'an one-way ticket' and the closing note says it applied 'an before a vowel letter' - yet it had just passed 'a university' and 'an hour' by sound. The pupil contradicts the rule it was shown, which muddles the point of the game. And 'It can be done with 1' never reveals which card; show it.",
+          "screenshot": "shots/149-click.png"
+        },
+        {
+          "id": "J1-9",
+          "severity": "major",
+          "page": "/notebook",
+          "critique": "The notebook is a raw log: a flat list of every sentence the games displayed (including report sentences I never wrote), no game, no date, no meaning, no replay; Family Threads is missing. Group by game and session, show what each phrase did ('a request', 'a/an by sound'), and let a tap replay it.",
+          "screenshot": "shots/165-click.png"
+        },
+        {
+          "id": "J1-10",
+          "severity": "minor",
+          "page": "/play/builder end card",
+          "critique": "The primary 'Next: Two slabs - there!' button is 30 px tall while the secondary 'Play again' is 48 px; the primary is the cramped one. Both 48 px.",
+          "screenshot": "shots/043-look.png"
+        },
+        {
+          "id": "J1-11",
+          "severity": "minor",
+          "page": "/play/scene",
+          "critique": "A wrong 'make it true' shows a red X but never says what is wrong. One line - 'The key is on the box, not in it' - would teach the preposition at the moment of error.",
+          "screenshot": "shots/070-click.png"
+        },
+        {
+          "id": "J1-12",
+          "severity": "minor",
+          "page": "/play/family",
+          "critique": "Hint is a text link here but a square bulb button in every other game. Use one component.",
+          "screenshot": "shots/157-look.png"
+        },
+        {
+          "id": "J1-13",
+          "severity": "minor",
+          "page": "/play/builder (desktop)",
+          "critique": "The desktop game header 'Slab!' is about 18 px and its subtitle about 12 px, smaller than the home page body copy. No keyboard shortcuts (1-4 for stones, Enter for Bring/Next), and nothing tells desktop users either way.",
+          "screenshot": "shots/173-goto.png"
+        }
+      ],
+      "top_problem": "Let the user reach each game's real payoff in minutes: a visible, tappable session row in every game (starting with Slab!'s 'give the orders yourself') and one tap per answer instead of pick-Bring-Next.",
+      "cut": "The 'About ...' block under every game (How to play / The idea) that sits below an empty half-screen - the end card already carries the passage and the reading; and the 'Bring the ...' confirm step in Slab! session 1.",
+      "rechecked": [],
+      "verdict": "not satisfied",
+      "words": "The ideas are genuinely clever and the craft is warm and legible - the Cafe's 'a request made by describing the problem' teaches more in one line than most apps do in a lesson. But you hide the best game behind a dozen fetch-and-confirm rounds, leave half of every screen empty, and tell the Cafe's clues in text instead of showing them; fix those and I would ship it."
+    },
+    {
+      "reviewer": "fresh subagent (Jobs round 2)",
+      "log": "round-2/actions.jsonl",
+      "used": [
+        {
+          "feature": "Landing",
+          "did": "Opened / on phone 390px, read first screen, tapped Play Slab!",
+          "result": "Understood in 5 s: short English games built on Wittgenstein, for intermediate learners, start with Slab!. Hero is an illustration, not the game."
+        },
+        {
+          "feature": "Slab! session 1",
+          "did": "Tapped beam when builder called Slab! (mistake), then tapped slab",
+          "result": "One tap brings a stone; 'not a beam' + Try again. Tapping the right stone after a miss is a dead tap (timed out) until Try again is pressed."
+        },
+        {
+          "feature": "Slab! session picker / your turn",
+          "did": "Tapped '3 Your turn to call'; called 'Beam!' (wrong), Take it back, 'Pillar!'; then 'Two pillars there' without pointing, pointed left, Call",
+          "result": "Picker works at once; assistant brings a beam, then asks 'There? Point to where.', then 'Done.' with a redrawn scene. Strong."
+        },
+        {
+          "feature": "Slab! session 2 + reload",
+          "did": "slab, +, Here, reloaded mid-call, Bring two slabs",
+          "result": "State survived reload; 'Good.' with check chips. Here/Left/Right pill fits at 390px."
+        },
+        {
+          "feature": "Picture Theatre make it true",
+          "did": "Put key ON the box (mistake), Is it true?, Change it, tap key, IN, Is it true?",
+          "result": "'The key is on the box, not in it.' then pass. Fix took 3 taps (Change it, key, in)."
+        },
+        {
+          "feature": "Picture Theatre true or false",
+          "did": "Checked the report without changing it (mistake), Change it, selected 'in', Check",
+          "result": "Red/green per sentence, then pass."
+        },
+        {
+          "feature": "The Cafe two rounds",
+          "did": "Round 1 chose 'Bring her a fresh hot tea' (wrong) then 'Close the window'; round 2 'Offer her another pot of tea'",
+          "result": "Picture changed between rounds (open window/steaming tea vs shut window/teapot). Rosa answers in character; the job of the words is explained. Then played rounds 3-6 to reach the end card."
+        },
+        {
+          "feature": "Go On!",
+          "did": "Showed 'an egg' (pupil over-applies: 'an university'), then 'an honest man'; teacher's call: chose 'Both are in use' (wrong)",
+          "result": "All five right with 2 cards, and it names the 1-card answer. Pupil then writes 'an European city' while its own board still shows 'a university' ticked."
+        },
+        {
+          "feature": "Family Threads",
+          "did": "Claimed 'All of these games have a winner' (mistake), then 'Most', Look, Keep this claim, Next",
+          "result": "'Objection! What about ball against a wall?'; Most accepted, patience blurred as 'unclear'."
+        },
+        {
+          "feature": "Notebook",
+          "did": "Opened via footer link after playing",
+          "result": "Grouped by game and session, sentence + what it did, Play again per session, Family Threads present. Mistakes and corrections not kept."
+        },
+        {
+          "feature": "Back button / sources",
+          "did": "Browser back from Family Threads; opened /sources",
+          "result": "Back lands on home at the cards with 'Continue Family Threads'; sources page fine."
+        },
+        {
+          "feature": "Desktop 1440",
+          "did": "Home, Picture Theatre, Slab! with keyboard key '2'",
+          "result": "Key 2 selects pillar, but nothing on screen says shortcuts exist. Game band ends at ~490px of 900; header title 22px."
+        },
+        {
+          "feature": "Benchmark",
+          "did": "browse.py goto https://www.nytimes.com/games/connections",
+          "result": "ERR_CONNECTION_REFUSED again from this machine (shots/127-goto-error.png); compared from knowledge of NYT Games layout only."
+        }
+      ],
+      "findings": [
+        {
+          "id": "J2-1",
+          "severity": "major",
+          "page": "/play/builder, /play/scene (desktop 1440x900)",
+          "critique": "Desktop game still sits in a 490 px band: stage 660x372 top-left, controls in a narrow right column, bottom 45% of the screen empty. Size the stage to the viewport height and let the board own the screen, as NYT Games does with one centred board.",
+          "screenshot": "shots/125-press.png"
+        },
+        {
+          "id": "J2-2",
+          "severity": "major",
+          "page": "/play/cafe (session end card)",
+          "critique": "End card leads with two long quotation cards; the next action sits two screens down, and the primary 'Next: Which one?' is 30 px tall under a 48 px 'Play again' (J1-10 unchanged). Lead with what the learner did (their sentences, first-try score), one quote collapsed, and a full-size primary button visible without scrolling.",
+          "screenshot": "shots/165-scroll.png"
+        },
+        {
+          "id": "J2-3",
+          "severity": "major",
+          "page": "/play/builder",
+          "critique": "After a wrong stone the four stones still look tappable but are dead; tapping the right one does nothing until you find 'Try again'. Make the next stone tap the retry (the Cafe already works this way).",
+          "screenshot": "shots/009-click-error.png"
+        },
+        {
+          "id": "J2-4",
+          "severity": "major",
+          "page": "/play/builder, /play/scene, /play/family (phone 390x844)",
+          "critique": "Phone game screens end at ~65-75% height; the bottom quarter, where the thumb rests, is empty paper while the primary button floats mid-screen. Grow the stage or dock the action bar at the bottom.",
+          "screenshot": "shots/013-click.png"
+        },
+        {
+          "id": "J2-5",
+          "severity": "major",
+          "page": "/",
+          "critique": "The landing shows a decorative illustration and a paragraph: the product is described, not shown. Put the first Slab! call on the landing itself (builder bubble + four stones, one tap) so the visitor plays within a second, then the game list.",
+          "screenshot": "shots/119-goto.png"
+        },
+        {
+          "id": "J2-6",
+          "severity": "major",
+          "page": "/play/builder (desktop)",
+          "critique": "Keyboard shortcuts exist (key 2 picks pillar) but nothing ever says so; a desktop user clicks every time. Show the key on each stone (small 1-4) or one quiet line after the first mouse pick.",
+          "screenshot": "shots/125-press.png"
+        },
+        {
+          "id": "J2-7",
+          "severity": "minor",
+          "page": "/play/pupil",
+          "critique": "The pupil writes 'an European city' while its own test board just above still shows 'a university' ticked: same /ju/ sound, opposite answers. Clear the board for the new word or choose a case the pupil has not already got right.",
+          "screenshot": "shots/087-click.png"
+        },
+        {
+          "id": "J2-8",
+          "severity": "minor",
+          "page": "/notebook",
+          "critique": "Notebook keeps only correct sentences; the corrections (beam vs slab, on vs in, a European) are what is worth revisiting. Show 'you first tried X' under each entry. '<- All games' is 85x17 px.",
+          "screenshot": "shots/105-click.png"
+        },
+        {
+          "id": "J2-9",
+          "severity": "minor",
+          "page": "/play/builder",
+          "critique": "After a correct fetch in session 2 the screen shows 'Good.' and a Next button, then advances on its own; pick one (auto-advance or Next), not both.",
+          "screenshot": "shots/116-click.png"
+        },
+        {
+          "id": "J2-10",
+          "severity": "minor",
+          "page": "/play/family",
+          "critique": "'Keep this claim' is an extra tap that only reveals a one-line note; fold it into the Look result. Patience is blurred as 'unclear' without saying why. The Hint button sits alone on its own row here, unlike the other games.",
+          "screenshot": "shots/097-click.png"
+        },
+        {
+          "id": "J2-11",
+          "severity": "minor",
+          "page": "/play/scene, /play/builder",
+          "critique": "'in'/'on' chips are 44x36 and Here/Left/Right 63x36: below 44 px height. A key placed 'on the box' floats above the box instead of resting on it.",
+          "screenshot": "shots/046-click.png"
+        },
+        {
+          "id": "J2-12",
+          "severity": "minor",
+          "page": "/ (phone)",
+          "critique": "Landing cards are 396 px each, so Family Threads is three screens down; 'Choose a game' is a 24 px text link and the notebook lives only in the footer. A compact list (thumbnail, name, progress) would put all five on one screen.",
+          "screenshot": "shots/001-goto.png"
+        }
+      ],
+      "top_problem": "Make every game screen own the viewport on phone and desktop (stage sized to the screen, actions docked at the bottom, no empty paper below), and end each session with the learner's own result and a full-size Next instead of two screens of quotations.",
+      "cut": "The quotation cards leading each session end card (keep one, collapsed) and the 'Keep this claim' step in Family Threads. The About block answer holds: it is below the fold, never interrupts play, and serves crawlers; but drop its 'The idea' paragraph on Family Threads, which states the conclusion before the player discovers it.",
+      "rechecked": [
+        {
+          "id": "J1-1",
+          "status": "fixed",
+          "observed": "Session picker (1 Four words / 2 Two slabs - there! / 3 Your turn to call) on the first screen; 'Your turn to call' opens at once."
+        },
+        {
+          "id": "J1-2",
+          "status": "not fixed",
+          "observed": "Phone: bottom ~25-30% blank (shots/013-click.png). Desktop: game ends ~490 px of 900 (shots/121-goto.png, shots/125-press.png)."
+        },
+        {
+          "id": "J1-3",
+          "status": "fixed",
+          "observed": "Session 1: one tap brings the stone and advances on success."
+        },
+        {
+          "id": "J1-4",
+          "status": "fixed",
+          "observed": "Sessions open at scroll 0 with the call bubble in view."
+        },
+        {
+          "id": "J1-5",
+          "status": "fixed",
+          "observed": "Here/Left/Right segmented pill fits at 390 px (shots/109-click.png)."
+        },
+        {
+          "id": "J1-6",
+          "status": "fixed",
+          "observed": "Cafe picture changes between rounds (shots/067-click.png vs shots/073-click.png)."
+        },
+        {
+          "id": "J1-7",
+          "status": "fixed",
+          "observed": "Drop zones 81x48 and separate; placed key 52x42; in/on chips still 36 px high (J2-11)."
+        },
+        {
+          "id": "J1-8",
+          "status": "fixed",
+          "observed": "'It can be done with 1: “an honest man”'; a/an test consistent. New minor inconsistency in the follow-up word (J2-7)."
+        },
+        {
+          "id": "J1-9",
+          "status": "fixed",
+          "observed": "Notebook grouped by game/session with meaning and Play again; Family Threads present."
+        },
+        {
+          "id": "J1-10",
+          "status": "not fixed",
+          "observed": "Cafe end card: 'Next: Which one?' 358x30 vs 'Play again' 358x48 (shots/165-scroll.png)."
+        },
+        {
+          "id": "J1-11",
+          "status": "fixed",
+          "observed": "'The key is on the box, not in it.' (shots/046-click.png)."
+        },
+        {
+          "id": "J1-12",
+          "status": "fixed",
+          "observed": "Family Threads Hint is the same 48 px bulb button (though on its own row)."
+        },
+        {
+          "id": "J1-13",
+          "status": "not fixed",
+          "observed": "Desktop header still a 22 px title with small tabs; keyboard shortcuts work but are never shown."
+        }
+      ],
+      "verdict": "not satisfied",
+      "words": "The games themselves are now good: the assistant asking 'There? Point to where.' and Rosa's words changing job with the room are the product working, not described. But a third of the glass is still empty, the end of a session buries the next step under quotations, and a dead tap after a mistake makes you feel stupid; fix those and I will ship it."
+    },
+    {
+      "reviewer": "fresh subagent (Jobs round 3)",
+      "log": "round-3/actions.jsonl",
+      "used": [
+        {
+          "feature": "Landing (phone)",
+          "did": "Opened /, tapped 'block' on the landing Slab! call (mistake), then 'slab'",
+          "result": "Playable in one second: 'No - slab!', then 'Good.' with the PI §2 line and 'Keep playing Slab!'. I knew at once: English games built on Wittgenstein; start by tapping a stone."
+        },
+        {
+          "feature": "Slab! Four words",
+          "did": "Keep playing Slab!, tapped beam on 'Slab!' (mistake), then tapped slab directly without 'Try again'",
+          "result": "'not a beam' chip; the direct tap on slab counted and advanced to 'Pillar!'. Stones docked at the bottom, 179x114 each."
+        },
+        {
+          "feature": "Slab! Your turn to call",
+          "did": "Tapped Call with an empty tray (mistake), then pillar, Call",
+          "result": "Empty Call is disabled; 'Pillar!' gives 'Done.' but the scene is unchanged (a pillar already stood there before the call)."
+        },
+        {
+          "feature": "Slab! Order or report?",
+          "did": "'Three slabs!': chose 'Write 3 slabs on the stock list' (mistake), then 'Bring him three slabs'; played all 6 rounds",
+          "result": "'I don't need a list - I need slabs!', then 'An order.' explained; stock-keeper round 'A report' (PI §21). End card: '4 of 6 right first time', full-size 'Choose another game', Your English chips, quote collapsed."
+        },
+        {
+          "feature": "Picture Theatre",
+          "did": "Make it true: key ON the box (mistake), Is it true?, Change it, key, IN. True or false?: Check without change (mistake), Change it, select 'in', Check",
+          "result": "'The key is on the box, not in it.' then pass; report line red/green then pass. The 'on' rendering looks like the key is in the box."
+        },
+        {
+          "feature": "The Cafe",
+          "did": "Round 1 'Yes, it's November.' (mistake) then 'Close the window.'; round 2 'Ask first' then 'Offer her another pot of tea.'",
+          "result": "Rosa replies in character, picture changes (open window vs shut window and teapot), 'A request - made by describing the problem' / 'A hint'. Best game in the set."
+        },
+        {
+          "feature": "Go On!",
+          "did": "Showed 'an egg' (pupil over-applies: 'an university'), then 'an honest man'; teacher's call on 'a historic day': Correct it (wrong)",
+          "result": "All five right with 2 cards, names the 1-card answer; 'Both are in use' explained with §202. Then a plurals round."
+        },
+        {
+          "feature": "Family Threads",
+          "did": "'All ... have a winner' (mistake), then Most, Look; reloaded mid-session; browser back",
+          "result": "'Objection! What about ball against a wall?'; Most accepted, patience explained (§66), no extra 'Keep' tap. Reload kept the round."
+        },
+        {
+          "feature": "Notebook",
+          "did": "Opened from the landing link after playing",
+          "result": "Grouped by game and session with what each sentence did and 'first try'; 'Play again' 69x44; shortcut note at the bottom. What I first tried is not recorded."
+        },
+        {
+          "feature": "Desktop 1440",
+          "did": "Landing; Slab! Order or report? with key 1 then Enter; Four words with key 3; Picture Theatre",
+          "result": "Stage 936x527 with controls in a right column; key numbers shown on options and stones and they work. Right column type is small."
+        },
+        {
+          "feature": "Benchmark NYT Connections",
+          "did": "browse.py goto https://www.nytimes.com/games/connections",
+          "result": "net::ERR_CONNECTION_REFUSED again (shots/134-goto-error.png). From its known layout: Connections keeps one centred board with nothing empty between board and buttons; this product loses on the empty band between stage and controls on phone (J3-1)."
+        }
+      ],
+      "findings": [
+        {
+          "id": "J3-1",
+          "severity": "major",
+          "page": "/play/builder, /play/scene, /play/family (phone 390x844)",
+          "critique": "Docking the controls to the bottom fixed the empty bottom but moved the emptiness to the middle: a 150-300 px band of bare paper between the stage text and the tray (Slab! 'Your turn to call' ~250 px, Picture Theatre after success ~300 px, Family Threads ~110 px). The stage stays a fixed 16:9 strip. Size the stage to the remaining height (taller crop on phone) so picture and controls meet, or put the message/plan text directly above the tray.",
+          "screenshot": "shots/020-click.png"
+        },
+        {
+          "id": "J3-2",
+          "severity": "major",
+          "page": "/play/scene",
+          "critique": "The game teaches in vs on, yet 'Put the key on the box' draws the key leaning into the open box from its rim, which a learner reads as 'in the box'. The picture contradicts the feedback 'The key is on the box, not in it.' Give the box a lid or flat top and lay the key flat on it, clearly outside.",
+          "screenshot": "shots/067-click.png"
+        },
+        {
+          "id": "J3-3",
+          "severity": "major",
+          "page": "/play/builder (Your turn to call, Order or report?)",
+          "critique": "The result of what you say is told, not shown. 'Pillar!' gets 'Done.' but the scene is identical to before the call (the pillar already stood there). In 'Order or report?' the clue says 'The builder stands on the scaffold, empty-handed' while the picture shows him on the ground, shouting, and 'Bring him three slabs' brings nothing. The scene must show the clue (builder on the scaffold, gap in the wall) and the outcome (the assistant carries the pillar or the three slabs).",
+          "screenshot": "shots/026-click.png"
+        },
+        {
+          "id": "J3-4",
+          "severity": "minor",
+          "page": "/ (returning visitor, phone)",
+          "critique": "Coming back, the landing demo is frozen at 'Good. You just played...' with 'Keep playing Slab!' and directly below a second blue 'Continue Slab!': two primaries to the same place. On return, reset the demo to a fresh call (or drop the success card) and keep one Continue button.",
+          "screenshot": "shots/059-click.png"
+        },
+        {
+          "id": "J3-5",
+          "severity": "minor",
+          "page": "/play/pupil",
+          "critique": "'Fewest possible: 1' is shown before the first card, which gives the puzzle away; show it after the pupil passes. Go On! also lacks the session pills and Hint button every other game has.",
+          "screenshot": "shots/100-click.png"
+        },
+        {
+          "id": "J3-6",
+          "severity": "minor",
+          "page": "/notebook",
+          "critique": "Entries now say 'first try', but the missed ones still do not say what you first tried (beam for Slab!, on for in, 'Yes, it's November'). Those corrections are what is worth revisiting: add 'you first tried ...'.",
+          "screenshot": "shots/123-click.png"
+        },
+        {
+          "id": "J3-7",
+          "severity": "minor",
+          "page": "/play/* (phone)",
+          "critique": "Session pills are 40 px high and the last one is cut off at the right edge ('3 Your tu...', '3 Say where i...') with no sign the row scrolls. Make them 44 px and wrap or fade the edge.",
+          "screenshot": "shots/007-click.png"
+        },
+        {
+          "id": "J3-8",
+          "severity": "minor",
+          "page": "/play/builder end card",
+          "critique": "'Order or report?: done' (question mark plus colon) reads like a bug; the bottom 40% is empty; and the primary 'Choose another game' sends you to a list instead of the next game. Title 'Order or report? Done.', primary 'Next: Picture Theatre'.",
+          "screenshot": "shots/051-look.png"
+        },
+        {
+          "id": "J3-9",
+          "severity": "minor",
+          "page": "/play/builder, /play/scene (desktop 1440)",
+          "critique": "Beside a 936 px stage the right column uses 13 px grey instructions and 15-17 px options, the hint says 'Tap the stone' on a mouse device, and the locked report line keeps a gap ('in      the box'). Raise the column to body size (18 px), say 'Choose', close the gap.",
+          "screenshot": "shots/133-goto.png"
+        }
+      ],
+      "top_problem": "Make the picture do the work in every game: the stage fills the space down to the controls, and it shows the clue and the outcome (key flat on a closed box, builder on the scaffold, the assistant carrying what you called for) instead of a fixed strip with the meaning in text below.",
+      "cut": "The bare band between stage and tray (give it to the stage), the second blue 'Continue' on the returning landing, and the 'Fewest possible' line before the pupil's first card.",
+      "rechecked": [
+        {
+          "id": "J1-2",
+          "status": "fixed",
+          "observed": "Phone screens now reach the bottom with docked controls (shots/007-click.png); desktop stage 936x527 (shots/131-click.png). The emptiness moved to a mid-screen band, tracked as J3-1."
+        },
+        {
+          "id": "J1-10",
+          "status": "fixed",
+          "observed": "End card primary 'Choose another game' full width and at least as tall as 'Play again' (shots/051-look.png)."
+        },
+        {
+          "id": "J1-13",
+          "status": "fixed",
+          "observed": "Desktop title ~28 px; key numbers shown on stones and options (shots/131-click.png)."
+        },
+        {
+          "id": "J2-1",
+          "status": "fixed",
+          "observed": "Desktop stage 936x527 of 900 px height, controls beside it; ~140 px empty at the bottom (shots/131-click.png, shots/133-goto.png)."
+        },
+        {
+          "id": "J2-2",
+          "status": "fixed",
+          "observed": "End card leads with '4 of 6 right first time', full-size primary, Your English chips, one collapsed quote (shots/051-look.png)."
+        },
+        {
+          "id": "J2-3",
+          "status": "fixed",
+          "observed": "After 'not a beam', tapping slab directly advanced to 'Pillar!' (shots/009-click.png, shots/011-click.png)."
+        },
+        {
+          "id": "J2-4",
+          "status": "fixed",
+          "observed": "Tray and main button docked at the bottom on phone (shots/007-click.png, shots/074-click.png); see J3-1 for the mid band."
+        },
+        {
+          "id": "J2-5",
+          "status": "fixed",
+          "observed": "Landing opens on a playable Slab! call; wrong and right taps answered in place (shots/001-goto.png, shots/003-click.png, shots/005-click.png)."
+        },
+        {
+          "id": "J2-6",
+          "status": "fixed",
+          "observed": "Numbers 1-4 shown on desktop options and stones; keys 1, Enter and 3 worked (shots/129-press.png, shots/131-click.png, shots/132-press.png)."
+        },
+        {
+          "id": "J2-7",
+          "status": "fixed",
+          "observed": "Follow-up word is 'a historic day', consistent with the sound rule on the board (shots/104-click.png)."
+        },
+        {
+          "id": "J2-8",
+          "status": "not fixed",
+          "observed": "Back link now 91x44 and 'first try' shown, but first attempts are still not recorded (shots/123-click.png)."
+        },
+        {
+          "id": "J2-9",
+          "status": "fixed",
+          "observed": "Session 1 advances on its own; session 4 waits for Next with no auto-advance (shots/011-click.png, shots/026-click.png)."
+        },
+        {
+          "id": "J2-10",
+          "status": "fixed",
+          "observed": "No 'Keep this claim' step; the blur on patience is explained (§66); Hint sits beside Look (shots/113-click.png, shots/116-click.png)."
+        },
+        {
+          "id": "J2-11",
+          "status": "not fixed",
+          "observed": "in/on chips now 48x44 and All/Most pills 87x48, but the key placed 'on the box' still does not rest on it: it leans into the box (J3-2, shots/067-click.png)."
+        },
+        {
+          "id": "J2-12",
+          "status": "fixed",
+          "observed": "Landing game cards ~100 px each, all five on one phone screen (shots/061-click.png)."
+        }
+      ],
+      "verdict": "not satisfied",
+      "words": "Now you open the page and you are playing in one second, a mistake no longer leaves you tapping dead stones, and the Cafe is a little masterpiece. But the picture still is not doing the job - a strip of stage over a band of nothing, a key that looks in the box when you are told it is on it, a builder who is not where the words say he is - make the stage show what the sentence means and I will ship it."
+    },
+    {
+      "reviewer": "fresh subagent (Jobs round 4)",
+      "log": "round-4/actions.jsonl",
+      "used": [
+        {
+          "feature": "Landing (phone)",
+          "did": "Opened /, tapped 'block' on the builder's 'Slab!' (mistake), then 'slab'",
+          "result": "Understood in 5 s: English games built on Wittgenstein, play by tapping a stone. 'No - slab!' then 'Good.' with the slab drawn on the ground and the PI §2 line."
+        },
+        {
+          "feature": "Slab! Your turn to call",
+          "did": "Called 'Block!' when the plan wanted a pillar (mistake), Take it back, tapped pillar, removed the leftover 'block' tile, Call 'Pillar!'",
+          "result": "Assistant brings a block ('not a block' chip), then a pillar appears between builder and assistant with 'Done.' Take it back leaves the wrong tile in the tray, so the next tap made 'Block pillar!'."
+        },
+        {
+          "feature": "Slab! Order or report?",
+          "did": "'Three slabs!': chose 'Write 3 slabs on the stock list' (mistake), then 'Bring him three slabs'",
+          "result": "'I don't need a list - I need slabs!', then three slabs drawn at his feet and 'An order.' Clue text now matches the picture."
+        },
+        {
+          "feature": "Slab! Two slabs - there! + reload",
+          "did": "slab, +, reloaded mid-call, Bring two slabs",
+          "result": "State survived reload; two slabs drawn, check chips, auto-advance."
+        },
+        {
+          "feature": "Picture Theatre Make it true",
+          "did": "Key ON the box (mistake), Is it true?, Change it, key, IN, Is it true?",
+          "result": "Key now lies on a closed lid, clearly 'on'; then sits inside the open box, clearly 'in'. Feedback 'The key is on the box, not in it.'"
+        },
+        {
+          "feature": "Picture Theatre True or false?",
+          "did": "Checked twice without changing (mistake), Change it, chose 'in' in the dropdown, Check",
+          "result": "Red/green per line then pass; locked 'in' line keeps a wide gap."
+        },
+        {
+          "feature": "The Cafe",
+          "did": "Round 1 'Yes, it's November.' (mistake) then 'Close the window.'; round 2 'Close the window.' (mistake) then 'Offer her another pot of tea.'",
+          "result": "Rosa replies in character, request/hint explained. After 'Close the window' she says 'Much better' but the picture still shows the window open, curtain blowing, arms crossed."
+        },
+        {
+          "feature": "Go On!",
+          "did": "Showed 'an egg' (pupil over-applies: 'an university'), then 'an honest man'; teacher's call on 'a historic day': Correct it (wrong)",
+          "result": "No 'Fewest possible' before the first card; 2 cards, names the 1-card answer; §202 explanation."
+        },
+        {
+          "feature": "Family Threads",
+          "did": "'All ... have a winner' (mistake), Most; three more claims incl. 'Most ... played with a ball' (mistake); thread chess-poker 'played with cards' (mistake), then a full 6-card thread",
+          "result": "Objections and §66/§67 notes work; the thread completes as a numbered text list. The 'played with cards' error stays on screen after the next correct link."
+        },
+        {
+          "feature": "Notebook",
+          "did": "Opened /notebook after playing",
+          "result": "Grouped by game and session, 'You first tried' in red for Order or report?, Make it true, Cafe and Family Threads. Slab! 'Block!' and the True-or-false 'on' are not recorded; Make it true logs the feedback line as what I tried."
+        },
+        {
+          "feature": "Returning landing",
+          "did": "Notebook -> All games",
+          "result": "Fresh demo call, one primary 'Continue Family Threads', progress counts on each card."
+        },
+        {
+          "feature": "Desktop 1440x900",
+          "did": "Picture Theatre Make it true / True or false, Slab! Two slabs - there!, Cafe, Family Threads",
+          "result": "Picture Theatre stage is 936x1080: the first screen shows a blank wall; the box and the message are below the fold. Slab! shows only the top of the builder's cap; his pointing is off-screen. Cafe and Family Threads fit."
+        },
+        {
+          "feature": "Benchmark NYT Connections",
+          "did": "browse.py goto https://www.nytimes.com/games/connections",
+          "result": "net::ERR_CONNECTION_TIMED_OUT (shots/168-goto-error.png). From its known layout: Connections keeps the whole board and the task on one screen at every size; this product loses on desktop, where the stage pushes the task out of view (J4-1)."
+        }
+      ],
+      "findings": [
+        {
+          "id": "J4-1",
+          "severity": "blocker",
+          "page": "/play/scene, /play/builder (desktop 1440x900)",
+          "critique": "The phone fix for stage height broke desktop. Picture Theatre's stage is 936x1080, so the first screen is a blank backdrop beside a column that says 'Choose a thing, then where it goes' with no sentence: the box, the cup and 'The key is in the box.' are all below the fold. In Slab! 'Pillar - there!' only the top of the builder's cap shows, so you cannot see where he points. Cap the stage at the viewport height minus the header, keep actors and objects in view, and put the message in the right column.",
+          "screenshot": "shots/160-click.png"
+        },
+        {
+          "id": "J4-2",
+          "severity": "major",
+          "page": "/play/scene (phone and desktop)",
+          "critique": "The stage was filled by stretching the backdrop: a ghost copy of the pelmet, faded and half-transparent, runs across the middle of the wall, and the box and cup sit in the bottom eighth of a 1,100 px stage. It reads as a rendering bug. Crop the theatre art to the floor and front so the objects are large, or make a true portrait backdrop; never tile or stretch the art.",
+          "screenshot": "shots/041-click.png"
+        },
+        {
+          "id": "J4-3",
+          "severity": "major",
+          "page": "/play/builder Your turn to call / Order or report? (phone)",
+          "critique": "Same trick in Slab!: the stage grew by adding sky. About 60% of the picture is clouds and the pillar you called for is a 30 px sliver at the bottom. Filling the space means zooming on the action (builder, assistant, stones), not more sky.",
+          "screenshot": "shots/021-click.png"
+        },
+        {
+          "id": "J4-4",
+          "severity": "major",
+          "page": "/play/cafe",
+          "critique": "The result is told, not shown. After 'Close the window' Rosa says 'Oh, thank you, dear. Much better.' while the picture still shows the window wide open, the curtain blowing and her arms crossed, and the clue still reads 'The window beside her is wide open.' Show the window shut and Rosa relaxed. On phone the result card also floats below a 180-280 px band of bare paper under the clues.",
+          "screenshot": "shots/061-click.png"
+        },
+        {
+          "id": "J4-5",
+          "severity": "major",
+          "page": "/play/family (phone)",
+          "critique": "The J3-1 band remains: about 200 px of empty paper between the card grid and the controls, before and after Look. And the payoff of 'Don't think - look' is a numbered text list: draw the thread through the six cards (coloured fibres linking neighbours) so the family resemblance is seen, not read.",
+          "screenshot": "shots/132-click.png"
+        },
+        {
+          "id": "J4-6",
+          "severity": "minor",
+          "page": "/play/builder Your turn to call",
+          "critique": "After a wrong call, 'Take it back' returns the stone but leaves the wrong word in the tray, so tapping the right word made 'Block pillar!'. Take it back should clear the call (or a new word should replace it); the 'Remove' chips are 40 px high.",
+          "screenshot": "shots/017-click.png"
+        },
+        {
+          "id": "J4-7",
+          "severity": "minor",
+          "page": "/notebook",
+          "critique": "'You first tried' now appears, but Make it true logs the feedback sentence ('The key is on the box, not in it.') as what I tried, and the Slab! 'Block!' and True-or-false 'on' attempts are missing. Record the learner's own first answer every time.",
+          "screenshot": "shots/144-goto.png"
+        },
+        {
+          "id": "J4-8",
+          "severity": "minor",
+          "page": "/play/scene True or false?",
+          "critique": "Locked report lines keep the dropdown's width: 'The key is in      the box.' Collapse the gap. The red X on a false line says nothing, unlike Make it true, which explains the error.",
+          "screenshot": "shots/045-click.png"
+        },
+        {
+          "id": "J4-9",
+          "severity": "minor",
+          "page": "/play/family",
+          "critique": "A wrong link's message ('It isn't true that both chess and poker are played with cards') stays on screen after the next correct link. 'Most ... played with a ball' gets 'Objection! What about chess?', but one counter-example does not refute 'most'; give the count. The extra 'Keep it' tap still appears after a weak claim.",
+          "screenshot": "shots/132-click.png"
+        },
+        {
+          "id": "J4-10",
+          "severity": "minor",
+          "page": "/play/cafe, /play/scene (desktop)",
+          "critique": "Right column and clue lines are still 13-15 px grey beside a 936 px picture (J3-9). Raise them to body size.",
+          "screenshot": "shots/166-goto.png"
+        }
+      ],
+      "top_problem": "Make the stage fit the screen by framing the action, not by stretching the art: on desktop the scene and the task must both be visible at 1440x900 (today the box, the message and the builder fall below the fold), and on phone crop to the actors and objects instead of adding sky and a ghosted curtain.",
+      "cut": "The stretched sky and duplicated pelmet that pad the phone stage, the bare paper band in the Cafe and Family Threads, and the 'Keep it' step after a weak claim.",
+      "rechecked": [
+        {
+          "id": "J3-1",
+          "status": "not fixed",
+          "observed": "Slab! and Picture Theatre now reach the controls on phone, but through stretched sky and a ghosted backdrop (J4-2, J4-3); Family Threads still has ~200 px of bare paper (shots/132-click.png) and the Cafe has the same band (shots/061-click.png); desktop overflows (J4-1)."
+        },
+        {
+          "id": "J3-2",
+          "status": "fixed",
+          "observed": "Key lies on a closed green lid for 'on' and inside the open box for 'in' (shots/034-click.png, shots/041-click.png)."
+        },
+        {
+          "id": "J3-3",
+          "status": "fixed",
+          "observed": "'Block!' brings a block, 'Pillar!' a pillar, 'Bring him three slabs' draws three slabs; the clue now says 'by the unfinished wall' (shots/014-click.png, shots/021-click.png, shots/027-click.png)."
+        },
+        {
+          "id": "J2-8",
+          "status": "fixed",
+          "observed": "Notebook shows 'You first tried: ...' in red (shots/144-goto.png); gaps tracked as J4-7."
+        },
+        {
+          "id": "J3-6",
+          "status": "fixed",
+          "observed": "Same as J2-8; incomplete for the Slab! call and True or false (J4-7)."
+        },
+        {
+          "id": "J2-11",
+          "status": "fixed",
+          "observed": "Key rests flat on the lid (shots/034-click.png)."
+        },
+        {
+          "id": "J3-4",
+          "status": "fixed",
+          "observed": "Returning landing shows a fresh call and one primary 'Continue Family Threads' (shots/146-click.png)."
+        },
+        {
+          "id": "J3-5",
+          "status": "fixed",
+          "observed": "No 'Fewest possible' before the first card; the 1-card answer is named after success (shots/070-click.png, shots/072-click.png). Go On! still has no Hint button."
+        },
+        {
+          "id": "J3-7",
+          "status": "fixed",
+          "observed": "Pills 44 px with a fade at the right edge, active pill scrolled into view (shots/014-click.png)."
+        },
+        {
+          "id": "J3-8",
+          "status": "not fixed",
+          "observed": "Not re-checked: I did not reach a session end card this round, so it stays open."
+        },
+        {
+          "id": "J3-9",
+          "status": "not fixed",
+          "observed": "Desktop right column and clues still 13-15 px grey (shots/166-goto.png); locked report line gap remains (shots/055-click.png, shots/158-goto.png)."
+        }
+      ],
+      "verdict": "not satisfied",
+      "words": "The pictures finally tell the truth - the key lies on the lid, the slabs you ordered land at his feet - and the notebook remembers your mistakes. But you made the stage tall by stretching sky and ghosting a curtain, and on a laptop the box, the sentence and the builder fall off the bottom of the screen; frame the action instead of padding the picture and I will ship it."
+    },
+    {
+      "reviewer": "fresh subagent (Jobs, round 5)",
+      "log": "round-5/actions.jsonl",
+      "used": [
+        {
+          "feature": "Landing demo",
+          "did": "Phone: tapped 'block' (wrong), then 'slab'",
+          "result": "'No - slab!' then 'Good.' with a slab on the ground and a one-line PI §2 note. Product shown working in 5 seconds."
+        },
+        {
+          "feature": "Slab! Your turn to call",
+          "did": "Called 'Block!' for a pillar plan, Take it back, then 'Pillar!'; browser Back mid-task",
+          "result": "Assistant brought a block, chips said 'not a block'; Take it back cleared the tray; Back restored state; pillar brought, 'Done.'"
+        },
+        {
+          "feature": "Slab! Order or report?",
+          "did": "Six rounds, chose 'Write 3 slabs' wrong first, then right; finished the session",
+          "result": "Feedback per round; end card 'Done · Order or report?', 5 of 6, primary 'Next game: Picture Theatre'. Pictures do not show the clues (no beam, cart, pile)."
+        },
+        {
+          "feature": "Picture Theatre",
+          "did": "Put key ON the box, checked; Change it; key IN the box. True or false: checked without fixing, then set 'in'",
+          "result": "Key drawn on the lid with 'The key is on the box, not in it.'; locked lines collapse and the X explains. Stage half blank wall."
+        },
+        {
+          "feature": "The Café",
+          "did": "Round 1 'Bring her a fresh hot tea' (wrong) then 'Close the window'; reloaded; round 2 'Close the window' (wrong) then 'Offer her another pot of tea'",
+          "result": "Window drawn shut and Rosa relaxed after the right answer; reload kept progress; round 2 picture shows her pouring tea."
+        },
+        {
+          "feature": "Go On!",
+          "did": "Showed 'an egg' then 'an honest man'; teacher's call 'Correct it' on 'a historic day'",
+          "result": "Board re-sat each time; told 1 card would do; 'Not this time. Both are in use...'. Big empty band under the board on success."
+        },
+        {
+          "feature": "Family Threads",
+          "did": "'All ... have a winner' (objection), then Most; 'Most ... ball' (objection with count), then Some; thread with one wrong link 'played with cards' for chess-poker",
+          "result": "Objection gives the count; wrong-link error cleared on next link; finished thread drawn as coloured lines through the cards plus a list."
+        },
+        {
+          "feature": "Notebook",
+          "did": "Opened from the landing page after playing",
+          "result": "Logs my own first answers (Block!, Write '3 slabs', key on the box, tea, All/Most claims). Go On! cards, teacher's call and 2 of 5 thread links missing."
+        },
+        {
+          "feature": "404 and nav",
+          "did": "Opened /play/rule (wrong URL); landing primary button after play",
+          "result": "Fly-bottle 404 with one way out; landing CTA became 'Continue The Café' / 'Continue Family Threads'."
+        },
+        {
+          "feature": "Desktop 1440x900",
+          "did": "Landing, Picture Theatre True or false, Slab! Two slabs with keyboard (3, Enter) bringing three slabs by mistake, Family Threads finished, Slab! end card",
+          "result": "Stages fit the viewport with controls beside them; '3' worked on second try, Enter incremented the count instead of confirming; end card is a small column in empty paper."
+        },
+        {
+          "feature": "Benchmark NYT Connections",
+          "did": "browse.py goto https://www.nytimes.com/games/connections",
+          "result": "ERR_CONNECTION_TIMED_OUT again (shots/166-goto-error.png); no comparison possible."
+        }
+      ],
+      "findings": [
+        {
+          "id": "J5-1",
+          "severity": "major",
+          "page": "/play/builder Order or report?",
+          "critique": "The picture contradicts the clues it is supposed to carry. 'You are carrying a beam. From the scaffold he can't see it clearly. He looks at it, unsure' shows the builder on the ground in the same shouting pose, no beam, no scaffold. 'She is counting the pile' shows no pile; 'A slab is sliding off the cart behind you' shows no cart and no slab. The round (same words, different job) rests on the situation, and the situation is only written. You fixed this in the Café (window shut, Rosa pouring); do the same here: draw the beam in your arms, the cart and the falling slab, the stock-keeper at a pile, and drop the eye-icon clue lines once the picture says it.",
+          "screenshot": "shots/035-click.png"
+        },
+        {
+          "id": "J5-2",
+          "severity": "major",
+          "page": "/play/builder, /play/scene, /play/pupil, /play/family (phone)",
+          "critique": "J3-1 is still here, game after game: bare paper between the stage/message and the controls. Slab! Your turn to call ~115 px between 'Plan:' and the tray; Picture Theatre ~150 px between the message and 'Choose a thing...' after Change it; Go On! ~220 px under 'Teach the pupil...' on the success screen; Family Threads ~100 px under the cards. Controls are pinned to the bottom and content floats at the top. Let the controls follow the content, or give the stage that height.",
+          "screenshot": "shots/092-click.png"
+        },
+        {
+          "id": "J5-3",
+          "severity": "major",
+          "page": "/play/scene",
+          "critique": "The ghost pelmet is gone, but the stage is still mostly empty wall: on phone the top 260 px is blank plaster and the box, key and cup are ~70 px objects in the bottom strip. On desktop the lamp 'at the back' is drawn directly above the cup and looks perched on its rim, so 'behind' and 'on' - the very distinction being taught - read the same. Crop to the floor so the objects are big, and give the back row real depth (smaller, higher, a shadow on the floor).",
+          "screenshot": "shots/063-click.png"
+        },
+        {
+          "id": "J5-4",
+          "severity": "major",
+          "page": "/play/builder end card (phone and desktop)",
+          "critique": "The success state is the least crafted screen. The picture disappears and you get a title, a score line, six phrase chips and an accordion; on phone the bottom 40% is empty paper, on desktop a narrow column floats in 1440x900 of nothing. Show the finished wall with builder and assistant, and pair each phrase chip with the job it did (order / report / question / warning) - that is the lesson of the session.",
+          "screenshot": "shots/152-click-error.png"
+        },
+        {
+          "id": "J5-5",
+          "severity": "minor",
+          "page": "/play/builder (phone)",
+          "critique": "In idle states the assistant is cut in half by the right edge of the stage - an arm and half a face. Keep both actors fully in frame.",
+          "screenshot": "shots/026-click.png"
+        },
+        {
+          "id": "J5-6",
+          "severity": "minor",
+          "page": "/play/builder (desktop)",
+          "critique": "Keyboard: with focus on the '+' count button, Enter ('Enter to confirm') added a slab instead of confirming, so I brought three; the first '3' after clicking a stage chip did nothing. Enter should confirm whatever has focus; the 1-4 badges are good, but the shortcut list lives only in a 14 px line at the foot of the notebook.",
+          "screenshot": "shots/162-press.png"
+        },
+        {
+          "id": "J5-7",
+          "severity": "minor",
+          "page": "/play/family (phone)",
+          "critique": "Completing the thread auto-scrolls to the text list, so on phone the drawn thread - the payoff - is off screen. The lines also strike through the 'football' label ('fo ball'). Keep the cards in view on completion and route lines around labels.",
+          "screenshot": "shots/137-click.png"
+        },
+        {
+          "id": "J5-8",
+          "severity": "minor",
+          "page": "/notebook",
+          "critique": "Go On! logs only 'an hour / a university / an apple' - not the cards I used or my teacher's call ('Correct it', wrong); Family Threads keeps 3 of the 5 links I made.",
+          "screenshot": "shots/141-click.png"
+        },
+        {
+          "id": "J5-9",
+          "severity": "minor",
+          "page": "/play/scene, /play/builder (desktop)",
+          "critique": "Right column still small and grey: the instruction 'The report. Change one word...' ~15 px grey, feedback chips 'slab / not three / here' ~13 px, Family Threads card labels ~12 px; the About text still says 'Tap the stone' on a mouse device.",
+          "screenshot": "shots/164-click.png"
+        },
+        {
+          "id": "J5-10",
+          "severity": "minor",
+          "page": "/play/cafe",
+          "critique": "After answering, the clue lines vanish but leave a ~60 px gap under the picture (and stay in the page text saying 'The window beside her is wide open'). Collapse the space or keep the clues.",
+          "screenshot": "shots/076-click.png"
+        }
+      ],
+      "top_problem": "Show, don't tell, everywhere: in Slab! Order or report? draw each situation the clues describe (beam in hand, sliding slab, stock-keeper at a pile) the way the Café now draws the shut window, and let the stage fill the phone screen instead of leaving bands of bare paper.",
+      "cut": "The eye-icon clue lines under the pictures once the pictures carry the situation, and the duplicated numbered text list under the finished Family thread (keep the drawing, show each fibre's sentence on tap).",
+      "rechecked": [
+        {
+          "id": "J4-1",
+          "status": "fixed",
+          "observed": "Desktop 1440x900: Picture Theatre stage fits with the report beside it (shots/147-click.png); Slab! builder and assistant fully visible with controls on the right (shots/154-click.png)."
+        },
+        {
+          "id": "J4-2",
+          "status": "not fixed",
+          "observed": "Ghost pelmet gone, but half the phone stage is blank wall and the objects are ~70 px at the bottom (shots/063-click.png)."
+        },
+        {
+          "id": "J4-3",
+          "status": "fixed",
+          "observed": "Phone Slab! stage now frames builder, assistant and stones; the called pillar is clearly visible (shots/025-look.png). Assistant cut at the edge in idle states (J5-5)."
+        },
+        {
+          "id": "J4-4",
+          "status": "fixed",
+          "observed": "After 'Close the window' the window is drawn shut and Rosa relaxed (shots/076-click.png); round 2 shows her pouring tea (shots/082-click.png). A ~60 px gap remains (J5-10)."
+        },
+        {
+          "id": "J4-5",
+          "status": "not fixed",
+          "observed": "The thread is now drawn through the cards (shots/139-scroll.png), but ~100 px of empty paper still sits under the cards before the claim (shots/100-click.png)."
+        },
+        {
+          "id": "J3-1",
+          "status": "not fixed",
+          "observed": "Bare band between stage and controls in Slab!, Picture Theatre, Go On! and Family Threads on phone (shots/009-click.png, shots/057-click.png, shots/092-click.png)."
+        },
+        {
+          "id": "J3-8",
+          "status": "fixed",
+          "observed": "End card reads 'Done · Order or report?' and the primary button is 'Next game: Picture Theatre' (shots/048-click.png)."
+        },
+        {
+          "id": "J3-9",
+          "status": "not fixed",
+          "observed": "Desktop side column instruction still ~15 px grey and About still says 'Tap'; the locked report line gap is fixed (shots/150-click.png)."
+        },
+        {
+          "id": "J4-6",
+          "status": "fixed",
+          "observed": "Take it back cleared the wrong word from the tray (shots/016-click.png)."
+        },
+        {
+          "id": "J4-7",
+          "status": "fixed",
+          "observed": "Notebook shows my own first answers: 'Block!', 'Write “3 slabs”...', 'The key is on the box.', 'Bring her a fresh hot tea.' (shots/141-click.png). Go On! detail still thin (J5-8)."
+        },
+        {
+          "id": "J4-8",
+          "status": "fixed",
+          "observed": "Locked lines collapse to 'The key is on the box.' and the X adds 'The key is in the box, not on it.' (shots/065-click.png)."
+        },
+        {
+          "id": "J4-9",
+          "status": "fixed",
+          "observed": "Wrong-link message cleared after the next correct link (shots/128-click.png); 'Most ... ball' answered 'Only 2 of these 6 games are played with a ball.' (shots/116-click.png); no extra 'Keep it' tap seen."
+        },
+        {
+          "id": "J4-10",
+          "status": "not fixed",
+          "observed": "Desktop right column text 13-15 px grey (shots/147-click.png, shots/164-click.png)."
+        }
+      ],
+      "verdict": "not satisfied",
+      "words": "This is now a real product: the landing shows the game working in one tap, the Café shows its result, the theatre fits the screen and the thread is drawn. But Slab! still writes the situations it should show, every phone screen has a band of nothing in the middle, and the end card is the dullest screen in the app - fix those and I'll sign it."
+    }
+  ]
+}
