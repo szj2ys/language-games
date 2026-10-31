@@ -382,6 +382,17 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*Rules with no rule"))).to_be_visible()
     shot(page, "later-pupil-end")
 
+    # Go On!, session 3: old rules in new clothes; both twists are irregular and must be corrected.
+    pick_session(page, "Old rules, new words")
+    for _ in range(2):
+        show_cards_until_pass(page)
+        page.get_by_role("button", name="Now a word it hasn't seen").click()
+        page.get_by_role("button", name="Correct it").click()
+        expect(page.get_by_text("Good call.")).to_be_visible()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Old rules, new words"))).to_be_visible()
+    shot(page, "later-pupil3-end")
+
 
 # --- Keyboard only (desktop) -------------------------------------------------------
 

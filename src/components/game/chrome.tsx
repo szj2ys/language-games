@@ -95,7 +95,8 @@ export function SessionEnd({
   items?: { text: string; did: string }[];
   /** The game's picture, so the finished screen still shows the world it happened in. */
   art?: string;
-  sources: SourceId[];
+  /** Passages for the end card; a session added without its own list falls back to none rather than crashing. */
+  sources?: SourceId[];
   /** Absent on a game's last session. */
   nextTitle?: string;
   /** After a game's last session: the next game to play. */
@@ -103,7 +104,7 @@ export function SessionEnd({
   onNext: () => void;
   onReplay: () => void;
 }) {
-  const [lead, ...more] = sources;
+  const [lead, ...more] = sources ?? [];
   return (
     <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start lg:gap-8">
       {art && (
@@ -145,19 +146,21 @@ export function SessionEnd({
             </ul>
           </section>
         )}
-        <details className="group rounded-xl border border-border bg-card">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 font-bold">
-            What Wittgenstein said — {SOURCES[lead].ref}
-            <span aria-hidden className="text-muted-foreground group-open:rotate-180">
-              ⌄
-            </span>
-          </summary>
-          <div className="flex flex-col gap-3 px-1 pb-1">
-            {[lead, ...more].map((id) => (
-              <MarginNote key={id} id={id} className="border-0" />
-            ))}
-          </div>
-        </details>
+        {lead && (
+          <details className="group rounded-xl border border-border bg-card">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 font-bold">
+              What Wittgenstein said — {SOURCES[lead].ref}
+              <span aria-hidden className="text-muted-foreground group-open:rotate-180">
+                ⌄
+              </span>
+            </summary>
+            <div className="flex flex-col gap-3 px-1 pb-1">
+              {[lead, ...more].map((id) => (
+                <MarginNote key={id} id={id} className="border-0" />
+              ))}
+            </div>
+          </details>
+        )}
       </div>
     </div>
   );

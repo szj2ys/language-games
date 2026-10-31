@@ -142,6 +142,17 @@ export function pluralItem(word: string, irregular?: string): Item {
   };
 }
 
+/** Present simple after he/she/it: the same spelling choices as plurals (watches, tries, plays). */
+export function thirdPersonItem(word: string, irregular?: string): Item {
+  const plural = pluralItem(word, irregular);
+  const she = (form: string) => `she ${form}`;
+  return {
+    word,
+    forms: Object.fromEntries(Object.entries(plural.forms).map(([way, form]) => [way, she(form)])),
+    correct: she(plural.correct),
+  };
+}
+
 export type Verb = { word: string; stressedLast: boolean };
 
 const CVC = /[^aeiou][aeiou][^aeiouwxy]$/;
@@ -156,6 +167,20 @@ export function pastItem(v: Verb): Item {
     word: w,
     forms: { ed: plain, "drop-e": dropE, "double-any": doubleAny, "double-stressed": doubleStressed },
     correct: doubleStressed,
+  };
+}
+
+/** -ing spelling: the same choices as -ed (making, stopping, visiting). */
+export function ingItem(v: Verb, irregular?: string): Item {
+  const w = v.word;
+  const plain = `${w}ing`;
+  const dropE = w.endsWith("e") ? `${w.slice(0, -1)}ing` : plain;
+  const doubleAny = CVC.test(w) ? `${w}${w.slice(-1)}ing` : dropE;
+  const doubleStressed = CVC.test(w) && v.stressedLast ? `${w}${w.slice(-1)}ing` : dropE;
+  return {
+    word: w,
+    forms: { ing: plain, "drop-e": dropE, "double-any": doubleAny, "double-stressed": doubleStressed },
+    correct: irregular ?? doubleStressed,
   };
 }
 

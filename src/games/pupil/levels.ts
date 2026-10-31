@@ -1,5 +1,5 @@
 import type { SourceId } from "@/content/sources";
-import { articleItem, comparativeItem, countItem, pastItem, patternItem, pluralItem, type Level } from "./engine";
+import { articleItem, comparativeItem, countItem, ingItem, pastItem, patternItem, pluralItem, thirdPersonItem, type Level } from "./engine";
 
 export const LEVELS: Level[] = [
   {
@@ -234,6 +234,86 @@ export const LEVELS_2: Level[] = [
 
 export type Session = { id: string; title: string; blurb: string; english: string; source: SourceId; rounds: Level[] };
 
+// Session 3: two spelling rules the learner has met before in another form (plurals, -ed).
+export const LEVELS_3: Level[] = [
+  {
+    id: "p-7",
+    title: "She watches, he tries",
+    task: "Teach the pupil the present simple after he, she or it.",
+    english: "Present simple -s: -es after s, x, ch, sh; consonant + y becomes -ies",
+    ways: [
+      { id: "s", label: "Always add -s" },
+      { id: "es", label: "-es after s, x, ch, sh" },
+      { id: "any-y", label: "…and every -y becomes -ies" },
+      { id: "consonant-y", label: "…but only consonant + y becomes -ies" },
+    ],
+    exam: [thirdPersonItem("watch"), thirdPersonItem("fly"), thirdPersonItem("play"), thirdPersonItem("wash"), thirdPersonItem("cry")],
+    deck: [
+      thirdPersonItem("read"),
+      thirdPersonItem("kiss"),
+      thirdPersonItem("try"),
+      thirdPersonItem("stay"),
+      thirdPersonItem("fix"),
+      thirdPersonItem("buy"),
+    ],
+    explain: [
+      { text: "When a verb ends in -y, change it to -ies.", readAs: "any-y" },
+      {
+        text: "Add -es after s, x, ch or sh; change consonant + y to -ies; otherwise add -s.",
+        readAs: "consonant-y",
+        needs: { ruledOut: "any-y", otherwise: "any-y" },
+      },
+    ],
+    twist: {
+      item: { word: "have", forms: {}, correct: "she has" },
+      prompt: "New verb: the pupil writes “She haves a dog.” Every rule you taught says just add -s.",
+      answer: "correct",
+      why: "Correct it: “she has”. A few of the commonest verbs (have, be, do, go) have their own forms; speakers learn them by using them, not from the rule (§217).",
+    },
+  },
+  {
+    id: "p-8",
+    title: "Making, stopping, visiting",
+    task: "Teach the pupil to spell the -ing form.",
+    english: "-ing spelling: drop silent e; double a final consonant after one vowel letter in a stressed last syllable",
+    ways: [
+      { id: "ing", label: "Always add -ing" },
+      { id: "drop-e", label: "Drop a final e, then add -ing" },
+      { id: "double-any", label: "…and double the last consonant after a single vowel letter" },
+      { id: "double-stressed", label: "…but only when that syllable is stressed" },
+    ],
+    exam: [
+      ingItem({ word: "make", stressedLast: true }),
+      ingItem({ word: "stop", stressedLast: true }),
+      ingItem({ word: "visit", stressedLast: false }),
+      ingItem({ word: "begin", stressedLast: true }),
+      ingItem({ word: "play", stressedLast: true }),
+    ],
+    deck: [
+      ingItem({ word: "walk", stressedLast: true }),
+      ingItem({ word: "hope", stressedLast: true }),
+      ingItem({ word: "run", stressedLast: true }),
+      ingItem({ word: "open", stressedLast: false }),
+      ingItem({ word: "forget", stressedLast: true }),
+      ingItem({ word: "listen", stressedLast: false }),
+    ],
+    explain: [
+      { text: "Double the last letter after a single vowel.", readAs: "double-any" },
+      {
+        text: "Drop a silent e; double a final consonant after a single vowel letter, but only when the last syllable is stressed.",
+        readAs: "double-stressed",
+        needs: { ruledOut: "double-any", otherwise: "double-any" },
+      },
+    ],
+    twist: {
+      item: { word: "see", forms: {}, correct: "seeing" },
+      prompt: "New verb: the pupil drops the final e and writes “I am seing it.”",
+      answer: "correct",
+      why: "Correct it: “seeing”. The e of “see” is not silent — it is half of the long “ee” — so it stays. The rule's words (“silent e”) only work for someone who already hears the difference (§§198–201).",
+    },
+  },
+];
+
 export const SESSIONS: Session[] = [
   {
     id: "pupil-1",
@@ -250,6 +330,14 @@ export const SESSIONS: Session[] = [
     english: "verb + -ing or to; countable and uncountable nouns",
     source: "pi-217",
     rounds: LEVELS_2,
+  },
+  {
+    id: "pupil-3",
+    title: "Old rules, new words",
+    blurb: "Two rules you have met before, in new clothes. Does the pupil carry them over?",
+    english: "present simple -s after he/she/it; -ing spelling",
+    source: "pi-185",
+    rounds: LEVELS_3,
   },
 ];
 

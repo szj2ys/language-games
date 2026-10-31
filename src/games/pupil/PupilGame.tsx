@@ -6,6 +6,7 @@ import { BookOpen, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
+import type { SourceId } from "@/content/sources";
 import { cn } from "@/lib/utils";
 import { nextGame } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
@@ -13,6 +14,12 @@ import { bestCards, explain, showExample, sitExam, startPupil, type Level, type 
 import { SESSIONS, did } from "./levels";
 
 const GAME = "pupil";
+
+const SESSION_SOURCES: SourceId[][] = [
+  ["pi-185", "pi-198", "pi-202"],
+  ["pi-217", "pi-202"],
+  ["pi-185", "pi-198"],
+];
 
 export function PupilGame() {
   const g = useSessions(GAME, SESSIONS, did);
@@ -29,7 +36,7 @@ export function PupilGame() {
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
-          sources={g.sessionIndex === 0 ? ["pi-185", "pi-198", "pi-202"] : ["pi-217", "pi-202"]}
+          sources={SESSION_SOURCES[g.sessionIndex]}
           nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
           onNext={g.nextSession}
           onReplay={g.replay}
