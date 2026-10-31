@@ -112,6 +112,7 @@ export function BuilderGame() {
 
 function Site({
   facing,
+  pointing,
   delivered,
   ghost,
   bubble,
@@ -123,6 +124,8 @@ function Site({
   walking,
 }: {
   facing: "left" | "right";
+  /** Arm out towards a place, or both hands cupped to call. */
+  pointing: boolean;
   delivered: Delivery[];
   ghost?: Delivery;
   bubble?: string;
@@ -136,24 +139,30 @@ function Site({
   return (
     <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
       <Image src="/art/builder/site.webp" alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
-      {ghost && <StonePile delivery={ghost} ghost />}
-      {delivered.map((d, i) => (
-        <StonePile key={i} delivery={d} offset={i} />
-      ))}
       {/* The builder, A. He turns to point; facing right is his resting pose. */}
       <div
         className="absolute bottom-[3%] h-[64%] w-[22%] transition-transform duration-300"
         style={{ left: "36%", transform: facing === "left" ? "scaleX(-1)" : undefined }}
       >
-        <Image src="/art/builder/builder.webp" alt="" fill sizes="160px" className="object-contain object-bottom" />
+        <Image
+          src={pointing ? "/art/builder/builder.webp" : "/art/builder/builder-call.webp"}
+          alt=""
+          fill
+          sizes="160px"
+          className="object-contain object-bottom"
+        />
       </div>
       {/* The assistant, B, walks to wherever the stones go. */}
       <div
         className="absolute bottom-[2%] h-[58%] w-[18%] transition-[left] duration-700 ease-out"
-        style={{ left: walking ? `${SPOT[walking].x - 9}%` : "88%" }}
+        style={{ left: walking ? `${SPOT[walking].x + (walking === "right" ? -26 : 4)}%` : "88%" }}
       >
         <Image src="/art/builder/assistant.webp" alt="" fill sizes="140px" className="object-contain object-bottom" />
       </div>
+      {ghost && <StonePile delivery={ghost} ghost />}
+      {delivered.map((d, i) => (
+        <StonePile key={i} delivery={d} offset={i} />
+      ))}
       {bubble && (
         <div
           className={cn(
@@ -304,6 +313,7 @@ function FetchPlay({
       <div>
         <Site
           facing={facing}
+          pointing={!!round.points}
           delivered={outcome ? [outcome.delivery] : []}
           bubble={outcome && !solved ? `No — ${call.replace(/!$/, "")}!` : solved ? "Good." : call}
           onSpeak={() => speak(call)}
@@ -365,7 +375,7 @@ function FetchPlay({
           </fieldset>
         )}
 
-        {outcome && <Marks outcome={outcome} want={round.want} />}
+        {outcome && <Marks outcome={outcome} want={round.want} only={advanced ? undefined : "stone"} />}
 
         <div className="flex gap-2">
           {!outcome && (
@@ -393,7 +403,7 @@ function FetchPlay({
   );
 }
 
-function Marks({ outcome, want }: { outcome: Outcome; want: Delivery }) {
+function Marks({ outcome, want, only }: { outcome: Outcome; want: Delivery; only?: keyof Outcome["marks"] }) {
   const rows: [keyof Outcome["marks"], string][] = [
     ["stone", outcome.marks.stone ? `${want.stone}` : `not a ${outcome.delivery.stone}`],
     ["count", outcome.marks.count ? NUMBER_WORDS[want.count - 1] : `not ${NUMBER_WORDS[outcome.delivery.count - 1]}`],
@@ -401,7 +411,7 @@ function Marks({ outcome, want }: { outcome: Outcome; want: Delivery }) {
   ];
   return (
     <ul className="flex flex-wrap gap-2" aria-label="How it went">
-      {rows.map(([k, text]) => (
+      {rows.filter(([k]) => !only || k === only).map(([k, text]) => (
         <li
           key={k}
           className={cn(
@@ -498,6 +508,7 @@ function CallPlay({
       <div>
         <Site
           facing={pointAt === "left" ? "left" : "right"}
+          pointing={typeof pointAt === "string"}
           delivered={outcome ? [outcome.delivery] : []}
           ghost={outcome ? undefined : round.goal}
           bubble={bubble}

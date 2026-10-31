@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Volume2, VolumeX } from "lucide-react";
 import { SOURCES, WORK_TITLE, type Source, type SourceId } from "@/content/sources";
 import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export function GameHeader({
   title,
@@ -66,5 +67,52 @@ export function MarginNote({ id, className }: { id: SourceId; className?: string
       <p className="mt-3 text-[15px] leading-relaxed">{s.gloss}</p>
       {s.limits && <p className="mt-2 text-sm text-muted-foreground">Where the game stops: {s.limits}</p>}
     </aside>
+  );
+}
+
+export function SessionEnd({
+  title,
+  english,
+  firstTry,
+  total,
+  sources,
+  nextTitle,
+  onNext,
+  onReplay,
+}: {
+  title: string;
+  english: string;
+  firstTry: number;
+  total: number;
+  sources: SourceId[];
+  /** Absent on a game's last session. */
+  nextTitle?: string;
+  onNext: () => void;
+  onReplay: () => void;
+}) {
+  return (
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-6">
+      <h2 className="font-heading text-3xl font-semibold">{title}: done</h2>
+      <p className="text-[17px]">
+        {firstTry} of {total} right first time. English practised: {english.charAt(0).toLowerCase() + english.slice(1)}.
+      </p>
+      {sources.map((id) => (
+        <MarginNote key={id} id={id} />
+      ))}
+      <div className="flex flex-col gap-2 sm:flex-row">
+        {nextTitle ? (
+          <Button size="lg" className="h-12 flex-1 text-lg" onClick={onNext} autoFocus>
+            Next: {nextTitle}
+          </Button>
+        ) : (
+          <Link href="/" className={cn(buttonVariants({ size: "lg" }), "h-12 flex-1 text-lg")}>
+            Choose another game
+          </Link>
+        )}
+        <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
+          Play again
+        </Button>
+      </div>
+    </div>
   );
 }

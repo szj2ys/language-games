@@ -276,3 +276,17 @@ Rule-following (§§185-219), §§241-244, §258, §293 and §340 all verified. 
   │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu3.txt
   └ 23 lines read
 
+Verifying the last few PI §§ I plan to cite (§§6, 9, 18, 198, 307) before writing the plan.
+
+● Verify PI 6, 9, 18, 198, 307, 21, 69 (shell)                                                   17s
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ @'
+  │ import re, sys, pathlib
+  │ d = pathlib.Path(sys.argv[1])…
+  └ 12 lines…
+
+● Read verify-pu4.txt                                                                             8s
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu4.txt
+  └ 14 lines read
+

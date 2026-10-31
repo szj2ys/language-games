@@ -1,0 +1,1173 @@
+Reading additional input from stdin...
+OpenAI Codex v0.165.0
+--------
+workdir: D:\githubprojects\language-games
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: ultra
+reasoning summaries: none
+session id: 01a19266-1d9e-72e0-93b0-41824d06c8b6
+--------
+user
+Use your built-in image generation tool (gpt-image-2) to create ONE image, then copy the resulting PNG to art/scene/book.png in the current directory. Do nothing else.
+
+Image prompt: One closed ochre hardback book lying flat, front three-quarter view from slightly above. Hand-cut paper illustration with subtle screen-print grain, charcoal #252A2D ink outlines, muted cobalt #42649A, terracotta #B0553E, sage #64775A, ochre #C9A24A and warm ivory; soft light from upper left; crisp distinct silhouette. No text, letters, numbers, logos or watermarks. The single subject is centred and fully visible, isolated on a perfectly flat, uniform, pure magenta #FF00FF background with no shadow on the background, no gradient, no floor, no other objects. Square 1:1.
+2026-10-31T14:38:50.141608Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: "Bearer resource_metadata=\"https://mcp.atlassian.com/.well-known/oauth-protected-resource/v2/mcp\"" })
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+I’ll use the imagegen skill to create the image and save it as `art/scene/book.png`.
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/.codex/skills/.system/imagegen/SKILL.md' -Raw" in D:\githubprojects\language-games
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/Documents/projects/harness/taste.md' -Raw; rg -n 'image|illustration|paper|magenta' 'C:/Users/Administrator/Documents/projects/harness/taste-log.md'" in D:\githubprojects\language-games
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/Documents/projects/LLMwiki/APEX/APEX-SUT-Results-Copy-Mechanism.md' -Raw; Select-String -LiteralPath 'C:/Users/Administrator/Documents/projects/LLMwiki/index.md' -Pattern 'voice-to-prompt-workflow' -Context 1,1" in D:\githubprojects\language-games
+ succeeded in 331ms:
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision tree
+
+Think about two separate questions:
+
+1. **Intent:** is this a new image or an edit of an existing image?
+2. **Execution strategy:** is this one asset or many assets/variants?
+
+Intent:
+- If the user wants to modify an existing image while preserving parts of it, treat the request as **edit**.
+- If the user provides images only as references for style, composition, mood, or subject guidance, treat the request as **generate**.
+- If the user provides no images, treat the request as **generate**.
+
+Built-in edit semantics:
+- Built-in edit mode is for images already visible in the conversation context, such as attached images or images generated earlier in the thread.
+- If the user wants to edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it with `view_image` first so the image is available in conversation context.
+8. If the user asked for a photo, illustration, sprite, product image, banner, or other explicitly raster-style asset, use `image_gen` rather than substituting SVG/HTML/CSS placeholders. If the request is for an icon, logo, or UI graphic that should match existing repo-native SVG/vector/code assets, prefer editing those directly instead.
+9. Augment the prompt based on specificity:
+   - If the user's prompt is already specific and detailed, normalize it into a clear spec without adding creative requirements.
+   - If the user's prompt is generic, add tasteful augmentation only when it materially improves output quality.
+10. Use the built-in `image_gen` tool by default.
+11. For transparent-output requests, ask built-in `image_gen` for a transparent background and preserve the generated alpha channel.
+12. Inspect outputs and validate: subject, style, composition, text accuracy, and invariants/avoid items.
+13. Iterate with a single targeted change, then re-check.
+14. For preview-only work, render the image inline; the underlying file may remain at the default `$CODEX_HOME/generated_images/...` path.
+15. For project-bound work, move or copy the selected artifact into the workspace and update any consuming code or references. Never leave a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+
+## Transparent image requests
+
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+
+## Prompt augmentation
+
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+
+### Specificity policy
+
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+- arbitrary side-specific placement unless the surrounding layout supports it
+
+## Use-case taxonomy (exact slugs)
+
+Classify each request into one of these buckets and keep the slug consistent across prompts and references.
+
+Generate:
+- photorealistic-natural — candid/editorial lifestyle scenes with real texture and natural lighting.
+- product-mockup — product/packaging shots, catalog imagery, merch concepts.
+- ui-mockup — app/web interface mockups and wireframes; specify the desired fidelity.
+- infographic-diagram — diagrams/infographics with structured layout and text.
+- scientific-educational — classroom explainers, scientific diagrams, and learning visuals with required labels and accuracy constraints.
+- ads-marketing — campaign concepts and ad creatives with audience, brand position, scene, and exact tagline/copy.
+- productivity-visual — slide, chart, workflow, and data-heavy business visuals.
+- logo-brand — logo/mark exploration, vector-friendly.
+- illustration-story — comics, children’s book art, narrative scenes.
+- stylized-concept — style-driven concept art, 3D/stylized renders.
+- historical-scene — period-accurate/world-knowledge scenes.
+
+Edit:
+- text-localization — translate/replace in-image text, preserve layout.
+- identity-preserve — try-on, person-in-scene; lock face/body/pose.
+- precise-object-edit — remove/replace a specific element (including interior swaps).
+- lighting-weather — time-of-day/season/atmosphere changes only.
+- background-extraction — transparent background / clean cutout. Ask built-in `image_gen` for actual transparency.
+- style-transfer — apply reference style while changing subject/scene.
+- compositing — multi-image insert/merge with matched lighting/perspective.
+- sketch-to-render — drawing/line art to photoreal render.
+
+## Shared prompt schema
+
+Use the following labeled spec as shared prompt scaffolding for both top-level modes:
+
+```text
+Use case: <taxonomy slug>
+Asset type: <where the asset will be used>
+Primary request: <user's main prompt>
+Input images: <Image 1: role; Image 2: role> (optional)
+Scene/backdrop: <environment>
+Subject: <main subject>
+Style/medium: <photo/illustration/3D/etc>
+Composition/framing: <wide/close/top-down; placement>
+Lighting/mood: <lighting + mood>
+Color palette: <palette notes>
+Materials/textures: <surface details>
+Text (verbatim): "<exact text>"
+Constraints: <must keep/must avoid>
+Avoid: <negative constraints>
+```
+
+Notes:
+- `Asset type` and `Input images` are prompt scaffolding, not dedicated CLI flags.
+- `Scene/backdrop` refers to the visual setting. It is not the same as the fallback CLI `background` parameter, which controls output transparency behavior.
+- Fallback-only execution notes such as `Quality:`, `Input fidelity:`, masks, output format, and output paths belong in the CLI path only. Do not treat them as built-in `image_gen` tool arguments.
+
+Augmentation rules:
+- Keep it short.
+- Add only the details needed to improve the prompt materially.
+- For edits, explicitly list invariants (`change only X; keep Y unchanged`).
+- If any critical detail is missing and blocks success, ask a question; otherwise proceed.
+
+## Examples
+
+### Generation example (hero image)
+```text
+Use case: product-mockup
+Asset type: landing page hero
+Primary request: a minimal hero image of a ceramic coffee mug
+Style/medium: clean product photography
+Composition/framing: wide composition with usable negative space for page copy if needed
+Lighting/mood: soft studio lighting
+Constraints: no logos, no text, no watermark
+```
+
+### Edit example (invariants)
+```text
+Use case: precise-object-edit
+Asset type: product photo background replacement
+Primary request: replace only the background with a warm sunset gradient
+Constraints: change only the background; keep the product and its edges unchanged; no text; no watermark
+```
+
+## Prompting best practices
+- Structure prompt as scene/backdrop -> subject -> details -> constraints.
+- Include intended use (ad, UI mock, infographic) to set the mode and polish level.
+- Use camera/composition language for photorealism.
+- Only use SVG/vector stand-ins when the user explicitly asked for vector output or a non-image placeholder.
+- Quote exact text and specify typography + placement.
+- For tricky words, spell them letter-by-letter and require verbatim rendering.
+- For multi-image inputs, reference images by index and describe how they should be used.
+- For edits, repeat invariants every iteration to reduce drift.
+- Iterate with single-change follow-ups.
+- If the prompt is generic, add only the extra detail that will materially help.
+- If the prompt is already detailed, normalize it instead of expanding it.
+- For CLI fallback only, see `references/cli.md` and `references/image-api.md` for model, `quality`, `input_fidelity`, masks, output format, and output-path guidance.
+- For transparent images, ask built-in `image_gen` for actual transparency and preserve its alpha.
+
+More principles shared by both modes: `references/prompting.md`.
+Copy/paste specs shared by both modes: `references/sample-prompts.md`.
+
+## Guidance by asset type
+Asset-type templates (website assets, game assets, wireframes, logo) are consolidated in `references/sample-prompts.md`.
+
+## gpt-image-2 guidance for CLI fallback
+
+The fallback CLI defaults to `gpt-image-2`.
+
+- Use `gpt-image-2` for new CLI/API workflows unless the user confirms a different model.
+- CLI `gpt-image-2` does not support `background=transparent`; ask before using `gpt-image-1.5` unless the user explicitly requested that model.
+- `gpt-image-2` always uses high fidelity for image inputs; do not set `input_fidelity` with this model.
+- `gpt-image-2` supports `quality` values `low`, `medium`, `high`, and `auto`.
+- Use `quality low` for fast drafts, thumbnails, and quick iterations. Use `medium`, `high`, or `auto` for final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+
+
+hook: PostToolUse
+hook: PostToolUse
+ succeeded in 505ms:
+# 品味宪法 / Taste Constitution (product sense + marketing instinct)
+
+Shared across all agents (Claude Code, Codex, OMP, Hermes). 这是 `RULES.md "Judgment principles"`
+的完整正文，只在**产品/营销任务**触发时展开细读。工程任务不读本文件。
+
+本文件是 `lessons.md` 的品味姊妹：`lessons.md` 积累工程教训，`taste-log.md` 积累
+**人对"什么叫做好"的判断**。宪法是积累的**产物**，不是起点——规则由 `taste-log.md`
+里反复出现的真人裁决晋升上来（同一规则出现 ≥3 次，且至少一条为 `observed-buyer` / `measured`，见 §0 来源门）。
+
+维护说明：本文件唯一真相源。Codex/Claude 在运行时通过 harness 规则指针读取本文件；
+改动后按 `runtime-setup.md` 跑 `runtime-install.py verify`（旧的 `~/.codex/rules-snapshot.py` 快照已不再使用）。
+硬上限：**禁令 6 条、评分维度 5 个**。超过即视为退化。
+
+---
+
+## 0. 何时生效 / When this binds + 校准范围
+
+**触发词**（命中任一即展开本文件，并 grep `<harness>/taste-log.md`）：
+该不该做 / 值不值得 / 要不要开发 / 这个功能 / MVP / wedge / 砍需求 / 产品方向 /
+定价 / pricing / margin / landing / 文案 / copy / hook / 标题 / offer / 套餐 /
+竞品 / ICP / 用户画像 / 出海 / SaaS / 上市 / brand / 域名 / 命名 / 转化 / CTA /
+订阅 / 付费 / 留存 / 获客。
+
+**校准范围（calibrated-to）**：本宪法校准到 **英语市场的独立 SaaS 买家**
+（`makeinterview` / `any2svg` 这类工具的目标用户）。当交付物面向的买家**不在**这个
+范围（例如中文市场、企业客户、完全不同品类），必须在输出里显式标注
+`⚠ 超出校准范围`，并把评分降权——不要把给这套买家写的规则硬套到别的市场。
+
+**证据标注规则（provenance，强制）**：本文件每条结论、每个评分、每个 gate 答案
+都必须带来源标签之一：
+
+| 标签 | 含义 | 可否晋升为禁令 |
+|---|---|---|
+| `Observed` | 来自真实产物 / 代码 / 用户原话 / 真实买家行为 / 实测转化 | ✅ 仅 `observed-buyer` / `measured`；用户原话（`user-opinion`）只作限本产品的偏好（见下方来源门） |
+| `Inference` | 由前两者推导出的判断 | ⚠️ 仅当反复出现为 Observed |
+| `Open question` | 没有来源、需要实证的假设 | ❌ 不可以 |
+
+禁止把 `Inference` 或 `Open question` 当作事实陈述。禁止编造用户画像、hook、
+claim、买家动机——那些若无来源，一律标 `Open question`。
+
+**进阶：来源门（防止把用户当下的反应硬化为普适法律）**——`taste-log.md` 里每条
+记录带 `[src:user-opinion|observed-buyer|measured]`。只有 `observed-buyer` /
+`measured` 的条目可以晋升为 §1 禁令；`user-opinion` 条目保持**建议性、限本产品**。
+理由：这个循环唯一的训练信号是用户本人，而用户自己也在学习网感；不设这道门，
+系统只会收敛到"取悦宋志军"，并把他的即时反应当成铁律。
+
+---
+
+## 1. 六条禁令 / The Kill-List（点名模型统计默认，逐条封杀）
+
+LLM 默认输出就是这些。不要写"要非通用"——要点名封杀具体 token。每条有 override
+路径：能用一句话说明为什么此情此景该破例，才可破例，否则禁止。
+
+- **K1 — 宣称没有代码路径的东西 / claim with no code path.**
+  任何 landing 文案、功能描述、卖点，必须能 `grep` 到对应代码路径。找不到 → 不许写。
+  （真实事故：pic2svg 页面宣称 "runs locally"/"记住你"，机制从未写入。）
+  **封杀**：任何未经代码验证的能力宣告。
+- **K2 — 通用营销填充词 / marketese tokens.**
+  **封杀 token**：seamless, effortless, elevate, unlock, unleash, supercharge,
+  game-changer, revolutionize/revolutionise, cutting-edge, next-gen, state-of-the-art,
+  "AI-powered"（作为卖点而非说明）, "in today's fast-paced world",
+  "take your X to the next level", "Introducing <X>", "Whether you're a X or a Y"。
+- **K3 — TAM 先行 / feature-parity 堆砌.**
+  不要用"市场很大 / 竞品都有 / 像 X 但更好"来论证该做。**封杀**：
+  "like <X> but better"、功能对齐清单、"<N> 人搜索这个词"当作需求证据。
+- **K4 — 编造的用户画像 / invented persona.**
+  **封杀**："busy professionals who value simplicity" 这类无来源画像，
+  无出处的买家动机、无出处的 hook。
+- **K5 — 一手证据之外的证据 / borrowed evidence.**
+  竞品的**营销页**不是机制证据；关键词架数量不是市场证据。
+  见 §5 禁用证据清单。
+- **K6 — 无证据的普适量词 / unsourced universals.**
+  **封杀**：every / all / none / always / never / forces / 唯一 / 所有——除非它经得起
+  报告**自己**的证据行，且 falsifier 已枚举**最近的那个**竞品。
+  （真实事故：对一条有桌面版的产品线写"forces upload"。）
+
+---
+
+## 2. 四问 / The Four Forced Questions（生成前必须答；答不出的格子先查证，查不出标 `Open question`，不据此下结论）
+
+仿 taste-skill 的 Design Read：把"再想想"变成一条**必填、可检查**的输出。
+
+- **Q1 — 谁付钱，什么时候，今天用什么替代？**
+  `谁为它付钱（不是谁受益）+ 触发时刻 + 他今天用什么办法凑合`。
+  三格任一没有证据 → 先查证；查不出就标 `Open question`，作为 "Decision rights" 提问的依据，并继续不依赖它的工作——不要基于缺失的格子写结论。
+- **Q2 — 单一 job 是什么，这一版砍掉什么？**
+  一句话 job（JTBD：他想取得的进展）。外加**这一轮明确不做**的东西。
+  没有砍东西 = 没想清楚。
+- **Q3 — wedge 一句话，最近的竞品是谁，它经得起证据行吗？**
+  写出一句定位；**点名最近的 incumbent**；检查这句话是否在报告自己的证据行里
+  自相矛盾（见 K6）。
+- **Q4 — 证据 vs 推断分开，两周内什么能证伪它？**
+  把陈述拆成 `Observed / Inference / Open question`。给一个 ≤2 周、有数字、有
+  日期的证伪动作。没有证伪条件 = 假设，不是结论。
+
+---
+
+## 3. 产品门 G1–G6 / The Product Gate（机械 PASS/FAIL，逐条打分）
+
+不是"感觉好不好"，是六道**数得出来**的检查。任一 FAIL → 不得说"可以做"。
+
+| Gate | 检查 | PASS 条件 |
+|---|---|---|
+| **G1 付钱方** | 点名的买家 + 具体价格 | 有一句话写明谁付、付多少 |
+| **G2 代码路径** | 每个 claim 能 grep 到实现 | 全部 claim 有代码路径 |
+| **G3 wedge 存活** | 定位句经得起本报告的证据行 | 无未枚举的最近竞品、无 K6 量词 |
+| **G4 砍清单** | 存在"这轮不做"的清单 | 清单非空，且真的砍了东西 |
+| **G5 证伪条件** | kill 条件带数字+日期 | ≤2 周内有可观测的 kill 指标 |
+| **G6 毛利底线** | 定价 ≥80% 毛利（honest discount 不破此下限） | 边际成本（含 API/风控/支付渠道费）算清后 ≥80% |
+
+## 4. 文案评分 R1–R5 / The Copy Rubric（0/1/2 分，总分见 §9）
+
+| 维度 | 0 分 | 2 分 |
+|---|---|---|
+| **R1 具体>抽象** | 抽象名词、企业腔 | 有名词、有数字、有机制 |
+| **R2 无 marketese** | 命中 §1 K2 任一 token | 零命中 |
+| **R3 可扫读** | 长段、读者需要读 | 结论前置、主题词在前、短段 |
+| **R4 忠于代码** | 有 K1 类宣称 | 每句可回溯到实现 |
+| **R5 只讲一件事** | 一句话塞多个卖点 | 一句一义 |
+
+**评分类硬规则**：
+- 自评不是终判。当文案/hook 是**重要交付物**时，须由**另一个 agent** 打分
+  (required review of the agent's draft under RULES.md "Decision rights" and Evidence & Lessons Loop 2;
+  the tone and brand feel themselves remain the user's decision)——模型给自己打分有 self-preference bias，
+  且 Loop 06 已证明"自己批改自己的 judge"不算独立品味门。
+- 结构约束会**降低**推理质量（"Let Me Speak Freely?"）。所以：**发散阶段宽松，
+  只有最终交付物套严格格式。**
+
+---
+
+## 5. 禁用证据清单 / Forbidden Evidence（看到即判定为未完成）
+
+- 关键词架数量（关键词工具的 shelf count）——它是**测量的盲区**，不是空白市场。
+- TAM 数字。
+- "<N> 人搜索这个词"。
+- 竞品的**营销页/文案**当作机制证据（要用真实产物：返回的文件 host、错误形状、
+  嵌入的 encoder 字符串签名去逆向）。
+- 模型自己的"plausibility"（听起来像真的）。
+- 任何 `Open question` 被当成 `Observed` 使用。
+
+**补充硬规则**：把空白关键词架读成开放市场是错的——它奖励的恰恰是那些 incumbent
+是**有钱公司、不发布插件/repo**的细分。判定一个细分是否开放，必须做一次
+**priced-brand（付费品牌）检查**：架外有没有人已经在为这个需求付费。
+
+---
+
+## 6. 定位拒绝测试 / Dunford Positioning Rejection Test
+
+顺序是**强制**的，且**不许用填空式定位话术**（Dunford 明确说它 "pointless or
+potentially dangerous"）：
+
+`竞争性替代 → 差异化能力 → 价值 → 最佳适配客户 → 市场品类`
+
+**拒绝规则**：任何在**最近竞争性替代被点名之前**写出的定位句，一律无效，退回重写。
+从 feature 出发定位 = 直接判 FAIL。
+
+---
+
+## 7. slop 测试 / The Slop Test（发布门前自检）
+
+> "Slop = 被无脑生成、硬塞给没要它的人的内容。不是所有 AI 内容都是 slop，
+> 但如果它是无脑生成且硬塞给没要的人，那就是 slop。"
+
+发布门：**未经审查的生成内容，不许发。** 审查 = 用户；`money/channels.json` 中 `agent_publish: true`
+的 A0-own 通道（grant G1）由 RULES.md "Decision rights" 的独立审查者执行；新的语气/品牌感仍由用户决定。每一条对外文案/offer/页面
+必须过一遍：这是被"硬塞"给人，还是人真的想要？说不清 → 不发。
+
+---
+
+## 8. 范例库 / Exemplar Swipe-File（本文件真正的引擎，必须非空）
+
+few-shot 例子胜过任何"要有品味"的文字描述。以下全部来自本用户的真实裁决
+（`Observed`），是给 agent 的 few-shot 锚点。
+
+**反面范例（bad → 已被用户否决）**
+1. ❌ "Runs locally / 离线运行" —— 机制没写进代码。
+   → 改：先写代码路径，再写文案。对应 K1 / G2 / R4。
+2. ❌ 对一条有桌面版的产品线写 "forces upload" —— 漏掉了最近的 incumbent。
+   → 改：枚举最近竞品；去掉普适量词。对应 K6 / G3。
+3. ❌ 只改 landing page 就交付 —— 用户否决：产品全站（/session /live /history
+   /pass /report）视觉标准才是验收线，不是首页原型。
+   → 改：全表面设计。对应 Q2 的砍清单之外/设计范围。
+4. ❌ 打折打到破毛利底线 —— 用户要求 ≥80% 毛利，honest discount 不得破线。
+   → 对应 G6。
+5. ❌ 便宜、带连字符、`.xyz` 的"海盗味"域名 —— 用户否决：要**高意图工作流
+   关键词 + 专业工作室品牌**的语义混合，并用真实搜索需求 + SERP 构成验证。
+   → 对应 K3 / §5。
+6. ❌ 把空关键词架读成开放市场。
+   → 改：做 priced-brand 付费品牌检查。对应 §5。
+
+**正面范例（good → 用户认可的形态）**
+7. ✅ 价值主张形态（来自用户真实 loop03 产物）：
+   "We help <隐私敏感的设计师> turn <客户的 logo/照片/扫描件> into <可编辑 SVG/DXF>
+   with <离线桌面转换器>, without <上传到云端转换器>."
+   —— 有具体买家、有替代方案、有机制、无可疑量词。
+8. ✅ 增长默认节奏：**回复热帖优先**，不是原创帖数量。用户明确改过 cadence
+   （"Don't keep posting; go interact with hot posts."）。
+9. ✅ 北极星：**一笔真实支付端到端跑通**，不是虚荣指标。
+10. ✅ 人的价值是**验收/judgment**："agent 抢走的不是干活，是你对'什么叫做好'
+    的模糊许可。"——产品判断服务的是那个说"行"的人。
+
+---
+
+## 9. 输出契约 / The Output Contract（机械门）
+
+For **buyer-facing deliverables** (landing pages, copy, offers, pricing, naming or
+positioning), follow RULES.md's Final-response contract. Record these product checks
+inline or in task-specific linked evidence; keep every failed dimension visible in
+the opening recommendation or completion limits:
+
+```
+Wedge: <一句话定位>
+Taste: G1..G6 [PASS/FAIL 逐项] · R1..R5 分 [0/1/2] 总分 <x>/10 · 任一维 <2 = do-not-ship
+```
+
+- 任一维 **< 2**（0/1/2 制）→ **不得判定"可交付"**，
+  要么改，要么在回复里显式 `flag`。
+- 若交付物超出校准范围（§0），必须标注 `⚠ 超出校准范围`。
+- Include failed scoring dimensions in the opening recommendation or completion limits; no separate `Judgment:` line is required.
+
+这条契约是把宪法变成行为的**唯一机械抓手**——没有它，本文件就是用户讨厌的"剧场"。
+
+122:[domain:branding][verdict:prefer][blame:user-opinion][src:user-opinion] 2026-10-04 — pic2svg/any2svg: user overrode a two-brand split (keep engine internal name `any2svg`) in favour of a full mechanical rename. Reason to record: "internal" identifiers do not stay internal — the engine filename leaks into served evidence JSON, the published verifier scripts, and the Docker build; the OG image and provider-side product names leak the brand regardless of naming strategy. [proposed] Full-consistency brand wins over internal-name stability when any internal string is user-reachable.[id:lsn-28222fb5]
+153:- What the user said: "这两个真不是一个专业的做网站的做出来的，太丑了，给我用image2进行优化"
+154:- Rule extracted: For this pic2svg example, the user wants illustration quality beyond crude placeholder geometry and specifically requested Image 2 refinement. This does not authorize a different page layout or claim approval of the replacement.
+
+hook: PostToolUse
+hook: PostToolUse
+ succeeded in 519ms:
+---
+title: APEX SUT→Host Results Copy 机制
+created: 2026-07-04T00:00
+updated: 2026-07-19T20:15
+tags: [apex, results, sut, copy, testflow]
+category: guide
+status: active
+summary: APEX 各 Testflow（ExecuteGenericCommand/CommonWorkload/BiosQA）的 SUT 结果回传机制与踩坑记录
+---
+
+# APEX SUT→Host Results Copy 机制
+
+## 结论
+
+**ExecuteGenericCommand 没有自动收集路径**，必须指定 `SUT Results Directory to Copy to Host` 才会触发 copy。只有 ExecuteCommonWorkload 才会自动收集 `C:\automation\Results\`。
+
+## 各 Testflow 行为对比
+
+| Testflow | SUT 自动收集路径 | 需要配置？ |
+|---|---|---|
+| **ExecuteCommonWorkload** | `C:\automation\Results\` | 否 — 自动 |
+| **ExecuteGenericCommand** | 无默认，取决于 `--sutresultsdirectory` 参数 | **是** — 必须填 |
+| **BiosQA Generic Command** | `C:\automation\BiosQA\result\` | 否 — 硬编码 |
+| **HelperScripts 模块** | `C:\automation\Results\`（脚本输出） | 否 — 自动 |
+
+## 关键代码
+
+### ExecuteGenericCommand — 条件触发
+
+来源：`testflows/public/execute_generic_command.py`
+
+```python
+# Get any files from the results directory on the SUT
+if self.args.get("sutresultsdirectory"):
+    log.info("Copy results from SUT to Host")
+    self.exe.copy_files_from_sut(self.args["sutresultsdirectory"], self.result_dir)
+```
+
+如果 `--sutresultsdirectory=`（空），则不触发任何 copy。
+
+### ExecuteCommonWorkload — 自动收集
+
+来源：`libs/constants.py` + `libs/sut_helper.py` + `libs/workload_helper.py`
+
+```python
+# constants.py
+SUT_RESULT_DIRNAME = "Results"
+
+# sut_helper.py
+def get_sut_local_dir(self) -> str:
+    drive = self.get_winpe_drive()
+    if drive is None or ...:
+        drive = "C:\\"
+    return self.os_path_join(drive, "automation")  # → C:\automation
+
+# workload_helper.py — result dir
+self.sh.os_path_join(sut_local_dir, Constants.SUT_RESULT_DIRNAME)  # → C:\automation\Results
+```
+
+## 踩坑记录
+
+### `%USERPROFILE%` 在 file transfer 不展开
+
+`SUT PreExecution Command` 和 `SUT Execution Command` 通过 `cmd /c` 执行，环境变量能正常展开。但 APEX 的 `file_size` / file transfer API（用于 `SUT Results Directory to Copy to Host` 回传文件）直接操作路径字符串，**不展开环境变量**。
+
+```
+[ERROR] Failed to transfer Infrastructure-SMU-Message-Test-MDS2.py
+Exception: FileNotFoundException
+Message: File %USERPROFILE%\Desktop\...\Infrastructure-SMU-Message-Test-MDS2.py not found
+```
+
+**结论：`SUT Results Directory to Copy to Host` 必须用硬编码绝对路径**，不能用 `%USERPROFILE%` 等环境变量。
+
+### 脚本 crash 看不到 stderr
+
+`Show SUT Command Output on Host` 默认为 `Never`，脚本报错时 testflow.log 只有 `ExitCode: 1`，无法看到 Python traceback。
+
+**调试时务必设为 `Always`**，否则只能盲猜失败原因。
+
+### SUT Results Directory 会收集目录中所有文件（含历史残留）
+
+`SUT Results Directory to Copy to Host` 会 copy 该目录下**所有文件**回 Host results，不区分本次还是历次执行产物。如果脚本每次生成带时间戳的 log 文件，多次执行后 SUT 上会累积多个旧 log，全部被 copy 回来造成混淆。
+
+**解决：脚本开头清理旧 log 文件**
+
+```python
+import glob
+script_dir = os.path.dirname(os.path.abspath(__file__))
+for old_log in glob.glob(os.path.join(script_dir, 'SMU-Message-Test-*.txt')):
+    os.remove(old_log)
+```
+
+### 脚本中不能有非 ASCII 字符输出到 stdout
+
+SUT 上通过 cmd.exe 执行 Python 脚本时，stdout 编码为 Windows 默认 codepage（如 cp936），遇到 Unicode 字符（如 `→` U+2192、`°` U+00B0）会触发 `UnicodeEncodeError` 导致脚本 crash。
+
+**所有 print 内容必须用 ASCII 字符**（用 `->` 代替 `→`，用 `degC` 代替 `°C`）。
+
+### AGM 必须在独立窗口中启动（不能共享 Python console 管道）
+
+从 Python 脚本中启动 AGM 时，**不能**用 `subprocess.Popen(exe, cwd=..., shell=True)` — 这会让 AGM 继承 Python 的 stdin/stdout 管道（APEX Executor 的管道），导致 AGM 虽然启动了但无法正常初始化设备接口（PM/BTC/CLOCK data interface 全部 fail），unilog CSV 只有 header 没有数据行。
+
+**正确做法：用 `start /d` 让 AGM 在独立 cmd 窗口中运行：**
+
+```python
+# WRONG — AGM 继承 Python console，设备接口初始化失败
+subprocess.Popen(f'"{AGM_EXE}" {args}', cwd=os.path.dirname(AGM_EXE), shell=True)
+
+# CORRECT — start /d 创建独立窗口，AGM 正常工作
+agm_dir = os.path.dirname(AGM_EXE)
+cmd = f'start /d "{agm_dir}" {AGM_PROCESS} {args}'
+subprocess.Popen(cmd, shell=True)
+```
+
+**症状**：AGM 窗口的错误信息（`Error: Device #0 can't start PM data interface!` 等）出现在 APEX Executor 的 terminal 中而不是独立窗口 → 说明 AGM 没有自己的 console handle。CSV 文件被创建（50KB header）但 0 行数据。
+
+**根因**：AGM 需要独立的 console 来初始化设备通信。当它继承 Python/APEX 的管道时，设备 DLL 的某些 I/O 操作失败（可能是因为管道不支持某些 console API）。
+
+**验证**：手动在 SUT cmd 中运行 AGM（有独立窗口）→ 正常采样；从 Python `Popen(cwd=...)` 启动（无独立窗口）→ 只有 header。
+
+## 实际使用建议
+
+### 方案 A：用 ExecuteGenericCommand（推荐）
+
+脚本把 log 写到任意路径（如脚本同目录或 `C:\automation\Results`），APEX 配置填对应路径：
+
+```
+SUT Results Directory to Copy to Host = C:\automation\Results
+```
+
+注意：此字段**不支持环境变量**，必须硬编码绝对路径（如 `C:\Users\Administrator\Desktop\PAPI2\Infrastructure\APEX`）。
+
+### 方案 B：用 ExecuteCommonWorkload + HelperScripts
+
+脚本输出到 `C:\automation\Results\`，由 Common Workload 框架自动收集。适合需要同时跑 workload + 采集数据的场景。
+
+## 相关
+
+- [[APEX-overview]] — APEX 概览：核心概念、工作流、CLI、本地源码路径
+
+
+  C:\Users\Administrator\Documents\projects\LLMwiki\index.md:94:- [[AI工具声音提醒方案]] — 用 winsound 给 Claude Code 
+/ Copilot / Codex / Cursor 加「完成」与「需你操作」的声音提醒
+> C:\Users\Administrator\Documents\projects\LLMwiki\index.md:95:- [[voice-to-prompt-workflow]] — 用语音替代打字向 AI 
+提问：Win+H 加清洗提示词（零成本）与 Handy/OpenLess/SayIt 工具层（自动化），含六个候选对比、五个已知坑与最小验收集
+  C:\Users\Administrator\Documents\projects\LLMwiki\index.md:96:
+
+
+hook: PostToolUse
+hook: PostToolUse
+2026-10-31T14:39:05.051600Z ERROR codex_core::tools::router: error=Warning: truncated output (original token count: 2636)
+Total output lines: 166
+
+[Output shortened from 19478 characters. Full output: C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19266-1d9e-72e0-93b0-41824d06c8b6/exec-2747b36b-4e3d-4c54-b4cd-422314678935.txt (Read it with offset/limit or grep it; do not rerun the command to see it.)]
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision…175 tokens truncated… edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it wit
+... [8961 characters omitted; read the raw file for a targeted range] ...
+final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+
+
+Full hook output saved to: C:\Users\ADMINI~1\AppData\Local\Temp\hook_outputs\01a19266-1d9e-72e0-93b0-41824d06c8b6\89a64de9-ec84-42a6-ab73-71b4deed50df.txt
+hook: PostToolUse Completed
+hook: PostToolUse Blocked
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19266-1d9e-72e0-93b0-41824d06c8b6/exec-2747b36b-4e3d-4c54-b4cd-422314678935.txt' | Select-Object -Skip 65 -First 100" in D:\githubprojects\language-games
+ succeeded in 1599ms:
+
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+
+- Do not describe or rely on OS temp as the default built-in destination.
+
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+
+- Save-path precedence in built-in mode:
+
+  1. If the user names a destination, move or copy the selected output there.
+
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+
+
+Fallback-only docs/resources for CLI mode:
+
+- `references/cli.md`
+
+- `references/image-api.md`
+
+- `references/codex-network.md`
+
+- `scripts/image_gen.py`
+
+
+
+## When to use
+
+- Generate a new image (concept art, product shot, cover, website hero)
+
+- Generate a new image using one or more reference images for style, composition, or mood
+
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+
+- Produce many assets or variants for one task
+
+
+
+## When not to use
+
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+
+- Making a small project-local asset edit when the source file already exists in an editable native format
+
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+
+
+## Decision tree
+
+
+
+Think about two separate questions:
+
+
+
+1. **Intent:** is this a new image or an edit of an existing image?
+
+2. **Execution strategy:** is this one asset or many assets/variants?
+
+
+
+Intent:
+
+- If the user wants to modify an existing image while preserving parts of it, treat the request as **edit**.
+
+- If the user provides images only as references for style, composition, mood, or subject guidance, treat the request as **generate**.
+
+- If the user provides no images, treat the request as **generate**.
+
+
+
+Built-in edit semantics:
+
+- Built-in edit mode is for images already visible in the conversation context, such as attached images or images generated earlier in the thread.
+
+- If the user wants to edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+
+
+Execution strategy:
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19266-1d9e-72e0-93b0-41824d06c8b6/exec-2747b36b-4e3d-4c54-b4cd-422314678935.txt' | Select-Object -Skip 165 -First 250 | Where-Object { "'$_.Trim() -ne '"'' }" in D:\githubprojects\language-games
+ succeeded in 1164ms:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+Assume the user wants a new image unless they clearly ask to change an existing one.
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it with `view_image` first so the image is available in conversation context.
+8. If the user asked for a photo, illustration, sprite, product image, banner, or other explicitly raster-style asset, use `image_gen` rather than substituting SVG/HTML/CSS placeholders. If the request is for an icon, logo, or UI graphic that should match existing repo-native SVG/vector/code assets, prefer editing those directly instead.
+9. Augment the prompt based on specificity:
+   - If the user's prompt is already specific and detailed, normalize it into a clear spec without adding creative requirements.
+   - If the user's prompt is generic, add tasteful augmentation only when it materially improves output quality.
+10. Use the built-in `image_gen` tool by default.
+11. For transparent-output requests, ask built-in `image_gen` for a transparent background and preserve the generated alpha channel.
+12. Inspect outputs and validate: subject, style, composition, text accuracy, and invariants/avoid items.
+13. Iterate with a single targeted change, then re-check.
+14. For preview-only work, render the image inline; the underlying file may remain at the default `$CODEX_HOME/generated_images/...` path.
+15. For project-bound work, move or copy the selected artifact into the workspace and update any consuming code or references. Never leave a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+## Transparent image requests
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+## Prompt augmentation
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+### Specificity policy
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+- arbitrary side-specific placement unless the surrounding layout supports it
+## Use-case taxonomy (exact slugs)
+Classify each request into one of these buckets and keep the slug consistent across prompts and references.
+Generate:
+- photorealistic-natural — candid/editorial lifestyle scenes with real texture and natural lighting.
+- product-mockup — product/packaging shots, catalog imagery, merch concepts.
+- ui-mockup — app/web interface mockups and wireframes; specify the desired fidelity.
+- infographic-diagram — diagrams/infographics with structured layout and text.
+- scientific-educational — classroom explainers, scientific diagrams, and learning visuals with required labels and accuracy constraints.
+- ads-marketing — campaign concepts and ad creatives with audience, brand position, scene, and exact tagline/copy.
+- productivity-visual — slide, chart, workflow, and data-heavy business visuals.
+- logo-brand — logo/mark exploration, vector-friendly.
+- illustration-story — comics, children’s book art, narrative scenes.
+- stylized-concept — style-driven concept art, 3D/stylized renders.
+- historical-scene — period-accurate/world-knowledge scenes.
+Edit:
+- text-localization — translate/replace in-image text, preserve layout.
+- identity-preserve — try-on, person-in-scene; lock face/body/pose.
+- precise-object-edit — remove/replace a specific element (including interior swaps).
+- lighting-weather — time-of-day/season/atmosphere changes only.
+- background-extraction — transparent background / clean cutout. Ask built-in `image_gen` for actual transparency.
+- style-transfer — apply reference style while changing subject/scene.
+- compositing — multi-image insert/merge with matched lighting/perspective.
+- sketch-to-render — drawing/line art to photoreal render.
+## Shared prompt schema
+Use the following labeled spec as shared prompt scaffolding for both top-level modes:
+```text
+Use case: <taxonomy slug>
+Asset type: <where the asset will be used>
+Primary request: <user's main prompt>
+Input images: <Image 1: role; Image 2: role> (optional)
+Scene/backdrop: <environment>
+Subject: <main subject>
+Style/medium: <photo/illustration/3D/etc>
+Composition/framing: <wide/close/top-down; placement>
+Lighting/mood: <lighting + mood>
+Color palette: <palette notes>
+Materials/textures: <surface details>
+Text (verbatim): "<exact text>"
+Constraints: <must keep/must avoid>
+Avoid: <negative constraints>
+```
+Notes:
+- `Asset type` and `Input images` are prompt scaffolding, not dedicated CLI flags.
+- `Scene/backdrop` refers to the visual setting. It is not the same as the fallback CLI `background` parameter, which controls output transparency behavior.
+- Fallback-only execution notes such as `Quality:`, `Input fidelity:`, masks, output format, and output paths belong in the CLI path only. Do not treat them as built-in `image_gen` tool arguments.
+Augmentation rules:
+- Keep it short.
+- Add only the details needed to improve the prompt materially.
+- For edits, explicitly list invariants (`change only X; keep Y unchanged`).
+- If any critical detail is missing and blocks success, ask a question; otherwise proceed.
+## Examples
+### Generation example (hero image)
+```text
+Use case: product-mockup
+Asset type: landing page hero
+Primary request: a minimal hero image of a ceramic coffee mug
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command '$source = '"'C:/Users/Administrator/.codex/generated_images/01a19266-1d9e-72e0-93b0-41824d06c8b6/exec-fc0ddbcb-6616-41c7-82e7-f79f7e9b8cb0.png'
+"'$destination = '"'D:/githubprojects/language-games/art/scene/book.png'
+New-Item -ItemType Directory -Path (Split-Path -Parent "'$destination) -Force | Out-Null
+Copy-Item -LiteralPath $source -Destination $destination -Force
+$sourceHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
+$destinationHash = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash
+if ($sourceHash -ne $destinationHash) { throw '"'Image copy verification failed' }
+Get-Item -LiteralPath "'$destination | Select-Object FullName, Length' in D:\githubprojects\language-games
+ succeeded in 1143ms:
+
+FullName                                             Length
+--------                                             ------
+D:\githubprojects\language-games\art\scene\book.png 2029517
+
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+codex
+Saved to [art/scene/book.png](/D:/githubprojects/language-games/art/scene/book.png).
+hook: Stop
+hook: Stop Completed
+tokens used
+17,414
+Saved to [art/scene/book.png](/D:/githubprojects/language-games/art/scene/book.png).
