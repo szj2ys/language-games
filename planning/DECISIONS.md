@@ -30,3 +30,22 @@ records who disagreed and why it was overruled or deferred.
 - Aspect Flip / Duck–Rabbit (Claude): Codex judged it a paraphrase quiz as specified; needs a consequential goal first.
 - Look at the Use / glorp (Copilot): closest to a quiz; candidate for v1.1 if the use-test stays a test of use.
 - Learner playtests (Codex's five-learner gate): not possible in this session; recommended to the owner before promotion.
+
+## After building: reviews and what changed
+
+| # | Finding (who) | Change |
+|---|---|---|
+| R1 | Slab!'s best part, giving orders, was 12 rounds away; no way to choose (Jobs J1-1). | Session picker in every game; all sessions open from the start. |
+| R2 | Three taps per one-word call (Jobs J1-3). | First session: one tap brings the stone; right answers move on by themselves; a wrong delivery is retried by tapping again (J2-3). |
+| R3 | The Café's picture never changed, so "read the room" was text (Jobs J1-6). | 18 per-round gpt-image-2 scenes drawn from the same character references; the clues are visible. |
+| R4 | The pupil contradicted the rule it had just learned ("an European"), Jobs J1-8/J2-7. | Twists rewritten so each is consistent with the pupil's learned rule: *a historic* (both in use), *two childs* (correct it: irregular). Best cards are revealed when the player used more than needed. |
+| R5 | Half of every screen empty (Jobs J1-2, J2-1, J2-4). | Phone: 4:3 crop of every 16:9 scene (positions preserved), controls docked at the bottom. Desktop: board fills the width beside a 400 px control column. |
+| R6 | End card buried the next step under quotations (Jobs J2-2). | Result and Next first; the learner's own sentences; quotations collapsed. |
+| R7 | Landing described the product (Jobs J2-5). | The first Slab! call is playable on the landing page. |
+| R8 | Shortcuts invisible (J1-13/J2-6); global single-key shortcuts violate WCAG 2.1.4 (Codex review). | Key numbers shown on choices for keyboard users; a one-time tip after three mouse picks; shortcuts only act inside the game and can be switched off in the notebook. |
+| R9 | A grammar note cost a mark, contradicting D5 (Codex review). | Outcome marks no longer depend on English notes. |
+| R10 | Tab races, impossible saved positions, drafts surviving reset (Codex review). | Incoming saves are merged, positions validated and clamped, drafts cleared on replay and reset. |
+| R11 | "archs", "nails doesn't", "fewer than half" for exactly half (Codex review). | Irregular plural map; verb agreement for plural cards; "no more than half". |
+| R12 | Builder disputed Jobs's cut of the "About" block. | Round-2 reviewer accepted it (served HTML for crawlers, below the fold) but asked to drop the "idea" paragraph on Family Threads, which gave away the discovery — done. |
+| R13 | Copilot: Slab! lacked the §21 order/report contrast and the learner never asked "Which one?". | Slab! session 4 "Order or report?" (orders, reports, a question, a warning — PI §§21, 27 — and a round where asking is the right move). |
+| R14 | Go On! had only four levels. | Session 2: *enjoy swimming / want to swim* (with *stop smoking / stop to smoke*) and countable vs uncountable nouns (*the data is/are*). |
