@@ -327,7 +327,7 @@ function StoneCard({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      aria-label={ariaLabel}
+      aria-label={label && label !== "?" ? undefined : ariaLabel}
       data-shortcut={shortcut ? "" : undefined}
       className={cn(
         "relative flex min-h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-card px-2 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
