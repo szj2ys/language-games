@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GAMES } from "@/content/games";
 import { SOURCES, WORK_TITLE } from "@/content/sources";
-import { ContinueButton, GameProgress } from "@/components/home-progress";
+import { ContinueButton, GameProgress, LadderEnd } from "@/components/home-progress";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://language-games.example";
 
@@ -48,6 +48,8 @@ export default function Home() {
           />
         </div>
       </section>
+
+      <LadderEnd />
 
       <section id="games" className="mt-10 scroll-mt-4" aria-labelledby="games-title">
         <h2 id="games-title" className="font-heading text-3xl font-semibold">

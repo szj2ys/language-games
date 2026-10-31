@@ -36,6 +36,15 @@ const SPOT: Record<Place, { x: number; y: number }> = {
   builder: { x: 60, y: 80 },
 };
 
+/** What an unlabelled stone looks like, for people who cannot see the picture. */
+const SHAPE: Record<Stone, string> = {
+  block: "A solid cube of stone",
+  pillar: "A tall round stone",
+  slab: "A broad flat stone",
+  beam: "A long narrow stone",
+  arch: "A curved stone",
+};
+
 const PLACE_LABEL: Record<Place, string> = { builder: "To him", left: "Left", right: "Right" };
 
 type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "count" | "place", boolean> };
@@ -345,7 +354,7 @@ function FetchPlay({
                 label={labelled ? s : undefined}
                 selected={stone === s}
                 onClick={() => setStone(s)}
-                ariaLabel={labelled ? s : `Stone ${["block", "pillar", "slab", "beam"].indexOf(s) + 1}`}
+                ariaLabel={labelled ? s : SHAPE[s]}
               />
             ))}
           </div>

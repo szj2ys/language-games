@@ -96,6 +96,15 @@ export const SOURCES = {
       "A one-word order is not broken English. Inside a shared activity, 'Slab!' does the same job as 'Bring me a slab'.",
     url: PI_URL,
   },
+  "pi-21": {
+    id: "pi-21",
+    work: "PI",
+    ref: "§21",
+    quote:
+      "We could imagine a language in which all statements had the form and tone of rhetorical questions; or every command the form of the question \"Would you like to …?\"",
+    gloss: "The grammatical form of a sentence does not fix its job. 'Would you like to…?' can offer, invite or instruct.",
+    url: PI_URL,
+  },
   "pi-23": {
     id: "pi-23",
     work: "PI",
@@ -173,6 +182,14 @@ export const SOURCES = {
     ref: "§217",
     quote: "If I have exhausted the justifications I have reached bedrock, and my spade is turned. Then I am inclined to say: \"This is simply what I do.\"",
     gloss: "Why 'an hour' and not 'a hour'? At some point the reasons stop, and there is just what English speakers do.",
+    url: PI_URL,
+  },
+  "pi-133": {
+    id: "pi-133",
+    work: "PI",
+    ref: "§133",
+    quote: "The real discovery is the one that makes me capable of stopping doing philosophy when I want to.",
+    gloss: "The later Wittgenstein's version of the ladder: the point is not to keep climbing, but to be able to stop.",
     url: PI_URL,
   },
   "pi-ppf-118": {

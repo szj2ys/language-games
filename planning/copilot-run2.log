@@ -222,3 +222,39 @@ Codex's Tractatus numbers check out as real propositions. Next I'll re-read both
   │ planning\plan-copilot.md
   └ L530:548 (18 lines read)
 
+Claude's Duck–Rabbit may overlap my own §1.8 Aspect Flip, and an overlap isn't really a borrow. Checking §1.7–§1.8 before I choose Claude's third idea.
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L318:371 (53 lines read)
+
+My backlog already has Aspect Flip and Hinges, so Claude's Duck–Rabbit and Must/Might/Can't converge with mine and aren't real borrows. Checking my scoring and IA so the borrow claims are accurate.
+
+● Read plan-copilot.md                                                                            5s
+  │ planning\plan-copilot.md
+  └ L76:93 (17 lines read)
+
+● Read plan-copilot.md                                                                            5s
+  │ planning\plan-copilot.md
+  └ L405:426 (21 lines read)
+
+/ Search (grep)                                                                                   5s
+  │ "Schachtel könnte auch leer" (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\file
+  │ s\sources\lwp-Philosophische_Untersuchungen.wiki)
+  └ 1 line found
+
+/ Search (grep)                                                                                   6s
+  │ "ladder|first.attempt|limits of|analogy|no-panel|without reading" (planning\plan-copilot.md)
+  └ No matches found
+
+/ Search (grep)                                                                                   6s
+  │ "Leiter wegwerfen"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt)
+  └ 1 line found
+
+/ Search (grep)
+  │ "vollständige primitive Sprache|Fünf Platten|1000, 1004|in der Luft|Denk nicht, sondern schau"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\lwp-Philosophische_
+  │ Untersuchungen.wiki)
+  └ 11 lines found
+

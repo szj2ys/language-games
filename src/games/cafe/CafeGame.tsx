@@ -41,7 +41,7 @@ export function CafeGame() {
             english={session.english}
             firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
             total={session.rounds.length}
-            sources={g.sessionIndex === 0 ? [session.source, "pi-23"] : [session.source, "pi-7"]}
+            sources={g.sessionIndex === 0 ? [session.source, "pi-23"] : g.sessionIndex === 1 ? [session.source, "pi-7"] : ["pi-21", "pi-23"]}
             nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
             onNext={g.nextSession}
             onReplay={g.replay}
@@ -79,7 +79,7 @@ function Round({
   const choose = (i: number) => {
     const o = round.options[i];
     setChosen(i);
-    speak(o.reaction);
+    speak(o.reaction.replace(/\([^)]*\)/g, ""));
     if (o.fits) onDone(misses === 0 ? 2 : 1, 2, misses === 0, [round.says]);
     else {
       setMisses((m) => m + 1);
@@ -109,8 +109,8 @@ function Round({
           <div className="absolute top-[6%] left-[30%] max-w-[64%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
             <p className="text-xs font-bold text-muted-foreground">{NAME[round.speaker]}</p>
             <p className="flex items-center gap-1 font-heading text-[clamp(16px,4.4vw,24px)] leading-tight font-semibold" aria-live="polite">
-              {bubble}
-              <button type="button" onClick={() => speak(bubble)} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
+              <Line text={bubble} />
+              <button type="button" onClick={() => speak(bubble.replace(/\([^)]*\)/g, ""))} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
                 <Volume2 className="size-5" aria-hidden />
               </button>
             </p>
@@ -180,5 +180,22 @@ function Round({
         )}
       </div>
     </div>
+  );
+}
+
+/** Speech in the serif; stage directions "(She looks at the teapot.)" in small italics, not read as words. */
+function Line({ text }: { text: string }) {
+  return (
+    <span>
+      {text.split(/(\([^)]*\))/).map((part, i) =>
+        part.startsWith("(") ? (
+          <em key={i} className="font-sans text-[0.7em] font-normal text-muted-foreground">
+            {part.slice(1, -1)}
+          </em>
+        ) : (
+          part
+        ),
+      )}
+    </span>
   );
 }

@@ -194,4 +194,79 @@ export const SESSIONS: Session[] = [
       },
     ],
   },
+  {
+    id: "cafe-3",
+    title: "Excuse me?",
+    blurb: "Short, everyday phrases do the most different jobs. Watch who says them, and when.",
+    english: "'Would you like to…?', 'I'm fine', 'Excuse me' — offers, instructions, apologies and requests",
+    source: "pi-23",
+    rounds: [
+      {
+        id: "c3-1", speaker: "tom", says: "Would you like to wipe the tables before you go?",
+        clues: ["Tom is the café manager — your boss.", "It is the end of your shift.", "The tables are covered in crumbs."],
+        options: [
+          say("“Sure — I'll do them now.”", true, "Thanks. See you tomorrow."),
+          say("“No thanks, I'd rather not.”", false, "…It wasn't really a question."),
+          say("“Would I like to? Not really.”", false, "(He raises an eyebrow and hands you a cloth.)"),
+        ],
+        use: "an instruction, politely shaped as a question",
+        note: "From a manager at the end of a shift, 'Would you like to…?' is a polite way to tell you what to do. Wittgenstein notes that a question can have the job of a command (PI §21).",
+      },
+      {
+        id: "c3-2", speaker: "rosa", says: "Would you like to try my lemon cake?",
+        clues: ["Rosa baked the cake at home.", "She is holding out a plate with a small slice.", "You have a break."],
+        options: [
+          say("“Oh, I'd love to — thank you!”", true, "Go on, tell me honestly what you think."),
+          act("Start wiping the tables.", false, "(She looks at the plate, then at you.) …It wasn't a job, dear. It's cake."),
+          say("“Is that an order?”", false, "An order? No, dear — an offer!"),
+        ],
+        use: "an offer",
+        note: "The same frame as before, 'Would you like to…?', but from a customer holding out cake it is an offer. Saying 'No, thank you' would also have been fine here.",
+      },
+      {
+        id: "c3-3", speaker: "lena", says: "I'm fine, thanks.",
+        clues: ["You just asked her “How are you?” as she came to the counter.", "She is smiling and looking at the menu."],
+        options: [
+          say("“Good to hear! What can I get you?”", true, "A flat white, please."),
+          say("“Are you sure? You can tell me anything.”", false, "Er… I'm sure. Just a coffee, please."),
+          act("Bring her a glass of water and a plaster.", false, "…Thanks? I'm really fine."),
+        ],
+        use: "a greeting ritual, not a medical report",
+        note: "'How are you?' — 'Fine, thanks' is part of greeting someone in English. It asks for no details.",
+      },
+      {
+        id: "c3-4", speaker: "lena", says: "I'm fine, thanks.",
+        clues: ["She has just tripped over a bag and dropped her cup.", "She is holding her ankle.", "Her face is pale."],
+        options: [
+          say("“Good to hear! What can I get you?”", false, "(She winces.) …Nothing right now."),
+          say("“Are you sure? Sit down a moment — I'll get you some ice.”", true, "Actually… yes. Thank you. That would help."),
+          act("Start sweeping up the cup and say nothing.", false, "(She limps to a chair on her own.)"),
+        ],
+        use: "a brave reassurance — not to be taken at its word",
+        note: "Same words, different situation. After a fall, 'I'm fine' often means 'I don't want to make a fuss'. A kind reply checks and offers help.",
+      },
+      {
+        id: "c3-5", speaker: "tom", says: "Excuse me.",
+        clues: ["Tom is carrying a heavy tray.", "Your chair is blocking the narrow way to the kitchen."],
+        options: [
+          say("“You're excused.”", false, "…Could you move, please?"),
+          act("Pull your chair in to let him pass.", true, "Thanks!"),
+          say("“What for? You didn't do anything.”", false, "No — I need to get past."),
+        ],
+        use: "a request to get past",
+        note: "Here 'Excuse me' asks you to make room. It is not an apology for anything.",
+      },
+      {
+        id: "c3-6", speaker: "lena", says: "Excuse me?",
+        clues: ["You just told her quietly that the card machine is broken.", "The coffee grinder was very loud.", "She is leaning towards you, frowning."],
+        options: [
+          act("Pull your chair in.", false, "No, I mean — what did you say?"),
+          say("“Sorry — I said the card machine is broken. Cash only today.”", true, "Ah, OK. I've got cash."),
+          say("“You're excused.”", false, "…I didn't hear you."),
+        ],
+        use: "a request to repeat",
+        note: "With a rising voice and a frown, 'Excuse me?' means 'I didn't hear — please say it again'. Three uses of one phrase in one café.",
+      },
+    ],
+  },
 ];
