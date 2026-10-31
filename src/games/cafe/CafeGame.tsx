@@ -21,6 +21,7 @@ const SESSION_SOURCES: SourceId[][] = [
   ["pi-43", "pi-23"],
   ["pi-23", "pi-7"],
   ["pi-21", "pi-23"],
+  ["pi-23", "pi-21"],
 ];
 
 const NAME: Record<Speaker, string> = { rosa: "Rosa", tom: "Tom", lena: "Lena" };

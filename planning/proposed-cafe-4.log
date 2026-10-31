@@ -1,0 +1,297 @@
+I'll read the game's types, existing sessions and tests first.
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ 316 lines read
+
+● Read rounds.test.ts
+  │ src\games\cafe\__tests__\rounds.test.ts
+  └ 27 lines read
+
+● Check git status, history, root files (shell)
+  │ git --no-pager status --short --untracked-files=all; git --no-pager log --oneline -8;
+  │ Get-ChildItem -Force | Select-Object Name, Mode | Format-Table -AutoSize | Out-String -Width 200
+  └ 15 lines…
+
+The working tree has other uncommitted work and an existing `planning/proposed-cafe-4.log`. I'll check the planning folder, sources, and how the cafe game renders rounds.
+
+● Read sources.ts
+  │ src\content\sources.ts
+  └ 301 lines read
+
+/ Search (glob)
+  │ "src/games/cafe/**/*"
+  └ 3 files found
+
+/ Search (glob)
+  │ "planning/**/*"
+  └ 21 files found
+
+● Summarize git status/log output (shell)
+  │ $f = "C:\Users\ADMINI~1\AppData\Local\Temp\1793471630779-copilot-tool-output-231344-765aa97b-770
+  │ 3-42ec-985c-204e6f8b9d35.txt"; Get-Content $f | Select-String -NotMatch "reports/" |
+  │ Select-Object -First 60 | ForEach-Object { $_.Line }; "---- reports lines: " + (Get-Content $f |
+  │ Select-String "reports/").Count
+  └ 44 lines…
+
+`sources.ts` has uncommitted edits, and there's a stray `proposed-cafe-4.log`. I'll check both, plus how CafeGame renders clues and pictures, and the planning docs on content rules.
+
+● Read CafeGame.tsx
+  │ src\games\cafe\CafeGame.tsx
+  └ 232 lines read
+
+● Inspect sources diff and stray log (shell)
+  │ git --no-pager diff --stat; git --no-pager diff -- src/content/sources.ts; "---- LOG ----";
+  │ Get-Item planning\proposed-cafe-4.log | Select-Object Length, LastWriteTime | Format-List |
+  │ Out-String; Get-Content planning\proposed-cafe-4.log -TotalCount 80
+  └ 74 lines…
+
+/ Search (grep)
+  │ "cafe|café|Café|Cafe" in *.md (planning)
+  └ 50 lines found
+
+● List docs sizes, scripts, cafe art files (shell)
+  │ Get-Content AGENTS.md; "==== BRIEF ===="; (Get-Content planning\BRIEF.md -Raw).Length; "====
+  │ DECISIONS ===="; (Get-Content planning\DECISIONS.md -Raw).Length; "==== ACCEPTANCE ====";
+  │ (Get-Content planning\ACCEPTANCE.md -Raw).Length; "==== content-review ===="; (Get-Content
+  │ planning\content-review-copilot.md -Raw).Length; "==== scripts ===="; Get-ChildItem scripts
+  │ -Recurse -File | Select-Object -ExpandProperty FullName; "==== art ===="; Get-ChildItem art …
+  └ 53 lines…
+
+Let me read the character art prompts, a round prompt, the art script, and the content review to match how clues become pictures and what reviewers flagged before.
+
+● Read content-review-copilot.md
+  │ planning\content-review-copilot.md
+  └ 32 lines read
+
+● Read character and scene art prompts (shell)
+  │ foreach ($n in 'cafe','host','rosa','tom','lena') { "==== $n ===="; Get-Content
+  │ "art\cafe\$n.prompt.txt" -Raw }; "==== round prompt files ===="; Get-ChildItem art\cafe -Recurse
+  │ -Filter *.prompt.txt | Select-Object -ExpandProperty FullName | ForEach-Object {
+  │ $_.Replace((Get-Location).Path + '\', '') }
+  └ 67 lines…
+
+The review already verified §21 against the German. Now the acceptance criteria, decisions, a sample round/after art prompt, and the art script.
+
+● Read ACCEPTANCE.md
+  │ planning\ACCEPTANCE.md
+  └ 67 lines read
+
+● Read DECISIONS.md
+  │ planning\DECISIONS.md
+  └ 57 lines read
+
+● Read sample round prompts and art script (shell)
+  │ foreach ($p in 'rounds\c3-4','after\c3-4','rounds\c2-3','rounds\c1-6') { "==== $p ====";
+  │ Get-Content "art\cafe\$p.prompt.txt" -Raw }; "==== art.py (head) ===="; Get-Content
+  │ scripts\art.py -TotalCount 120
+  └ 78 lines…
+
+/ Search (grep)
+  │ "\.source\b|sources=|SESSION_SOURCES|art/cafe|cafe/rounds|SESSIONS\.length" (src, e2e)
+  └ 14 lines found
+
+● Read tsconfig, vitest, eslint, scripts (shell)
+  │ Get-Content tsconfig.json; "==== vitest ===="; Get-Content vitest.config.mts; "==== eslint
+  │ ===="; Get-Content eslint.config.mjs; "==== package scripts ===="; (Get-Content package.json
+  │ -Raw | ConvertFrom-Json).scripts | Format-List | Out-String
+  └ 71 lines…
+
+Design is settled (two "same words" pairs plus two singles, all five phrases in play). Before writing, I'll check how `session.source` is consumed, the Node version for a throwaway checker, and verify the §21/§23 wording against the German text.
+
+/ Search (grep)
+  │ "CAFE|source" (src\content\notebook.ts, src\content\games.ts)
+  └ 52 lines found
+
+● Check Node and local runners (shell)
+  │ node --version; Test-Path node_modules\.bin\tsx.cmd; Test-Path node_modules\.bin\vitest.cmd
+  └ 3 lines…
+
+● Verify PI §21/§23/§43 in German source (shell)                                                  5s
+  │ $u = "https://www.wittgensteinproject.org/w/index.php?title=Philosophische_Untersuchungen&acti
+  │ on=raw"; try { $t = (Invoke-WebRequest -UseBasicParsing -Uri $u -TimeoutSec 60).Content;
+  │ foreach ($p in 'Rolle, die das Aussprechen','Bitten, Danken','und anderen','zahllose','Für
+  │ eine große Klasse') { $i = $t.IndexOf($p); if ($i -ge 0) { "== $p ==";
+  │ $t.Substring([Math]::Max(0,$i-250), 500) -replace "`n"," " } else { "== $p == NOT FOUND" } } }…
+  └ 10 lines…
+
+/ Search (grep)
+  │ "PI §2[13]|uttering these words|thanking" (src)
+  └ 6 lines found
+
+I'll paraphrase §21 the way the reviewed builder note does, and quote nothing I can't verify. One last integration check: what `SessionEnd` does if a fourth session has no `SESSION_SOURCES` entry.
+
+/ Search (grep)
+  │ "sources" (src\components\game\chrome.tsx)
+  └ 4 lines found
+
+Checking how the end card uses `sources`, and re-reading the exact formatting of `rounds.ts` before I write the file.
+
+● Read chrome.tsx
+  │ src\components\game\chrome.tsx
+  └ L78:130 (53 lines read)
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L1:140 (140 lines read)
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L140:320 (177 lines read)
+
+/ Search (grep)
+  │ "SESSION_SOURCES|\.source\b|\.use\b|\.english|\.blurb|pi-" (src\games\cafe\CafeGame.tsx)
+  └ 7 lines found
+
+/ Search (grep)
+  │ "thanking|pi-21|pi-23|pi-43|five slabs|Five slabs|large class" (src\content\sources.ts)
+  └ 10 lines found
+
+/ Search (grep)
+  │ "items|did" (src\components\game\chrome.tsx)
+  └ 14 lines found
+
+/ Search (glob)
+  │ "{.prettierrc*,prettier.config.*,.editorconfig,package.json}"
+  └ 2 files found
+
+● Read sources.ts
+  │ src\content\sources.ts
+  └ L105:145 (41 lines read)
+
+● Read .prettierrc
+  └ 3 lines read
+
+● Read CafeGame.tsx
+  │ src\games\cafe\CafeGame.tsx
+  └ L28:60 (33 lines read)
+
+/ Search (grep)
+  │ "session\.source|s\.source|\.source\]|sessionItems|\.blurb" (src)
+  └ 10 lines found
+
+● Read use-sessions.ts
+  │ src\components\game\use-sessions.ts
+  └ 55 lines read
+
+/ Search (grep)
+  │ "cafe|CAFE|\.use|did" (src\content\notebook.ts)
+  └ 8 lines found
+
+/ Search (grep)
+  │ "onDone\(|speak\(|key=|aria-label|alt=" (src\games\cafe\CafeGame.tsx)
+  └ 15 lines found
+
+/ Search (grep)
+  │ "id: "cafe"" (src\content\games.ts)
+  └ No matches found
+
+/ Search (grep)
+  │ "prettier|"lint"|"test"|"typecheck"|eslint" (package.json)
+  └ 5 lines found
+
+/ Search (grep)
+  │ "cafe" (src\content\games.ts)
+  └ 25 lines found
+
+● Read games.ts
+  │ src\content\games.ts
+  └ L58:80 (23 lines read)
+
+● Create proposed-cafe-4.ts +122
+  └ planning\proposed-cafe-4.ts
+
+File written. Next, verification: typecheck, lint, and an invariant checker outside the repo that mirrors the real test file. Re-reading the test so the checker matches it exactly.
+
+● Read rounds.test.ts
+  │ src\games\cafe\__tests__\rounds.test.ts
+  └ 27 lines read
+
+Writing a throwaway checker in the session folder (outside the repo). It runs the three real test assertions over `[...SESSIONS, CAFE_4]` plus the UI and content invariants.
+
+● Create check-cafe4.mts +79
+  └ ~\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143fc09\files\check-cafe4.mts
+
+● Run invariant checker on CAFE_4 (shell)
+  │ node "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143fc09\files\c
+  │ heck-cafe4.mts"; "exit=$LASTEXITCODE"
+  └ 11 lines…
+
+● Typecheck whole project (shell)                                                                 7s
+  │ npx tsc --noEmit 2>&1 | Out-String -Width 400; "tsc exit=$LASTEXITCODE"
+  └ 1 line…
+
+● Lint the proposal file (shell)                                                                  7s
+  │ npx eslint planning/proposed-cafe-4.ts; "eslint exit=$LASTEXITCODE"
+  └ 1 line…
+
+● Edit proposed-cafe-4.ts +5 -1
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +5 -1
+  └ planning\proposed-cafe-4.ts
+
+Both arrays are now wrapped. Re-running the checker and lint on the final file, plus a one-off `prettier --check` through npx, which doesn't touch the repo's manifests, to confirm the formatting.
+
+● Typecheck final state (shell)                                                                   6s
+  │ npx tsc --noEmit 2>&1 | Out-String -Width 400; "tsc exit=$LASTEXITCODE"
+  └ 1 line…
+
+● Rerun checker and eslint on final file (shell)                                                  7s
+  │ node --no-warnings "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa1
+  │ 43fc09\files\check-cafe4.mts"; "checker exit=$LASTEXITCODE"; npx eslint
+  │ planning/proposed-cafe-4.ts; "eslint exit=$LASTEXITCODE"
+  └ 6 lines…
+
+● Check formatting with Prettier via npx (shell)                                                 10s
+  │ npx --yes prettier@3 --check planning/proposed-cafe-4.ts 2>&1 | Out-String -Width 300; "prettier
+  │ exit=$LASTEXITCODE"
+  └ 5 lines…
+
+Prettier flags a style difference. Comparing its output with the file (without writing to the repo), and checking `rounds.ts` as a baseline:
+
+✗ Diff Prettier output vs file; baseline check (shell)
+  │ $out = "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143fc09\fil
+  │ es\pretty-cafe4.ts"; npx --yes prettier@3 --stdin-filepath planning/proposed-cafe-4.ts < $null
+  │ 2>$null | Out-Null; Get-Content -Raw planning/proposed-cafe-4.ts | npx --yes prettier@3
+  │ --stdin-filepath planning/proposed-cafe-4.ts | Set-Content -NoNewline -Encoding utf8 $out; git
+  │ --no-pager diff --no-index --stat -- planning/proposed-cafe-4.ts $out; git --no-pager diff …
+  └ ParserError:
+    Line |
+    2 |  . yes prettier@3 --stdin-filepath planning/proposed-cafe-4.ts < $null 2 .
+    |                                                                ~
+    | The '<' operator is reserved for future use.
+    Failed with exit code 1
+
+● Diff Prettier output vs file; baseline check (shell)                                            5s
+  │ $out = "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143fc09\fil
+  │ es\pretty-cafe4.ts"; Get-Content -Raw -Encoding utf8 planning/proposed-cafe-4.ts | npx --yes
+  │ prettier@3 --stdin-filepath planning/proposed-cafe-4.ts | Set-Content -Encoding utf8 $out; git
+  │ --no-pager diff --no-index --ignore-cr-at-eol -- planning/proposed-cafe-4.ts $out |
+  │ Select-Object -First 80; "---- baseline rounds.ts:"; npx --yes prettier@3 --check …
+  └ 4 lines…
+
+The only difference is line endings: the diff is empty with `--ignore-cr-at-eol`. `rounds.ts` passes Prettier, so it uses LF. Checking whether my file was written with CRLF:
+
+✗ Check line endings and BOM (shell)
+  │ $b = [IO.File]::ReadAllBytes("D:\githubprojects\language-games\planning\proposed-cafe-4.ts");
+  │ "crlf=" + ([regex]::Matches([Text.Encoding]::UTF8.GetString($b), "`r`n").Count) + " lf=" + ($b
+  │ | Where-Object { $_ -eq 10 }).Count + " bom=" + ($b[0] -eq 0xEF); $r =
+  │ [IO.File]::ReadAllBytes("D:\githubprojects\language-games\src\games\cafe\rounds.ts");
+  │ "rounds.ts crlf=" + ([regex]::Matches([Text.Encoding]::UTF8.GetString($r), "`r`n").Count) + " …
+  └ crlf=130 lf=130 bom=False
+    rounds.ts crlf=0 bom=False
+    false
+    Failed with exit code 1
+
+My file has CRLF line endings, while the repo uses LF (`autocrlf=false`, no `.gitattributes`). Converting to LF without a BOM, then re-checking Prettier and the checker:
+
+● Convert to LF; recheck prettier, checker, eslint (shell)                                        8s
+  │ $p = "D:\githubprojects\language-games\planning\proposed-cafe-4.ts"; $t =
+  │ [IO.File]::ReadAllText($p) -replace "`r`n", "`n"; [IO.File]::WriteAllText($p, $t, (New-Object
+  │ Text.UTF8Encoding($false))); $b = [IO.File]::ReadAllBytes($p); "crlf=" +
+  │ ([regex]::Matches([Text.Encoding]::UTF8.GetString($b), "`r`n").Count) + " bom=" + ($b[0] -eq
+  │ 0xEF); npx --yes prettier@3 --check planning/proposed-cafe-4.ts 2>&1 | Out-String -Width 300; …
+  └ 12 lines…
+
+Blind picks locked before file review: R1→2 (high; 1 yes, 3 weak), R2→3 (high; 1 yes, 2 weak), R3→1 (high; 2 yes, 3 weak), R4→2 (high; 1 yes, 3 weak), R5→3 (high; 1 yes, 2 weak), R6→1 (high; 2 yes, 3 yes).
