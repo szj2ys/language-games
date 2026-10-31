@@ -32,7 +32,7 @@ npm install
 npm run dev          # http://localhost:3000
 npm test             # game engines, content checks, every round has its picture (Vitest)
 npm run build && npm start
-python e2e/play_all.py http://localhost:3000            # plays every game and the later sessions end to end (Playwright)
+python e2e/play_all.py http://localhost:3000            # plays every session of every game end to end (Playwright)
 python e2e/play_all.py http://localhost:3000 --desktop
 python e2e/a11y.py http://localhost:3000             # axe-core, phone and desktop
 ```

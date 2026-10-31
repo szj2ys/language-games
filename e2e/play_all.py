@@ -409,6 +409,15 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a number"))).to_be_visible()
     shot(page, "later-family4-end")
 
+    # Picture Theatre, session 2: fix each false report by changing one position word.
+    page.goto(f"{BASE}/play/scene")
+    pick_session(page, "True or false?")
+    for line, rel in [(0, "in"), (1, "right of"), (0, "on"), (0, "in front of"), (1, "on"), (1, "left of")]:
+        page.get_by_label("Change the position word").nth(line).select_option(value=rel)
+        page.get_by_role("button", name="Check against the stage").click()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*True or false"))).to_be_visible()
+
     # Picture Theatre, session 3: one sentence must pin the thing down for a partner who cannot see.
     page.goto(f"{BASE}/play/scene")
     pick_session(page, "Say where it is")
