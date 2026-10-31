@@ -201,7 +201,7 @@ export const SESSIONS: Session[] = [
     id: "family-4",
     title: "What is a number?",
     blurb: "Wittgenstein: the kinds of number form a family too (§67). Does a bus number belong?",
-    english: "Numbers in English: 'how many', 'half', 'below zero', 'can be …'",
+    english: "Talking about numbers: 'how many', 'measure an amount', 'add to make a total', 'both … and'",
     kind: "numbers",
     source: "pi-67-number",
     cards: NUMBERS,
