@@ -27,6 +27,8 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   // A second build folder lets a verification server run beside one that a reviewer is using.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
+  // AVIF first: the round pictures are the largest thing on every play page.
+  images: { formats: ["image/avif", "image/webp"] },
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
