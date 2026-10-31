@@ -358,7 +358,7 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_role("button", name="Look").click()
         next_round(page)
     for name, link in [("whole numbers", None), ("fractions", "can measure an amount"), ("negative numbers", "can measure an amount"),
-                       ("π (pi)", "can measure an amount"), ("zero", "can be added together"), ("bus numbers", "can be written out in digits")]:
+                       ("π (pi)", "can measure an amount"), ("zero", "can be added to make a total"), ("bus numbers", "can be written out in digits")]:
         page.get_by_role("button", name=name, exact=True).click()
         if link:
             page.get_by_role("button", name=link).click()

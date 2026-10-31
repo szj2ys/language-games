@@ -95,7 +95,7 @@ export const LEVELS: Level[] = [
     explain: [
       { text: "Double the last letter after a single vowel.", readAs: "double-any" },
       {
-        text: "Drop a silent e; double a final consonant after a single vowel letter, but only when the last syllable is stressed.",
+        text: "Drop a silent e; double a final consonant (never w, x or y) after a single vowel letter, but only when the last syllable is stressed.",
         readAs: "double-stressed",
         needs: { ruledOut: "double-any", otherwise: "double-any" },
       },
@@ -268,14 +268,14 @@ export const LEVELS_3: Level[] = [
       item: { word: "have", forms: {}, correct: "she has" },
       prompt: "New verb: the pupil writes “She haves a dog.” Every rule you taught says just add -s.",
       answer: "correct",
-      why: "Correct it: “she has”. Two of the commonest verbs have their own forms — have → has, be → is — and speakers learn them by using them, not from the rule (§217).",
+      why: "Correct it: “she has”. A few very common verbs are irregular (have → has, be → is); learners pick them up one by one, from use rather than from the rule.",
     },
   },
   {
     id: "p-8",
     title: "Making, stopping, visiting",
     task: "Teach the pupil to spell the -ing form.",
-    english: "-ing spelling: drop silent e; double a final consonant after one vowel letter in a stressed last syllable",
+    english: "-ing spelling: drop silent e; double a final consonant (not w, x or y) after one vowel letter in a stressed last syllable",
     ways: [
       { id: "ing", label: "Always add -ing" },
       { id: "drop-e", label: "Drop a final e, then add -ing" },
@@ -300,16 +300,16 @@ export const LEVELS_3: Level[] = [
     explain: [
       { text: "Double the last letter after a single vowel.", readAs: "double-any" },
       {
-        text: "Drop a silent e; double a final consonant after a single vowel letter, but only when the last syllable is stressed.",
+        text: "Drop a silent e; double a final consonant (never w, x or y) after a single vowel letter, but only when the last syllable is stressed.",
         readAs: "double-stressed",
         needs: { ruledOut: "double-any", otherwise: "double-any" },
       },
     ],
     twist: {
       item: { word: "see", forms: {}, correct: "seeing" },
-      prompt: "New verb: the pupil drops the final e and writes “I am seing it.”",
+      prompt: "New verb: the pupil drops the final e of “see” and writes “seing”.",
       answer: "correct",
-      why: "Correct it: “seeing”. The e of “see” is not silent — it is half of the long “ee” — so it stays. The rule's words (“silent e”) only work for someone who already hears the difference (§§198–201).",
+      why: "Correct it: “seeing”. Only a silent e is dropped (make → making); the e of “see” is part of the long “ee”, so it stays. A rule in words still has to be applied, case by case.",
     },
   },
 ];

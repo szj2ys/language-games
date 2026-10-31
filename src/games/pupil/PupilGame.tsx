@@ -18,7 +18,7 @@ const GAME = "pupil";
 const SESSION_SOURCES: SourceId[][] = [
   ["pi-185", "pi-198", "pi-202"],
   ["pi-217", "pi-202"],
-  ["pi-185", "pi-198"],
+  ["pi-198", "pi-202"],
 ];
 
 export function PupilGame() {
@@ -177,9 +177,7 @@ function Lesson({
             </div>
             {explained.length > 0 && (
               <p role="status" className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px] lg:text-[18px]">
-                {exam.passed
-                  ? "This time the explanation worked: an example had already shown the pupil what its key word means. Explanations work inside a practice, not instead of one (§§198–202)."
-                  : "The pupil nods — and reads your sentence its own way. An explanation is one more sign to interpret (§198)."}
+                The pupil nods — and reads your sentence its own way. An explanation is one more sign to interpret (§198).
               </p>
             )}
             <p className="text-[15px] text-muted-foreground lg:text-[18px]" aria-live="polite">
@@ -190,6 +188,12 @@ function Lesson({
 
         {phase === "teach" && exam.passed && (
           <>
+            {explained.some((i) => level.explain[i].readAs === exam.way) && (
+              <p className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px] lg:text-[18px]">
+                This time the explanation worked: an example had already shown the pupil what its key word means. Explanations work inside a
+                practice, not instead of one (§§198–202).
+              </p>
+            )}
             <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
               All five right with {cards} card{cards === 1 ? "" : "s"}
               {cards <= best

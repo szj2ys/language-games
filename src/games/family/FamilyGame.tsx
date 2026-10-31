@@ -524,14 +524,20 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
               Both {n.name} and
               <Select
                 value={other}
-                onChange={setOther}
+                onChange={(v) => {
+                  setOther(v);
+                  setResult(null);
+                }}
                 disabled={!!result?.ok}
                 label="Which one"
                 options={session.cards.map((c) => [c.id, c.name])}
               />
               <Select
                 value={feat}
-                onChange={setFeat}
+                onChange={(v) => {
+                  setFeat(v);
+                  setResult(null);
+                }}
                 disabled={!!result?.ok}
                 label="What they share"
                 options={session.features.map((x) => [x.id, x.plural])}
@@ -543,7 +549,10 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
               Unlike most of these {session.kind}, {n.name}
               <Select
                 value={feat}
-                onChange={setFeat}
+                onChange={(v) => {
+                  setFeat(v);
+                  setResult(null);
+                }}
                 disabled={!!result?.ok}
                 label="What it lacks"
                 options={session.features.map((x) => [x.id, negate(x, n.plural)])}

@@ -157,9 +157,9 @@ export const SOURCES = {
     work: "PI",
     ref: "§67",
     quote:
-      "And for instance the kinds of number form a family in the same way. Why do we call something a “number”? Well, perhaps because it has a — direct — relationship with several things that have hitherto been called number; and this can be said to give an indirect relationship to other things we call the same name.",
+      "And for instance the kinds of number form a family in the same way. Why do we call something a “number”? Well, perhaps because it has a — direct — relationship with several things that have hitherto been called number; and this can be said to give it an indirect relationship to other things we call the same name.",
     gloss:
-      "Fractions earned the name “number” by measuring like whole numbers; negative numbers by being added like them. A bus number is related to the family only through its digits.",
+      "In this game, fractions and whole numbers both measure amounts, negative and whole numbers can both be added, and route numbers name buses. No one use runs through every card.",
     limits:
       "Wittgenstein makes the point about how we extend a concept; the game does not decide whether bus numbers are “really” numbers.",
     url: PI_URL,

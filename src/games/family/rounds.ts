@@ -95,7 +95,7 @@ const NUMBER_FEATURES: Feature[] = [
   { id: "howmany", plural: "can say how many", singular: "can say how many", colour: "#42649a" },
   { id: "measure", plural: "can measure an amount", singular: "can measure an amount", colour: "#b0553e" },
   { id: "order", plural: "can be put in order", singular: "can be put in order", colour: "#64775a" },
-  { id: "add", plural: "can be added together", singular: "can be added together", colour: "#c9a24a" },
+  { id: "add", plural: "can be added to make a total", singular: "can be added to make a total", colour: "#c9a24a" },
   { id: "name", plural: "can name one thing among many", singular: "can name one thing among many", colour: "#7a5c8a" },
   { id: "digits", plural: "can be written out in digits", singular: "can be written out in digits", colour: "#5b5f60" },
 ];
@@ -105,10 +105,10 @@ const num = (id: string, name: string, on: string[], blurred: string[] = []) => 
 // PI §67: "And for instance the kinds of number form a family in the same way." Why do we call something
 // a number? Because it has a direct relationship with several things that have hitherto been called number.
 const NUMBERS: Card[] = [
-  num("wholenumbers", "whole numbers", ["howmany", "measure", "order", "add", "digits"]),
+  num("wholenumbers", "whole numbers", ["howmany", "measure", "order", "add", "name", "digits"]),
   num("fractions", "fractions", ["measure", "order", "add", "digits"]),
   num("negativenumbers", "negative numbers", ["measure", "order", "add", "digits"]),
-  num("zero", "zero", ["howmany", "order", "add", "digits"]),
+  num("zero", "zero", ["howmany", "measure", "order", "add", "digits"]),
   num("busnumbers", "bus numbers", ["name", "digits"], ["order"]),
   num("pi", "π (pi)", ["measure", "order", "add"]),
 ];
@@ -207,7 +207,12 @@ export const SESSIONS: Session[] = [
     cards: NUMBERS,
     features: NUMBER_FEATURES,
     rounds: [
-      { id: "f4-1", mode: "claim", feature: "add", hint: "Can you add two bus numbers and get a bus?" },
+      {
+        id: "f4-1",
+        mode: "claim",
+        feature: "add",
+        hint: "Bus 42 and bus 7: adding the route numbers does not give you a total of anything.",
+      },
       {
         id: "f4-2",
         mode: "claim",
@@ -219,7 +224,7 @@ export const SESSIONS: Session[] = [
         id: "f4-4",
         mode: "newcomer",
         newcomer: num("shirtnumber", "the number on a football shirt", ["name", "digits"]),
-        hint: "A shirt number tells you which player it is. Which card does that too?",
+        hint: "A shirt number tells you which player it is. Which cards name one thing among many?",
       },
     ],
   },

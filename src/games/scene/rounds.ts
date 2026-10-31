@@ -221,7 +221,7 @@ export const SESSIONS: Session[] = [
     id: "scene-4",
     title: "Not here",
     blurb: "A sentence with “not” rules one picture out and leaves many others in. Find one that makes every sentence true.",
-    english: "Negative sentences: is not, neither … nor; reading two facts at once",
+    english: "Negative sentences with “is not”; several facts true at once",
     source: "tlp-4.0621",
     rounds: [
       {
@@ -270,7 +270,7 @@ export const SESSIONS: Session[] = [
         message: [c("ball", "on", "book", true), c("ball", "in", "box", true), c("ball", "next to", "book")],
         things: ["ball"],
         start: { book: { spot: 1, row: "front" }, box: { spot: 2, row: "front" } },
-        hint: "Not on the book, not in the box, but beside the book: only one place is left.",
+        hint: "Not on the book, not in the box, but beside the book. Try the free place on the shelf.",
       },
     ],
   },
