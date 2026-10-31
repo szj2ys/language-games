@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SOURCES, WORK_TITLE, type Source, type Work } from "@/content/sources";
+import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
-  title: "Sources — the Wittgenstein behind the games",
+  title: "Sources — every Wittgenstein passage the games use",
   description:
-    "The Wittgenstein passages behind the Language Games, each with a plain-English reading and the limits of the game's analogy.",
+    "Every Wittgenstein passage behind the games, from the Tractatus to On Certainty, each with a plain reading and where the game's analogy stops.",
   alternates: { canonical: "/sources" },
 };
 
@@ -17,50 +17,49 @@ const TRANSLATION: Record<Work, string> = {
 
 export default function SourcesPage() {
   const all = Object.values(SOURCES) as Source[];
-  const works: Work[] = ["PI", "TLP", "OC"];
+  // In the order he wrote them: Tractatus (1921), Investigations (1953), On Certainty (1969); remarks in number order.
+  const works: Work[] = ["TLP", "PI", "OC"];
+  const order = (ref: string) => parseFloat(ref.replace(/[^0-9.]/g, "")) || 9999;
   return (
-    <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
-      <Link href="/" className="inline-flex min-h-11 items-center text-[15px] font-bold text-cobalt underline-offset-4 hover:underline">
-        ← All games
-      </Link>
-      <h1 className="mt-3 font-heading text-4xl font-semibold">Sources</h1>
-      <p className="mt-3 text-[17px] leading-relaxed">
-        The games are inspired by Wittgenstein&apos;s writing; they do not summarise it. Each passage below is quoted briefly, read in plain
-        English, and paired with a note on where the game&apos;s analogy stops. Section numbers (§) refer to the numbered remarks; Tractatus
-        numbers are proposition numbers.
-      </p>
-      <Link href="/" className="mt-4 inline-flex h-12 items-center rounded-lg bg-cobalt px-5 text-[17px] font-bold text-paper">
-        Play the games
-      </Link>
-      {works.map((w) => {
-        const list = all.filter((s) => s.work === w);
-        if (!list.length) return null;
-        return (
-          <section key={w} className="mt-8" aria-labelledby={`w-${w}`}>
-            <h2 id={`w-${w}`} className="font-heading text-2xl font-semibold">
-              {WORK_TITLE[w]}
-            </h2>
-            <p className="text-sm text-muted-foreground">{TRANSLATION[w]}</p>
-            <ul className="mt-3 flex flex-col gap-3">
-              {list.map((s) => (
-                <li key={s.id} id={s.id} className="rounded-xl border border-border bg-card p-4">
-                  <p className="font-heading font-semibold text-terracotta">{s.ref}</p>
-                  <blockquote className="mt-1 font-heading text-[17px] leading-snug italic">“{s.quote}”</blockquote>
-                  <p className="mt-2 text-[15px] leading-relaxed">{s.gloss}</p>
-                  {s.limits && <p className="mt-1 text-sm text-muted-foreground">Where the game stops: {s.limits}</p>}
-                  <a
-                    href={s.url}
-                    className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-cobalt underline-offset-4 hover:underline"
-                    rel="noopener"
-                  >
-                    {s.work === "TLP" ? "Read the full text (English)" : "Read the original (German)"}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-    </main>
+    <>
+      <SiteHeader />
+      <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
+        <h1 className="font-heading text-[40px] leading-tight font-medium">Sources</h1>
+        <p className="mt-3 text-[18px] leading-relaxed">
+          Every passage the games use, quoted briefly, with a plain reading and a note on where the game&apos;s analogy stops. The games
+          help you see the ideas; they do not replace the books. Section numbers (§) are Wittgenstein&apos;s numbered remarks; Tractatus
+          numbers are proposition numbers.
+        </p>
+        {works.map((w) => {
+          const list = all.filter((s) => s.work === w).sort((x, y) => order(x.ref) - order(y.ref));
+          if (!list.length) return null;
+          return (
+            <section key={w} className="mt-8" aria-labelledby={`w-${w}`}>
+              <h2 id={`w-${w}`} className="font-heading text-[28px] font-medium">
+                {WORK_TITLE[w]}
+              </h2>
+              <p className="text-sm text-muted-foreground">{TRANSLATION[w]}</p>
+              <ul className="mt-3 flex flex-col gap-3">
+                {list.map((s) => (
+                  <li key={s.id} id={s.id} className="scroll-mt-4 rounded-lg border border-border bg-card p-4">
+                    <p className="font-heading text-[18px] font-medium text-vermilion">{s.ref}</p>
+                    <blockquote className="mt-1 font-heading text-[19px] leading-snug italic">“{s.quote}”</blockquote>
+                    <p className="mt-2 text-[16px] leading-relaxed">{s.gloss}</p>
+                    {s.limits && <p className="mt-1 text-[15px] text-muted-foreground">Where the game stops: {s.limits}</p>}
+                    <a
+                      href={s.url}
+                      className="mt-1 inline-flex min-h-11 items-center text-sm font-bold underline underline-offset-4"
+                      rel="noopener"
+                    >
+                      {s.work === "TLP" ? "Read the full text (English)" : "Read the original (German)"}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+      </main>
+    </>
   );
 }

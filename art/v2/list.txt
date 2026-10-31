@@ -1,0 +1,20 @@
+stop-1|square|A small framed picture on an easel showing a tree and a hill, beside it the real tree and hill — a picture laid against reality.
+stop-2|square|A builder in a hard hat and blue overalls carrying a flat stone slab, a few stone blocks beside him.
+stop-3|square|A green teacup on a saucer with a small speech bubble above it, on a café table.
+stop-4|square|Four overlapping paper cards — a chessboard, a football, playing cards and a ring of children holding hands — linked by one braided thread of many colours.
+stop-5|square|A child standing at a wooden signpost with two arrows pointing different ways, looking up at it.
+stop-6|square|A hand holding a small closed cardboard box, with a shadowy beetle visible only as a faint silhouette as if imagined.
+stop-7|square|A wooden door slightly open on large iron hinges, set in a stone wall, steady and solid.
+beetle-friends|wide|Four adult friends sitting around a wooden table, each holding a small closed cardboard box close to their chest; no one can see into anyone else's box; they talk cheerfully.
+beetle-reveal|wide|Four small cardboard boxes standing open in a row on a wooden table, seen from slightly above: the first holds a beetle, the second a grey pebble, the third is completely empty, the fourth holds a blurry, swirling, indistinct shape.
+diary|wide|A person at a desk writing a single large letter S in a small diary, one hand pressed thoughtfully to their chest, an oil lamp beside them.
+manometer|wide|A person at a desk with an open diary showing a letter S, and beside it an old brass blood-pressure gauge (manometer) with a dial whose needle is rising, a rubber cuff on the person's arm.
+child|wide|A small child sitting on a garden path after a fall, crying, while a kind adult kneels beside them, comforting them.
+cover-beetle|wide|Many small closed cardboard boxes arranged on a table in warm light, one box slightly open with darkness inside; a single beetle walks across the table between them.
+hinge-door|wide|A heavy wooden door swinging open on two big iron hinges fixed firmly in a stone wall; light coming through the doorway.
+river|wide|A river seen from above in a valley: water flowing fast in the middle, and the river-bed of stones and sand clearly visible at the shallow edges, slowly shifting.
+hands|wide|Two open hands held up in front of a person's face, palms facing the viewer, in a calm, slightly puzzled gesture.
+moon|wide|A child and an adult sitting on a hill at night looking up at a large full moon; the child points at the moon.
+doubt|wide|A person sitting in an armchair surrounded by floating question marks, so many that the chair itself has a question mark on it; gently humorous.
+cover-hinges|wide|A riverside scene: a wooden door with iron hinges standing on its own on the river bank, the river flowing past it; calm and quiet.
+hero|wide|A man in a 1930s tweed suit sitting alone on a large rock beside a calm Norwegian fjord, chin on his hand, thinking; mountains and a small wooden hut far away; generous empty paper on the left half.

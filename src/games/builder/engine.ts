@@ -120,31 +120,3 @@ export function sentence(tiles: Tile[]): string {
   const text = words.join(" ");
   return text ? `${cap(text)}!` : "";
 }
-
-/**
- * English notes on a call. They never stop the assistant (in the builders' game
- * "Two slab!" still gets two slabs); they name the rule in one sentence.
- */
-export function englishNotes(tiles: Tile[]): string[] {
-  const notes: string[] = [];
-  const n = tiles.findIndex((t) => t.kind === "number");
-  const s = tiles.findIndex((t) => t.kind === "stone");
-  const num = tiles[n];
-  const stone = tiles[s];
-  if (stone?.kind === "stone") {
-    const count = num?.kind === "number" ? num.value : 1;
-    if (count > 1 && !stone.plural) {
-      notes.push(`After “${NUMBER_WORDS[count - 1]}”, English needs the plural: ${NUMBER_WORDS[count - 1]} ${PLURAL[stone.value]}.`);
-    }
-    if (count === 1 && stone.plural) {
-      notes.push(`One stone, no -s: “${num ? "one " : ""}${stone.value}”.`);
-    }
-    if (n > s && num)
-      notes.push(
-        `The number comes before the noun: ${NUMBER_WORDS[(num as { value: number }).value - 1]} ${stone.plural ? PLURAL[stone.value] : stone.value}.`,
-      );
-  }
-  const there = tiles.findIndex((t) => t.kind === "there");
-  if (there >= 0 && s > there) notes.push("Say what first, then where: “… slabs there!”");
-  return notes;
-}

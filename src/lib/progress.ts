@@ -10,7 +10,7 @@ export type RoundRecord = {
   max: number;
   /** True when the round was solved without a hint or repair. */
   firstTry: boolean;
-  /** The English the player used or met in this round, for the notebook. */
+  /** What the player said or chose in this round, for the notebook. */
   said?: string[];
   /** What the player tried first, when it was wrong: the correction worth revisiting. */
   missed?: string;

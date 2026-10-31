@@ -3,9 +3,9 @@ import { GameAbout } from "@/components/game-about";
 import { SceneGame } from "@/games/scene/SceneGame";
 
 export const metadata: Metadata = {
-  title: "Picture Theatre — prepositions as pictures",
+  title: "1. Pictures of facts — Wittgenstein's picture theory, played",
   description:
-    "Practise in, on, behind and next to with Wittgenstein's picture theory: build what a sentence says, catch false reports, describe a stage.",
+    "Play the Tractatus picture theory: set up a stage so a sentence is true, catch false reports, and find the one sentence that pins a fact down (TLP 2.1–4.0621).",
   alternates: { canonical: "/play/scene" },
 };
 

@@ -39,7 +39,8 @@ export type Session = {
   id: string;
   title: string;
   blurb: string;
-  english: string;
+  /** The idea this session shows, in one sentence. */
+  shows: string;
   source: SourceId;
   rounds: SceneRound[];
 };
@@ -51,7 +52,7 @@ export const SESSIONS: Session[] = [
     id: "scene-1",
     title: "Make it true",
     blurb: "A sentence is a little model of how things stand. Build the scene it describes.",
-    english: "Warm-up (A2): in, on, next to, to the left of; two facts true at once",
+    shows: "A sentence is a picture: its words stand for things, and their arrangement shows how things stand (Tractatus 2.1, 4.01).",
     source: "tlp-2.1",
     rounds: [
       {
@@ -107,7 +108,7 @@ export const SESSIONS: Session[] = [
     id: "scene-2",
     title: "True or false?",
     blurb: "A report can be perfectly clear and still false. Compare it with the stage.",
-    english: "'behind', 'in front of' and 'is not'; checking a description against the facts",
+    shows: "You understand a picture before you know whether it is true; comparing it with the facts decides (Tractatus 2.21–2.223).",
     source: "tlp-2.21",
     rounds: [
       {
@@ -164,7 +165,7 @@ export const SESSIONS: Session[] = [
     id: "scene-3",
     title: "Say where it is",
     blurb: "Your partner cannot see the stage. One true sentence must be enough for them to put the thing in the right place.",
-    english: "Describing position precisely; 'next to' versus 'to the left of'",
+    shows: "A proposition fixes reality to a yes or a no: one sentence has to leave one possibility (Tractatus 4.023).",
     source: "tlp-4.01",
     rounds: [
       {
@@ -221,7 +222,7 @@ export const SESSIONS: Session[] = [
     id: "scene-4",
     title: "Not here",
     blurb: "A sentence with “not” rules one picture out and leaves many others in. Find one that makes every sentence true.",
-    english: "Negative sentences with “is not”; several facts true at once",
+    shows: "“p” and “not p” are about the same reality: a negation rules a picture out and leaves many others open (Tractatus 4.0621).",
     source: "tlp-4.0621",
     rounds: [
       {
@@ -276,7 +277,7 @@ export const SESSIONS: Session[] = [
   },
 ];
 
-/** What the English did in a round, for the end card and the notebook. */
+/** What a round showed, for the end card and the notebook. */
 export function did(r: SceneRound): string {
   if (r.mode === "build") return "a description you made true";
   if (r.mode === "check") return "a report you corrected";

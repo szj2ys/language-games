@@ -6,7 +6,7 @@ export const LEVELS: Level[] = [
     id: "p-1",
     title: "A or an?",
     task: "Teach the pupil when English says “a” and when it says “an”.",
-    english: "a/an go by the first sound, not the first letter",
+    rule: "a/an go by the first sound, not the first letter",
     ways: [
       { id: "always-a", label: "Always “a”" },
       { id: "letter", label: "“an” before a vowel letter" },
@@ -42,7 +42,7 @@ export const LEVELS: Level[] = [
     id: "p-2",
     title: "One box, two…",
     task: "Teach the pupil to make plurals.",
-    english: "Plural spelling: -s, -es after s/x/ch/sh, -ies after a consonant + y",
+    rule: "Plural spelling: -s, -es after s/x/ch/sh, -ies after a consonant + y",
     ways: [
       { id: "s", label: "Always add -s" },
       { id: "es", label: "-es after s, x, ch, sh" },
@@ -70,7 +70,7 @@ export const LEVELS: Level[] = [
     id: "p-3",
     title: "Yesterday I…",
     task: "Teach the pupil to spell the past tense.",
-    english: "Past -ed spelling: drop silent e; double a final consonant after one vowel letter in a stressed last syllable",
+    rule: "Past -ed spelling: drop silent e; double a final consonant after one vowel letter in a stressed last syllable",
     ways: [
       { id: "ed", label: "Always add -ed" },
       { id: "drop-e", label: "After a final e, just add -d" },
@@ -111,7 +111,7 @@ export const LEVELS: Level[] = [
     id: "p-4",
     title: "Bigger, happier…",
     task: "Teach the pupil to make comparatives.",
-    english: "Comparatives: -er for short words, -ier for -y words, “more” for longer ones",
+    rule: "Comparatives: -er for short words, -ier for -y words, “more” for longer ones",
     ways: [
       { id: "always-er", label: "Always add -er" },
       { id: "syllables", label: "-er for one syllable, otherwise “more”" },
@@ -154,7 +154,7 @@ export const LEVELS_2: Level[] = [
     id: "p-5",
     title: "Enjoy swimming, want to swim",
     task: "Teach the pupil what comes after a verb: “to swim” or “swimming”.",
-    english: "verb + -ing (enjoy, finish, mind, avoid) and verb + to (want, hope, decide, plan)",
+    rule: "verb + -ing (enjoy, finish, mind, avoid) and verb + to (want, hope, decide, plan)",
     ways: [
       { id: "always-to", label: "Always “to” + verb" },
       { id: "always-ing", label: "Always -ing" },
@@ -194,7 +194,7 @@ export const LEVELS_2: Level[] = [
     id: "p-6",
     title: "Two pieces of advice",
     task: "Teach the pupil which nouns can simply take -s.",
-    english: "countable and uncountable nouns: two chairs, but two pieces of furniture",
+    rule: "countable and uncountable nouns: two chairs, but two pieces of furniture",
     ways: [
       { id: "always-s", label: "Every noun can take -s" },
       { id: "abstract", label: "Ideas (advice, news) can't be counted; things can" },
@@ -232,7 +232,7 @@ export const LEVELS_2: Level[] = [
   },
 ];
 
-export type Session = { id: string; title: string; blurb: string; english: string; source: SourceId; rounds: Level[] };
+export type Session = { id: string; title: string; blurb: string; shows: string; source: SourceId; rounds: Level[] };
 
 // Session 3: two spelling rules the learner has met before in another form (plurals, -ed).
 export const LEVELS_3: Level[] = [
@@ -240,7 +240,7 @@ export const LEVELS_3: Level[] = [
     id: "p-7",
     title: "She watches, he tries",
     task: "Teach the pupil the present simple after he, she or it.",
-    english: "Present simple -s: -es after s, x, ch, sh; consonant + y becomes -ies",
+    rule: "Present simple -s: -es after s, x, ch, sh; consonant + y becomes -ies",
     ways: [
       { id: "s", label: "Always add -s" },
       { id: "es", label: "-es after s, x, ch, sh" },
@@ -275,7 +275,7 @@ export const LEVELS_3: Level[] = [
     id: "p-8",
     title: "Making, stopping, visiting",
     task: "Teach the pupil to spell the -ing form.",
-    english: "-ing spelling: drop silent e; double a final consonant (not w, x or y) after one vowel letter in a stressed last syllable",
+    rule: "-ing spelling: drop silent e; double a final consonant (not w, x or y) after one vowel letter in a stressed last syllable",
     ways: [
       { id: "ing", label: "Always add -ing" },
       { id: "drop-e", label: "Drop a final e, then add -ing" },
@@ -319,7 +319,7 @@ export const SESSIONS: Session[] = [
     id: "pupil-1",
     title: "Teach the pupil",
     blurb: "You know the rule. The pupil only has your examples — and its own ideas about what they mean.",
-    english: "a/an, plural spelling, past-tense spelling and comparatives",
+    shows: "Every example fits more than one way of going on; the pupil's misreading is not stupidity (§185).",
     source: "pi-185",
     rounds: LEVELS,
   },
@@ -327,7 +327,7 @@ export const SESSIONS: Session[] = [
     id: "pupil-2",
     title: "Rules with no rule",
     blurb: "Some patterns are nearly rules; some must simply be learned. Teach both.",
-    english: "verb + -ing or to; countable and uncountable nouns",
+    shows: "A rule is followed in a practice; when justifications run out, “this is simply what I do” (§§198–202, 217).",
     source: "pi-217",
     rounds: LEVELS_2,
   },
@@ -335,13 +335,13 @@ export const SESSIONS: Session[] = [
     id: "pupil-3",
     title: "Old rules, new words",
     blurb: "Two rules you have met before, in new clothes. Does the pupil carry them over?",
-    english: "present simple -s after he/she/it; -ing spelling",
+    shows: "No explanation fixes a rule on its own: an interpretation hangs in the air along with what it interprets (§198).",
     source: "pi-185",
     rounds: LEVELS_3,
   },
 ];
 
-/** What the English did in a round, for the end card and the notebook. */
+/** What a round showed, for the end card and the notebook. */
 export function did(r: Level): string {
-  return r.english;
+  return r.rule;
 }

@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible, Fraunces } from "next/font/google";
+import { Atkinson_Hyperlegible, Newsreader } from "next/font/google";
 import { Analytics } from "@/components/analytics";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 
-const display = Fraunces({
+const display = Newsreader({
   variable: "--font-display",
   subsets: ["latin"],
-  axes: ["SOFT", "opsz"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
 const body = Atkinson_Hyperlegible({
@@ -19,24 +20,22 @@ const body = Atkinson_Hyperlegible({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Language Games — learn English by playing Wittgenstein",
-    template: "%s · Language Games",
+    default: "Wittgenstein, played — his philosophy in seven short games",
+    template: "%s · Wittgenstein, played",
   },
   description:
-    "Five short games for intermediate English learners, built on Wittgenstein's language-games. Give orders, describe scenes, read a room. No account.",
+    "Learn Ludwig Wittgenstein's philosophy by playing: pictures of facts, language-games, meaning as use, family resemblance, following a rule, the beetle in the box and the hinges of certainty. Free, no account.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    siteName: "Language Games",
-    images: [
-      { url: "/og.jpg", width: 1200, height: 630, alt: "A paper-theatre builder and assistant beneath a ladder into a sky of words" },
-    ],
+    siteName: "Wittgenstein, played",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Wittgenstein, played: seven of his ideas, each one a game" }],
   },
   twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f0e6",
+  themeColor: "#f7f2e8",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

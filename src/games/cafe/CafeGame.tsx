@@ -28,17 +28,17 @@ const NAME: Record<Speaker, string> = { rosa: "Rosa", tom: "Tom", lena: "Lena" }
 
 export function CafeGame() {
   const g = useSessions(GAME, SESSIONS, did);
-  if (!g.ready) return <GameLoading game="The Café" poster="/art/cafe/rounds/c1-1.webp" />;
+  if (!g.ready) return <GameLoading slug={GAME} poster="/art/cafe/rounds/c1-1.webp" />;
   const { session, round, finished } = g;
   return (
-    <GameFrame game="The Café" g={g} withSpeech>
+    <GameFrame slug={GAME} g={g} withSpeech>
       {finished ? (
         <SessionEnd
           nextGame={nextGame("cafe")}
           items={g.sessionItems()}
           art="/art/covers/cafe.webp"
           title={session.title}
-          english={session.english}
+          shows={session.shows}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
           sources={SESSION_SOURCES[g.sessionIndex]}

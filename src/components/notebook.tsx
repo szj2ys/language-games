@@ -27,9 +27,12 @@ export function Notebook() {
   if (played.length === 0)
     return (
       <div className="mt-4 flex flex-col items-start gap-4">
-        <p className="text-[17px]">Nothing here yet. Play a round and the English you use will be kept here, game by game.</p>
-        <Link href="/play/builder" className="inline-flex h-12 items-center rounded-lg bg-cobalt px-5 text-[17px] font-bold text-paper">
-          Start with Slab!
+        <p className="text-[18px]">Nothing here yet. Play a round, and each idea you meet will be kept here with what you answered.</p>
+        <Link
+          href="/play/scene"
+          className="inline-flex h-12 items-center rounded-lg bg-vermilion px-5 text-[17px] font-bold text-primary-foreground"
+        >
+          Start with the first idea
         </Link>
       </div>
     );
@@ -38,8 +41,8 @@ export function Notebook() {
     <div className="mt-4 flex flex-col gap-8">
       {played.map((g) => (
         <section key={g.slug} aria-labelledby={`nb-${g.slug}`}>
-          <h2 id={`nb-${g.slug}`} className="font-heading text-2xl font-semibold">
-            {g.title}
+          <h2 id={`nb-${g.slug}`} className="font-heading text-[26px] font-medium">
+            <span className="text-vermilion">{g.step}.</span> {g.title}
           </h2>
           {NOTEBOOK[g.slug]
             .filter((s) => s.rounds.some((r) => save.rounds[r.id]))
@@ -50,7 +53,7 @@ export function Notebook() {
                   <Link
                     href={`/play/${g.slug}`}
                     onClick={() => replay(g.slug, s.index)}
-                    className="inline-flex min-h-11 items-center text-sm font-bold text-cobalt underline-offset-4 hover:underline"
+                    className="inline-flex min-h-11 items-center text-sm font-bold underline underline-offset-4"
                   >
                     Play again
                   </Link>
@@ -61,21 +64,15 @@ export function Notebook() {
                     .map((r) => {
                       const rec = save.rounds[r.id];
                       return (
-                        <li key={r.id} className="rounded-lg bg-card px-3 py-2">
+                        <li key={r.id} className="rounded-lg border border-border bg-card px-3 py-2">
+                          <p className="font-heading text-[18px] leading-snug">{r.did.charAt(0).toUpperCase() + r.did.slice(1)}</p>
                           {(rec.said ?? []).map((line) => (
-                            <p key={line} className="font-heading text-[17px] leading-snug">
-                              {line}
+                            <p key={line} className="text-[15px] text-muted-foreground">
+                              You: {line}
                             </p>
                           ))}
-                          {rec.missed && (
-                            <p className="text-[15px] text-terracotta">
-                              You first tried: <span className="font-heading">{rec.missed}</span>
-                            </p>
-                          )}
-                          <p className="text-sm text-muted-foreground">
-                            {r.did.charAt(0).toUpperCase() + r.did.slice(1)}
-                            {rec.firstTry ? " · first try" : ""}
-                          </p>
+                          {rec.missed && <p className="text-[15px] text-vermilion">You first tried: {rec.missed}</p>}
+                          {rec.firstTry && <p className="text-sm text-sage">Right first time</p>}
                         </li>
                       );
                     })}
@@ -135,7 +132,7 @@ function ShortcutSetting() {
   return (
     <section>
       <label className="flex min-h-11 cursor-pointer items-center gap-3 text-[16px]">
-        <input type="checkbox" checked={!off} onChange={toggle} className="size-5 accent-cobalt" />
+        <input type="checkbox" checked={!off} onChange={toggle} className="size-5 accent-vermilion" />
         Keyboard shortcuts in the games (1–4 to choose, Enter to confirm)
       </label>
     </section>

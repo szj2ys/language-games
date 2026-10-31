@@ -10,7 +10,8 @@ export type Session = {
   id: string;
   title: string;
   blurb: string;
-  english: string;
+  /** The idea this session shows, in one sentence. */
+  shows: string;
   /** Plural noun for the cards: "games", "tools". */
   kind: string;
   source: SourceId;
@@ -118,7 +119,7 @@ export const SESSIONS: Session[] = [
     id: "family-1",
     title: "What is a game?",
     blurb: "Look for what all these games have in common. Don't think — look!",
-    english: "Quantifiers about a group: all, most, some, none of these; 'both … and …'",
+    shows: "“Don't think, but look!” Games share no single feature, only a network of overlapping similarities (§66).",
     kind: "games",
     source: "pi-66",
     cards: GAMES,
@@ -153,7 +154,7 @@ export const SESSIONS: Session[] = [
     id: "family-2",
     title: "What is a tool?",
     blurb: "Wittgenstein compares words to the tools in a tool-box (§11). Are tools any more alike?",
-    english: "Describing function: 'is used to…', 'both … and', 'unlike'",
+    shows: "The functions of words are as diverse as the functions of the tools in a toolbox (§11).",
     kind: "tools",
     source: "pi-11",
     cards: TOOLS,
@@ -175,7 +176,7 @@ export const SESSIONS: Session[] = [
     id: "family-3",
     title: "What is a language?",
     blurb: "Wittgenstein's builders have only four words (§2). Is that a language? Is a road sign? Look before you decide.",
-    english: "Talking about language itself: 'can be …', 'is used for …', 'both … and', 'unlike'",
+    shows: "Our language is like an old city; chemistry's symbols and other notations are its newer suburbs (§18).",
     kind: "languages",
     source: "pi-18",
     cards: LANGUAGES,
@@ -201,7 +202,7 @@ export const SESSIONS: Session[] = [
     id: "family-4",
     title: "What is a number?",
     blurb: "Wittgenstein: the kinds of number form a family too (§67). Does a bus number belong?",
-    english: "Talking about numbers: 'how many', 'measure an amount', 'add to make a total', 'both … and'",
+    shows: "The kinds of number form a family too: no one fibre runs through the whole thread (§67).",
     kind: "numbers",
     source: "pi-67-number",
     cards: NUMBERS,
@@ -230,7 +231,7 @@ export const SESSIONS: Session[] = [
   },
 ];
 
-/** What the English did in a round, for the end card and the notebook. */
+/** What a round showed, for the end card and the notebook. */
 export function did(r: FamilyRound): string {
   if (r.mode === "claim") return "a claim about these cards";
   if (r.mode === "thread") return "comparisons with “both”";

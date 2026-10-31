@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:3417"
 AXE = Path(__file__).resolve().parent.parent / "node_modules" / "axe-core" / "axe.min.js"
-PAGES = ["/", "/play/builder", "/play/scene", "/play/cafe", "/play/pupil", "/play/family", "/sources", "/notebook"]
+PAGES = ["/", "/play/scene", "/play/builder", "/play/cafe", "/play/family", "/play/pupil", "/play/beetle", "/play/hinges", "/sources", "/notebook"]
 
 bad = 0
 with sync_playwright() as p:

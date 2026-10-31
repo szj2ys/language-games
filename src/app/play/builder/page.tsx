@@ -3,9 +3,9 @@ import { GameAbout } from "@/components/game-about";
 import { BuilderGame } from "@/games/builder/BuilderGame";
 
 export const metadata: Metadata = {
-  title: "Slab! — the builder's game",
+  title: "2. The builders — Wittgenstein's language-games, played",
   description:
-    "Learn English orders, numbers and plurals like Wittgenstein's builders (PI §2): hear the call, bring the stones, then give the orders yourself.",
+    "Play the builders of Philosophical Investigations §2: fetch stones for a four-word language, give the orders yourself, and see the same words do different jobs (§§2–21).",
   alternates: { canonical: "/play/builder" },
 };
 

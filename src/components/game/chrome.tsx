@@ -6,84 +6,120 @@ import { ArrowLeft, Check, Lightbulb, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { ShortcutTip } from "./shortcuts";
 import { SOURCES, WORK_TITLE, type Source, type SourceId } from "@/content/sources";
+import { stopOf, type GameSlug } from "@/content/order";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 
 export function GameHeader({
-  game,
+  slug,
   title,
   round,
   total,
   speech,
   onToggleSpeech,
 }: {
-  /** The game's name: the page's one H1. */
-  game: string;
-  /** The current session or level. */
+  /** Which stop on the path: its number and idea make the page's one H1. */
+  slug: GameSlug;
+  /** The current session. */
   title: string;
   round: number;
   total: number;
   speech?: boolean;
   onToggleSpeech?: () => void;
 }) {
+  const stop = stopOf(slug);
   return (
-    <header className="flex items-center gap-2 px-3 pt-2 pb-1 lg:px-4 lg:pt-4">
-      <Link
-        href="/"
-        aria-label="All games"
-        className="grid size-11 shrink-0 place-items-center rounded-full text-ink hover:bg-paper-deep focus-visible:outline-2 focus-visible:outline-cobalt"
-      >
-        <ArrowLeft className="size-5" aria-hidden />
-      </Link>
-      <div className="min-w-0 flex-1 leading-tight">
-        <h1 className="truncate font-heading text-xl font-semibold lg:text-3xl">{game}</h1>
-        <p className="truncate text-sm text-muted-foreground lg:text-lg">{title}</p>
-      </div>
-      <ol className="flex items-center gap-1.5" aria-label={`Round ${round + 1} of ${total}`}>
-        {Array.from({ length: total }, (_, i) => (
-          <li key={i} className={cn("size-2 rounded-full", i < round ? "bg-sage" : i === round ? "bg-cobalt" : "bg-border")} />
-        ))}
-      </ol>
-      {onToggleSpeech && (
-        <button
-          type="button"
-          onClick={onToggleSpeech}
-          aria-pressed={speech}
-          aria-label={speech ? "Turn voice off" : "Turn voice on"}
-          className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep"
+    <header className="flex flex-col gap-2 border-b border-border px-3 pt-2 pb-2.5 lg:px-6 lg:pt-4">
+      <div className="flex items-center gap-1">
+        <Link
+          href="/#path"
+          aria-label="The path: all seven ideas"
+          className="-ml-1 grid size-11 shrink-0 place-items-center rounded-full text-ink hover:bg-paper-deep focus-visible:outline-2 focus-visible:outline-ink"
         >
-          {speech ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
-        </button>
+          <ArrowLeft className="size-5" aria-hidden />
+        </Link>
+        <div className="min-w-0 flex-1 leading-tight">
+          <h1 className="truncate font-heading text-[22px] font-medium lg:text-[30px]">
+            <span className="text-vermilion">{stop.step}.</span> {stop.title}
+          </h1>
+          <p className="truncate text-sm text-muted-foreground lg:text-base">
+            {title} · <span className="italic">{stop.work}</span>
+          </p>
+        </div>
+        {onToggleSpeech && (
+          <button
+            type="button"
+            onClick={onToggleSpeech}
+            aria-pressed={speech}
+            aria-label={speech ? "Turn voice off" : "Turn voice on"}
+            className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep"
+          >
+            {speech ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
+          </button>
+        )}
+      </div>
+      {total > 0 && (
+        <ol className="flex items-center" aria-label={`Round ${Math.min(round + 1, total)} of ${total}`}>
+          {Array.from({ length: total }, (_, i) => (
+            <li key={i} className="flex flex-1 items-center last:flex-none">
+              <span className={cn("size-2.5 shrink-0 rounded-full", i <= round ? "bg-vermilion" : "bg-border")} />
+              {i < total - 1 && <span className={cn("h-0.5 flex-1", i < round ? "bg-vermilion" : "bg-border")} />}
+            </li>
+          ))}
+        </ol>
       )}
     </header>
   );
 }
 
-/** A remark in the margin: the passage, a plain gloss, and where the analogy stops. */
+/**
+ * The passage the session is about, one tap away while playing. Closed by default:
+ * the game lets you find the point first, then the passage names it.
+ */
+export function IdeaCard({ source }: { source: SourceId }) {
+  const s: Source = SOURCES[source];
+  return (
+    <details className="group mx-3 mb-4 rounded-lg border border-border bg-card lg:mx-6">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4">
+        <span className="font-heading text-[18px] font-medium">The idea behind this game</span>
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          {WORK_TITLE[s.work]} {s.ref}
+          <span aria-hidden className="group-open:rotate-180">
+            ⌄
+          </span>
+        </span>
+      </summary>
+      <div className="px-4 pb-3">
+        <blockquote className="font-heading text-[18px] leading-snug italic lg:text-[19px]">“{s.quote}”</blockquote>
+        <Link
+          href={`/sources#${s.id}`}
+          className="mt-1 inline-flex min-h-11 items-center text-sm font-bold underline-offset-4 hover:underline"
+        >
+          All the passages
+        </Link>
+      </div>
+    </details>
+  );
+}
+
+/** A remark in the margin: the passage, a plain reading, and where the game's analogy stops. */
 export function MarginNote({ id, className }: { id: SourceId; className?: string }) {
   const s: Source = SOURCES[id];
   return (
-    <aside className={cn("rounded-xl border border-border bg-card p-4 text-left", className)}>
-      <p className="font-heading text-sm text-terracotta">
-        {WORK_TITLE[s.work]} <span className="font-semibold">{s.ref}</span>
+    <aside className={cn("rounded-lg border border-border bg-card p-4 text-left", className)}>
+      <p className="text-sm text-vermilion">
+        {WORK_TITLE[s.work]} <span className="font-bold">{s.ref}</span>
       </p>
-      <blockquote className="mt-2 font-heading text-[17px] leading-snug italic">“{s.quote}”</blockquote>
-      <p className="mt-3 text-[15px] leading-relaxed">{s.gloss}</p>
-      {s.limits && <p className="mt-2 text-sm text-muted-foreground">Where the game stops: {s.limits}</p>}
+      <blockquote className="mt-2 font-heading text-[18px] leading-snug italic">“{s.quote}”</blockquote>
+      <p className="mt-3 text-[16px] leading-relaxed">{s.gloss}</p>
+      {s.limits && <p className="mt-2 text-[15px] text-muted-foreground">Where the game stops: {s.limits}</p>}
     </aside>
   );
 }
 
-/** "You practised …" from a session's English summary: no level tag inside the sentence, no doubled end mark. */
-function practisedSentence(english: string): string {
-  const what = english.replace(/^warm-up \([A-C][12]\):\s*/i, "");
-  const end = /[.?!][’'”"]?$/.test(what) ? "" : ".";
-  return `You practised ${what.charAt(0).toLowerCase()}${what.slice(1)}${end}`;
-}
-
 export function SessionEnd({
   title,
-  english,
+  shows,
   firstTry,
   total,
   items = [],
@@ -95,10 +131,11 @@ export function SessionEnd({
   onReplay,
 }: {
   title: string;
-  english: string;
+  /** The idea the session showed: the end card leads with it. */
+  shows: string;
   firstTry: number;
   total: number;
-  /** Each round's English and the job it did: the lesson of the session. */
+  /** Each round's point, and what you answered. */
   items?: { text: string; did: string }[];
   /** The game's picture, so the finished screen still shows the world it happened in. */
   art?: string;
@@ -106,27 +143,28 @@ export function SessionEnd({
   sources?: SourceId[];
   /** Absent on a game's last session. */
   nextTitle?: string;
-  /** After a game's last session: the next game to play. */
+  /** After a game's last session: the next idea on the path. */
   nextGame?: { title: string; href: string };
   onNext: () => void;
   onReplay: () => void;
 }) {
   const [lead, ...more] = sources ?? [];
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start lg:gap-8">
-      {art && (
-        <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-paper-deep">
-          <Image src={art} alt="" fill sizes="(min-width: 1024px) 700px, 100vw" className="object-cover" />
-          <p className="absolute top-3 left-3 rounded-full bg-card px-3 py-1 font-heading text-lg font-semibold shadow-sm">
-            {firstTry} of {total} right first time
-          </p>
-        </div>
-      )}
+    <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_460px] lg:items-start lg:gap-10">
       <div className="flex flex-col gap-4">
-        <h2 className="font-heading text-3xl font-semibold">
-          <span className="text-sage">Done</span> · {title}
-        </h2>
-        <p className="text-[17px] lg:text-[18px]">{practisedSentence(english)}</p>
+        {art && (
+          <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-paper-deep">
+            <Image src={art} alt="" fill sizes="(min-width: 1024px) 700px, 100vw" className="object-cover" />
+            <p className="absolute top-3 left-3 rounded-full bg-card px-3 py-1 text-[15px] font-bold shadow-sm">
+              {firstTry} of {total} right first time
+            </p>
+          </div>
+        )}
+        {lead && <MarginNote id={lead} />}
+      </div>
+      <div className="flex flex-col gap-4">
+        <p className="text-sm font-bold tracking-wide text-vermilion uppercase">Done · {title}</p>
+        <h2 className="font-heading text-[26px] leading-snug font-medium lg:text-[32px]">{shows}</h2>
         <div className="flex flex-col gap-2 sm:flex-row">
           {nextTitle ? (
             <Button size="lg" className="h-12 text-lg sm:flex-1" onClick={onNext} autoFocus>
@@ -134,7 +172,7 @@ export function SessionEnd({
             </Button>
           ) : (
             <Link href={nextGame?.href ?? "/"} className={cn(buttonVariants({ size: "lg" }), "h-12 text-lg sm:flex-1")}>
-              {nextGame ? `Next game: ${nextGame.title}` : "Choose another game"}
+              {nextGame ? `Next idea: ${nextGame.title}` : "Back to the path"}
             </Link>
           )}
           <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
@@ -142,27 +180,30 @@ export function SessionEnd({
           </Button>
         </div>
         {items.length > 0 && (
-          <section aria-label="Your English in this session">
-            <ul className="flex flex-col divide-y divide-border rounded-xl border border-border bg-card">
+          <section aria-labelledby="round-by-round">
+            <h3 id="round-by-round" className="mb-2 font-heading text-[18px] font-medium">
+              Round by round
+            </h3>
+            <ol className="flex flex-col divide-y divide-border rounded-lg border border-border bg-card">
               {items.map((x) => (
-                <li key={x.text + x.did} className="flex flex-wrap items-baseline justify-between gap-x-3 px-3 py-2">
-                  <span className="font-heading text-[17px] lg:text-[18px]">{x.text}</span>
-                  <span className="text-[14px] text-muted-foreground lg:text-[15px]">{x.did}</span>
+                <li key={x.text + x.did} className="flex flex-col gap-0.5 px-3 py-2">
+                  <span className="text-[16px] leading-snug">{x.did.charAt(0).toUpperCase() + x.did.slice(1)}</span>
+                  <span className="text-[14px] text-muted-foreground">You: {x.text}</span>
                 </li>
               ))}
-            </ul>
+            </ol>
           </section>
         )}
-        {lead && (
-          <details className="group rounded-xl border border-border bg-card">
+        {more.length > 0 && (
+          <details className="group rounded-lg border border-border bg-card">
             <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 font-bold">
-              What Wittgenstein said — {SOURCES[lead].ref}
+              More from Wittgenstein
               <span aria-hidden className="text-muted-foreground group-open:rotate-180">
                 ⌄
               </span>
             </summary>
             <div className="flex flex-col gap-3 px-1 pb-1">
-              {[lead, ...more].map((id) => (
+              {more.map((id) => (
                 <MarginNote key={id} id={id} className="border-0" />
               ))}
             </div>
@@ -178,10 +219,10 @@ export function SessionEnd({
  * sends: the game's name and its scene, so the first paint is the picture,
  * not a blank page.
  */
-export function GameLoading({ game, poster, posterSquare }: { game: string; poster: string; posterSquare?: string }) {
+export function GameLoading({ slug, poster, posterSquare }: { slug: GameSlug; poster: string; posterSquare?: string }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[1400px] flex-col" aria-busy="true">
-      <GameHeader game={game} title="Loading…" round={0} total={0} />
+      <GameHeader slug={slug} title="Loading…" round={0} total={0} />
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8 lg:px-4">
         <SceneCanvas frame={posterSquare ? "own" : undefined}>
           {posterSquare ? (
@@ -198,7 +239,7 @@ export function GameLoading({ game, poster, posterSquare }: { game: string; post
 type FrameGame = {
   ready: boolean;
   storable: boolean;
-  session: { title: string; rounds: { id: string }[] };
+  session: { title: string; source: SourceId; rounds: { id: string }[] };
   sessionIndex: number;
   roundIndex: number;
   round: { id: string };
@@ -213,12 +254,12 @@ type FrameGame = {
 
 /** Header, session picker and main area shared by every game. */
 export function GameFrame({
-  game,
+  slug,
   g,
   withSpeech,
   children,
 }: {
-  game: string;
+  slug: GameSlug;
   g: FrameGame;
   withSpeech?: boolean;
   children: React.ReactNode;
@@ -232,7 +273,7 @@ export function GameFrame({
   return (
     <div ref={top} className="mx-auto flex min-h-dvh w-full max-w-[1400px] flex-col">
       <GameHeader
-        game={game}
+        slug={slug}
         title={g.session.title}
         round={g.finished ? g.session.rounds.length : g.roundIndex}
         total={g.session.rounds.length}
@@ -269,9 +310,10 @@ export function GameFrame({
           Progress cannot be saved in this browser. You can still play.
         </p>
       )}
-      <main id="main" className="flex flex-1 flex-col lg:justify-center lg:pb-10">
+      <main id="main" className="flex flex-1 flex-col pt-3 lg:justify-center lg:pb-6">
         {children}
       </main>
+      {!g.finished && <IdeaCard source={g.session.source} />}
       <ShortcutTip />
     </div>
   );

@@ -39,18 +39,18 @@ const END_ART = [
 
 export function FamilyGame() {
   const g = useSessions(GAME, SESSIONS, did);
-  if (!g.ready) return <GameLoading game="Family Threads" poster="/art/covers/family.webp" />;
+  if (!g.ready) return <GameLoading slug={GAME} poster="/art/covers/family.webp" />;
   const { session, round, finished } = g;
   const props = { session, onDone: g.complete, onNext: g.next };
   return (
-    <GameFrame game="Family Threads" g={g}>
+    <GameFrame slug={GAME} g={g}>
       {finished ? (
         <SessionEnd
           nextGame={nextGame("family")}
           items={g.sessionItems()}
           art={END_ART[g.sessionIndex]}
           title={session.title}
-          english={session.english}
+          shows={session.shows}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
           sources={

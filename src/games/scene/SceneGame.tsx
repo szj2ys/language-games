@@ -283,17 +283,17 @@ function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 
 export function SceneGame() {
   const g = useSessions(GAME, SESSIONS, did);
-  if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" />;
+  if (!g.ready) return <GameLoading slug={GAME} poster="/art/scene/stage.webp" />;
   const { session, round, finished } = g;
   return (
-    <GameFrame game="Picture Theatre" g={g}>
+    <GameFrame slug={GAME} g={g}>
       {finished ? (
         <SessionEnd
           nextGame={nextGame("scene")}
           items={g.sessionItems()}
           art="/art/covers/scene.webp"
           title={session.title}
-          english={session.english}
+          shows={session.shows}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
           sources={g.sessionIndex === 2 ? [session.source, "tlp-5.6"] : [session.source]}

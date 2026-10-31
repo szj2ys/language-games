@@ -50,7 +50,7 @@ def advance(page: Page, before: str = "") -> None:
 
 def play_builder(page: Page) -> None:
     page.goto(f"{BASE}/play/builder")
-    expect(page.get_by_role("heading", level=1, name="Slab!")).to_be_visible()
+    expect(page.get_by_role("heading", level=1, name="2. The builders")).to_be_visible()
     # Session 1: the four words. The call is shown in the speech bubble.
     for _ in range(6):
         call = page.locator("p[aria-live=polite]").first.inner_text().strip().lower()
@@ -64,7 +64,7 @@ def play_builder(page: Page) -> None:
         shot(page, f"builder-fetch-{stone}")
         advance(page, call)
     shot(page, "builder-session-1-end")
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Four words"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Four words"))).to_be_visible()
     page.get_by_role("button", name="Next: Two slabs — there!").click()
 
     # Session 2: numbers and "there". Read the call and the pointing direction.
@@ -96,11 +96,11 @@ def play_builder(page: Page) -> None:
     page.get_by_role("button", name=re.compile(r"^Call")).click()
     shot(page, "builder-call-1")
     next_round(page)
-    # Round 2: a deliberate slip ("two pillar") still works and earns an English note.
+    # Round 2: "two pillar there", as in the builders' own language (§8), does the job.
     say("two", "pillar", "there")
     page.get_by_role("button", name="Point at the left platform").click()
     page.get_by_role("button", name=re.compile(r"^Call")).click()
-    expect(page.get_by_text("English needs the plural")).to_be_visible()
+    expect(page.get_by_text("Your call worked")).to_be_visible()
     shot(page, "builder-call-note")
     next_round(page)
     say("one", "beam", "there")
@@ -122,7 +122,7 @@ def play_builder(page: Page) -> None:
     page.get_by_role("button", name="Point at the right platform").click()
     page.get_by_role("button", name=re.compile(r"^Call")).click()
     next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Your turn to call"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Your turn to call"))).to_be_visible()
     shot(page, "builder-done")
 
 
@@ -130,7 +130,7 @@ def play_builder(page: Page) -> None:
 
 def play_scene(page: Page) -> None:
     page.goto(f"{BASE}/play/scene")
-    expect(page.get_by_role("heading", level=1, name="Picture Theatre")).to_be_visible()
+    expect(page.get_by_role("heading", level=1, name="1. Pictures of facts")).to_be_visible()
     # The stage must fit the window: on desktop it keeps its 16:9 shape; on a phone it fills down to the controls.
     stage = page.locator("figure").first.bounding_box()
     vp = page.viewport_size
@@ -173,7 +173,7 @@ def play_scene(page: Page) -> None:
     page.get_by_role("button", name="Is it true?").click()
     shot(page, "scene-6")
     next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Make it true"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Make it true"))).to_be_visible()
 
 
 # --- The Café -----------------------------------------------------------------
@@ -190,7 +190,7 @@ CAFE_ANSWERS = [
 
 def play_cafe(page: Page) -> None:
     page.goto(f"{BASE}/play/cafe")
-    expect(page.get_by_role("heading", level=1, name="The Café")).to_be_visible()
+    expect(page.get_by_role("heading", level=1, name="3. Meaning is use")).to_be_visible()
     # A literal answer first: the visitor reacts and the round stays open.
     page.get_by_role("button", name="“Yes, it's November.”").click()
     expect(page.get_by_text("Not quite what Rosa meant")).to_be_visible()
@@ -200,7 +200,7 @@ def play_cafe(page: Page) -> None:
         expect(page.get_by_text("What the words were doing here")).to_be_visible()
         next_round(page)
     shot(page, "cafe-session-end")
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Same words, new job"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Same words, new job"))).to_be_visible()
 
 
 # --- Go On! -------------------------------------------------------------------
@@ -226,7 +226,7 @@ def show_cards_until_pass(page: Page) -> None:
 
 def play_pupil(page: Page) -> None:
     page.goto(f"{BASE}/play/pupil")
-    expect(page.get_by_role("heading", level=1, name="Go On!")).to_be_visible()
+    expect(page.get_by_role("heading", level=1, name="5. Following a rule")).to_be_visible()
     # Level 1: the loose explanation is misread first (§198).
     page.get_by_role("button", name="Explain: “Use “an” before a vowel.”").click()
     expect(page.get_by_text("reads your sentence its own way")).to_be_visible()
@@ -238,14 +238,14 @@ def play_pupil(page: Page) -> None:
         expect(page.get_by_text("Good call.")).to_be_visible()
         shot(page, f"pupil-{card.replace(' ', '-')}")
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Teach the pupil"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Teach the pupil"))).to_be_visible()
 
 
 # --- Family Threads -------------------------------------------------------------
 
 def play_family(page: Page) -> None:
     page.goto(f"{BASE}/play/family")
-    expect(page.get_by_role("heading", level=1, name="Family Threads")).to_be_visible()
+    expect(page.get_by_role("heading", level=1, name="4. Family resemblance")).to_be_visible()
     # Round 1: "All" is refuted by a counterexample, then "Most" holds.
     page.get_by_role("radio", name="All").click()
     page.get_by_role("button", name="Look").click()
@@ -281,7 +281,7 @@ def play_family(page: Page) -> None:
     expect(page.get_by_text("sits at the edge")).to_be_visible()
     shot(page, "family-edge")
     next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a game\?"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*What is a game\?"))).to_be_visible()
 
 
 # --- Later sessions, reached through the session picker ----------------------------
@@ -305,8 +305,8 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_role("button", name=answer).click()
         expect(page.get_by_text("What the words were doing here")).to_be_visible()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Order or report"))).to_be_visible()
-    expect(page.get_by_role("link", name="Next game: Picture Theatre")).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Order or report"))).to_be_visible()
+    expect(page.get_by_role("link", name="Next idea: 3. Meaning is use")).to_be_visible()
     shot(page, "later-builder-end")
 
     # The Café, sessions 2 and 3: the fitting response in every round.
@@ -323,7 +323,7 @@ def play_later_sessions(page: Page) -> None:
             page.get_by_role("button", name=answer).click()
             expect(page.get_by_text("What the words were doing here")).to_be_visible()
             next_round(page)
-        expect(page.get_by_role("heading", name=re.compile(rf"Done.*{re.escape(title)}"))).to_be_visible()
+        expect(page.get_by_text(re.compile(rf"Done · .*{re.escape(title)}"))).to_be_visible()
 
     # The Café, session 4: one wrong answer first, then the fitting ones.
     page.goto(f"{BASE}/play/cafe")
@@ -341,7 +341,7 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_role("button", name=answer).click()
         expect(page.get_by_text("What the words were doing here")).to_be_visible()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Sorry, thanks"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Sorry, thanks"))).to_be_visible()
     shot(page, "later-cafe-end")
 
     # Family Threads, session 2: tools (§11).
@@ -363,7 +363,7 @@ def play_later_sessions(page: Page) -> None:
     page.get_by_role("button", name="Say it").click()
     expect(page.get_by_text("join the family")).to_be_visible()  # "nails" is plural
     next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a tool"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*What is a tool"))).to_be_visible()
 
     # Family Threads, session 3: languages.
     page.goto(f"{BASE}/play/family")
@@ -385,7 +385,7 @@ def play_later_sessions(page: Page) -> None:
     page.get_by_role("button", name="Say it").click()
     expect(page.get_by_text("joins the family")).to_be_visible()
     next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a language"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*What is a language"))).to_be_visible()
     shot(page, "later-family-end")
 
     # Family Threads, session 4: kinds of number (§67).
@@ -406,7 +406,7 @@ def play_later_sessions(page: Page) -> None:
     page.get_by_role("button", name="Say it").click()
     expect(page.get_by_text("joins the family")).to_be_visible()
     next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a number"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*What is a number"))).to_be_visible()
     shot(page, "later-family4-end")
 
     # Picture Theatre, session 2: fix each false report by changing one position word.
@@ -416,7 +416,7 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_label("Change the position word").nth(line).select_option(value=rel)
         page.get_by_role("button", name="Check against the stage").click()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*True or false"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*True or false"))).to_be_visible()
 
     # Picture Theatre, session 3: one sentence must pin the thing down for a partner who cannot see.
     page.goto(f"{BASE}/play/scene")
@@ -427,7 +427,7 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_role("button", name="Tell your partner").click()
         expect(page.get_by_text("Leaves only one place.").first).to_be_visible()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Say where it is"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Say where it is"))).to_be_visible()
 
     # Picture Theatre, session 4: sentences with "not" leave many pictures open.
     page.goto(f"{BASE}/play/scene")
@@ -445,7 +445,7 @@ def play_later_sessions(page: Page) -> None:
             page.get_by_role("button", name=where).click()
         page.get_by_role("button", name="Is it true?").click()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Not here"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Not here"))).to_be_visible()
     shot(page, "later-scene-end")
 
     # Go On!, session 2: show cards until the pupil passes, then the teacher's call.
@@ -457,7 +457,7 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_role("button", name="Both are in use").click()
         expect(page.get_by_text("Good call.")).to_be_visible()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Rules with no rule"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Rules with no rule"))).to_be_visible()
     shot(page, "later-pupil-end")
 
     # Go On!, session 3: old rules in new clothes; both twists are irregular and must be corrected.
@@ -468,7 +468,7 @@ def play_later_sessions(page: Page) -> None:
         page.get_by_role("button", name="Correct it").click()
         expect(page.get_by_text("Good call.")).to_be_visible()
         next_round(page)
-    expect(page.get_by_role("heading", name=re.compile(r"Done.*Old rules, new words"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Old rules, new words"))).to_be_visible()
     shot(page, "later-pupil3-end")
 
 
@@ -496,6 +496,42 @@ def play_keyboard(page: Page) -> None:
     expect(page.get_by_text("What the words were doing here")).to_be_visible()
 
 
+# --- The beetle in the box, Hinges of certainty -------------------------------------
+
+def solve_choice_session(page: Page, title: str) -> None:
+    """Answer each round by trying options in order; a wrong one shows its reply and stays crossed out."""
+    pick_session(page, title)
+    while page.get_by_text(re.compile(r"Done · ")).count() == 0:
+        answers = page.get_by_role("group", name="Answers").get_by_role("button")
+        for b in answers.all():
+            if b.is_enabled():
+                b.click()
+                break
+        if page.get_by_role("button", name="Next", exact=True).count():
+            next_round(page)
+    expect(page.get_by_text(re.compile(rf"Done · {re.escape(title)}"))).to_be_visible()
+
+
+def play_choice_games(page: Page) -> None:
+    page.goto(f"{BASE}/play/beetle")
+    expect(page.get_by_role("heading", level=1, name="6. The beetle in the box")).to_be_visible()
+    # A wrong answer first: its reply explains why, and the round stays open.
+    page.get_by_role("button", name="Yes: put the boxes side by side and compare.").click()
+    expect(page.get_by_text("No one can look into anyone else's box. That is the rule here.")).to_be_visible()
+    shot(page, "beetle-wrong")
+    page.reload()
+    expect(page.get_by_text("No one can look into anyone else's box. That is the rule here.")).to_be_visible()
+    solve_choice_session(page, "The beetle")
+    shot(page, "beetle-end")
+    solve_choice_session(page, "The diary")
+    page.goto(f"{BASE}/play/hinges")
+    expect(page.get_by_role("heading", level=1, name="7. Hinges of certainty")).to_be_visible()
+    solve_choice_session(page, "Doubt it")
+    solve_choice_session(page, "The river-bed")
+    expect(page.get_by_role("link", name="Next idea: 1. Pictures of facts")).to_be_visible()
+    shot(page, "hinges-end")
+
+
 def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -516,6 +552,7 @@ def main() -> int:
             ("pupil", play_pupil),
             ("family", play_family),
             ("later sessions", play_later_sessions),
+            ("beetle and hinges", play_choice_games),
             ("keyboard", play_keyboard),
         ]:
             fn(page)

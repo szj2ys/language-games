@@ -17,7 +17,6 @@ import {
   NUMBER_WORDS,
   an,
   callFor,
-  englishNotes,
   interpret,
   markDelivery,
   plural,
@@ -89,18 +88,18 @@ type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "cou
 
 export function BuilderGame() {
   const g = useSessions(GAME, SESSIONS, did);
-  if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" posterSquare="/art/square/site.webp" />;
+  if (!g.ready) return <GameLoading slug={GAME} poster="/art/builder/site.webp" posterSquare="/art/square/site.webp" />;
   const { round, session, sessionIndex, finished } = g;
   const speak = g.speech.speak;
   return (
-    <GameFrame game="Slab!" g={g} withSpeech>
+    <GameFrame slug={GAME} g={g} withSpeech>
       {finished ? (
         <SessionEnd
           nextGame={nextGame("builder")}
           items={g.sessionItems()}
           art="/art/covers/builder.webp"
           title={session.title}
-          english={session.english}
+          shows={session.shows}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
           sources={SESSION_SOURCES[sessionIndex]}
@@ -606,7 +605,6 @@ function CallPlay({
   onDone: (firstTry: boolean, said: string, marks: number, missed?: string) => void;
   onNext: () => void;
 }) {
-  const [notes, setNotes] = useDraft<string[]>(round.id, "notes", []);
   const [tiles, setTiles] = useDraft<Tile[]>(round.id, "tiles", []);
   const [pointAt, setPointAt] = useDraft<Place | { stoneIndex: number } | undefined>(round.id, "pointAt", undefined);
   const [reply, setReply] = useState<AssistantResponse | null>(null);
@@ -648,8 +646,6 @@ function CallPlay({
     const said = sentence(tiles);
     speak(said);
     const r = interpret({ tiles, pointAt }, round.yard);
-    const englishSlips = englishNotes(tiles);
-    setNotes(englishSlips);
     setReply(r);
     setTries((n) => n + 1);
     if (r.kind === "acts") {
@@ -773,19 +769,6 @@ function CallPlay({
         )}
 
         {outcome && !solved && <Marks outcome={outcome} want={round.goal} />}
-        {notes.length > 0 && outcome && (
-          <ul
-            role="status"
-            className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px] lg:text-[18px]"
-            aria-label="English notes"
-          >
-            {notes.map((n) => (
-              <li key={n}>
-                <span className="font-bold">English note:</span> {n}
-              </li>
-            ))}
-          </ul>
-        )}
         {solved && outcome && !round.teaches && (
           <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px] lg:text-[18px]">
             Your call worked: {NUMBER_WORDS[outcome.delivery.count - 1]} {plural(outcome.delivery.stone, outcome.delivery.count)},{" "}

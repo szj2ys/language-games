@@ -48,8 +48,8 @@ export type Session = {
   blurb: string;
   rounds: BuilderRound[];
   source: SourceId;
-  /** What the English in this session trains, in one line. */
-  english: string;
+  /** The idea this session shows, in one sentence. */
+  shows: string;
 };
 
 const YARD: Stone[] = ["block", "block", "pillar", "pillar", "slab", "slab", "slab", "beam", "beam"];
@@ -59,7 +59,7 @@ export const SESSIONS: Session[] = [
     id: "builder-1",
     title: "Four words",
     blurb: "The builder has a language of four words. Learn it by doing what it asks.",
-    english: "Warm-up (A2): one-word orders; a bare noun as a whole request",
+    shows: "Wittgenstein's builders (§2): four words make a complete language when they are part of an activity.",
     source: "pi-2",
     rounds: [
       { id: "b1-1", role: "fetch", want: { stone: "slab", count: 1, place: "builder" }, hint: "A slab is broad and flat." },
@@ -74,7 +74,7 @@ export const SESSIONS: Session[] = [
     id: "builder-2",
     title: "Two slabs — there!",
     blurb: "Add numbers and a pointing word. Same game, many more orders.",
-    english: "Warm-up (A2): numbers, plurals, 'there' with a gesture",
+    shows: "Numbers, “there” and pointing are different kinds of word: each does a different job in the game (§8).",
     source: "pi-8",
     rounds: [
       {
@@ -112,7 +112,7 @@ export const SESSIONS: Session[] = [
     id: "builder-3",
     title: "Your turn to call",
     blurb: "Now you are the builder. Your assistant does exactly what you say — no more.",
-    english: "Giving clear instructions; ellipsis; 'this' with pointing",
+    shows: "“Slab!” is a whole sentence (§§19–20), and a word taught by pointing works only inside a practice (§6).",
     source: "pi-19",
     rounds: [
       {
@@ -194,7 +194,7 @@ export const SESSIONS: Session[] = [
     id: "builder-4",
     title: "Order or report?",
     blurb: "The same few words can order, report, ask or warn. Who says them, and when, decides.",
-    english: "Telling orders, reports, questions and warnings apart; asking 'Which one?'",
+    shows: "“Five slabs” can be an order or a report: the difference is the part the words play, not their form (§21).",
     source: "pi-21",
     rounds: [
       {
@@ -305,7 +305,7 @@ export function findRound(id: string): BuilderRound | undefined {
   for (const s of SESSIONS) for (const r of s.rounds) if (r.id === id) return r;
 }
 
-/** What the English did in a round, for the end card and the notebook. */
+/** What a round showed, for the end card and the notebook. */
 export function did(r: BuilderRound): string {
   if (r.role === "fetch") return "an order you carried out";
   if (r.role === "call") return "an order you gave";

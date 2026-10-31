@@ -3,9 +3,9 @@ import { GameAbout } from "@/components/game-about";
 import { FamilyGame } from "@/games/family/FamilyGame";
 
 export const metadata: Metadata = {
-  title: "Family Threads — what do all games share?",
+  title: "4. Family resemblance — Wittgenstein, played",
   description:
-    "Practise all, most, some, none and 'both … and' by testing claims about games and tools — Wittgenstein's family resemblances (PI §66).",
+    "What do all games have in common? Test claims, thread cards by overlapping features and meet Wittgenstein's family resemblances (PI §§66–67).",
   alternates: { canonical: "/play/family" },
 };
 

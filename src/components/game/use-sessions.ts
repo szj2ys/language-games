@@ -9,7 +9,7 @@ type SessionLike = { rounds: { id: string }[] };
 
 /**
  * Where the player is in a game's sessions, saved locally so a reload resumes the same round.
- * `did` names what the English did in a round (the game's own content module defines it).
+ * `did` names what a round showed (the game's own content module defines it).
  */
 export function useSessions<S extends SessionLike>(game: string, sessions: S[], did: (r: S["rounds"][number]) => string) {
   const { save, ready, update, storable } = useSave();

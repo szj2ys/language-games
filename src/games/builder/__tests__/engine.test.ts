@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { callFor, englishNotes, interpret, markDelivery, sentence, type Stone } from "../engine";
+import { callFor, interpret, markDelivery, sentence, type Stone } from "../engine";
 
 const yard: Stone[] = ["slab", "slab", "beam", "pillar", "pillar", "block"];
 
@@ -67,25 +67,11 @@ describe("assistant interprets the player's call", () => {
       ]),
     ).toBe("Four block!");
   });
-  it("coaches the plural without blocking the order", () => {
-    const slip = [
-      { kind: "number", value: 2 },
-      { kind: "stone", value: "slab" },
-    ] as const;
-    expect(englishNotes([...slip])).toEqual(["After “two”, English needs the plural: two slabs."]);
-    expect(interpret({ tiles: [...slip] }, yard)).toMatchObject({ kind: "acts", delivery: { count: 2 } });
-    expect(
-      englishNotes([
-        { kind: "number", value: 2 },
-        { kind: "stone", value: "slab", plural: true },
-      ]),
-    ).toEqual([]);
-    expect(englishNotes([{ kind: "stone", value: "slab", plural: true }])).toEqual(["One stone, no -s: “slab”."]);
-  });
 });
 
 import { SESSIONS } from "../rounds";
 
+// weakening-ok: the English plural notes (englishNotes) were removed with the feature; v2 teaches the philosophy, not English.
 describe("authored builder rounds", () => {
   const rounds = SESSIONS.flatMap((s) => s.rounds);
   it("have unique ids", () => {
@@ -122,11 +108,5 @@ describe("irregular spelling", () => {
         { kind: "stone", value: "arch", plural: true },
       ]),
     ).toBe("Two arches!");
-    expect(
-      englishNotes([
-        { kind: "number", value: 2 },
-        { kind: "stone", value: "arch" },
-      ]),
-    ).toEqual(["After “two”, English needs the plural: two arches."]);
   });
 });

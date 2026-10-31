@@ -30,7 +30,8 @@ export type Session = {
   id: string;
   title: string;
   blurb: string;
-  english: string;
+  /** The idea this session shows, in one sentence. */
+  shows: string;
   source: SourceId;
   rounds: CafeRound[];
 };
@@ -43,7 +44,7 @@ export const SESSIONS: Session[] = [
     id: "cafe-1",
     title: "Same words, new job",
     blurb: "Two visitors say exactly the same thing. Look around before you answer.",
-    english: "Indirect requests and complaints: what a sentence is used to do",
+    shows: "For a large class of cases, the meaning of a word is its use in the language (§43).",
     source: "pi-43",
     rounds: [
       {
@@ -132,7 +133,7 @@ export const SESSIONS: Session[] = [
     id: "cafe-2",
     title: "Which one?",
     blurb: "Sometimes the words are not enough. Ask, point, and agree on what is meant.",
-    english: "Clarifying questions: 'Do you mean…?', 'The … one or the … one?', 'The other what, sorry?'",
+    shows: "An explanation removes a misunderstanding that actually arises, not every one that could (§87).",
     source: "pi-23",
     rounds: [
       {
@@ -226,7 +227,7 @@ export const SESSIONS: Session[] = [
     id: "cafe-3",
     title: "Excuse me?",
     blurb: "Short, everyday phrases do the most different jobs. Watch who says them, and when.",
-    english: "'Would you like to…?', 'I'm fine', 'Excuse me' — offers, instructions, greetings, reassurances and requests",
+    shows: "There are countless kinds of use, and the list is not fixed once and for all (§23).",
     source: "pi-23",
     rounds: [
       {
@@ -317,7 +318,7 @@ export const SESSIONS: Session[] = [
     id: "cafe-4",
     title: "Sorry, thanks, no problem",
     blurb: "'Sorry!' isn't always an apology, and 'Thank you!' can mean 'That's enough'. Look before you answer.",
-    english: "'Sorry', 'Thank you', 'Never mind', 'Go ahead' and 'No problem' — apologies, thanks, requests and permission",
+    shows: "“Sorry!” and “Thank you!” do not name feelings; what they do depends on the game being played (§§21, 23).",
     source: "pi-23",
     rounds: [
       {
@@ -430,7 +431,7 @@ export const SESSIONS: Session[] = [
   },
 ];
 
-/** What the English did in a round, for the end card and the notebook. */
+/** What a round showed, for the end card and the notebook. */
 export function did(r: CafeRound): string {
   return r.use;
 }

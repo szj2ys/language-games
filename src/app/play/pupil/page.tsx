@@ -3,9 +3,9 @@ import { GameAbout } from "@/components/game-about";
 import { PupilGame } from "@/games/pupil/PupilGame";
 
 export const metadata: Metadata = {
-  title: "Go On! — teach a pupil the rules of English",
+  title: "5. Following a rule — Wittgenstein, played",
   description:
-    "Teach a stubborn pupil a/an, plurals, -ed, comparatives, -ing or to, and uncountable nouns with as few examples as you can — Wittgenstein on rule-following, as a puzzle.",
+    "Teach a stubborn pupil a rule with as few examples as you can, and find out why no example or explanation fixes a rule on its own (PI §§185–217).",
   alternates: { canonical: "/play/pupil" },
 };
 

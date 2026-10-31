@@ -3,27 +3,27 @@ import { GAMES, type GameInfo } from "@/content/games";
 import { SOURCES, WORK_TITLE } from "@/content/sources";
 import { SITE_URL } from "@/lib/site";
 
-/** Server-rendered notes under each game: how to play, the English, the passage. */
+/** Server-rendered notes under each game: how to play, the idea, the passage. */
 export function GameAbout({ slug }: { slug: GameInfo["slug"] }) {
   const g = GAMES.find((x) => x.slug === slug)!;
   const s = SOURCES[g.source];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LearningResource",
-    name: `${g.title} — Language Games`,
+    name: `${g.step}. ${g.title} — Wittgenstein, played`,
     description: g.promise,
     url: `${SITE_URL}/play/${g.slug}`,
     learningResourceType: "Game",
-    educationalLevel: "Intermediate (CEFR B1–B2)",
+    educationalLevel: "Introductory",
     inLanguage: "en",
     isAccessibleForFree: true,
-    teaches: g.english,
+    teaches: g.idea,
     citation: `${WORK_TITLE[s.work]} ${s.ref}`,
   };
   return (
     <section className="mx-auto mt-6 w-full max-w-5xl border-t border-border px-4 py-8" aria-labelledby="about-game">
       <h2 id="about-game" className="font-heading text-2xl font-semibold">
-        About {g.title}
+        About this game
       </h2>
       <div className="mt-3 grid gap-6 lg:grid-cols-2">
         <div>
@@ -33,9 +33,6 @@ export function GameAbout({ slug }: { slug: GameInfo["slug"] }) {
               <li key={step}>{step}</li>
             ))}
           </ol>
-          <p className="mt-3 text-[16px]">
-            <span className="font-bold">English you practise:</span> {g.english}.
-          </p>
         </div>
         {/* Family Threads is the discovery itself; stating its conclusion here would give it away. */}
         {slug !== "family" && (
@@ -44,7 +41,7 @@ export function GameAbout({ slug }: { slug: GameInfo["slug"] }) {
             <p className="mt-1 text-[16px] leading-relaxed">{s.gloss}</p>
             <p className="mt-2 text-sm text-muted-foreground">
               {WORK_TITLE[s.work]} {s.ref}.{" "}
-              <Link href={`/sources#${s.id}`} className="font-bold text-cobalt underline underline-offset-4">
+              <Link href={`/sources#${s.id}`} className="font-bold underline underline-offset-4">
                 Read the passage
               </Link>
             </p>

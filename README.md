@@ -1,15 +1,22 @@
-# Language Games
+# Wittgenstein, played
 
-Five short browser games that teach English to intermediate learners through Ludwig Wittgenstein's
-idea of *language-games*: words get their meaning in what people do with them.
+Seven short browser games for learning **Ludwig Wittgenstein's philosophy, in English**, early to late.
+Each game makes one idea something you do, then names the idea, quotes the passage and says where the
+game's analogy stops. (Version 1 of this project taught English *through* Wittgenstein; the owner corrected
+that on 2026-11-01 — see `planning/BRIEF-v2.md`.)
 
-| Game | You… | English | Wittgenstein |
+| # | Idea (route) | You… | Wittgenstein |
 |---|---|---|---|
-| **Slab!** (`/play/builder`) | fetch stones for a builder, give the orders, tell orders from reports | orders, numbers, plurals, *this/there*, asking "Which one?" | PI §§2, 6, 8, 19–21, 27 |
-| **Picture Theatre** (`/play/scene`) | build what a sentence says, fix false reports, describe a stage | *in, on, behind, next to, to the left of*, *is not, neither … nor* | TLP 2.1, 2.21, 4.01, 4.0621 |
-| **The Café** (`/play/cafe`) | read the room and respond | requests, hints, polite refusals, *Excuse me?*, *Sorry / Thank you / Never mind / Go ahead* | PI §§21, 23, 43 |
-| **Go On!** (`/play/pupil`) | teach a pupil a rule with as few examples as possible | *a/an*, plurals, *-ed*, comparatives, *-ing/to*, uncountables, *she watches*, *-ing* spelling | PI §§84, 185, 198–202, 217 |
-| **Family Threads** (`/play/family`) | test claims about games, tools, languages and numbers, thread them by resemblance | *all/most/some/none of these*, *both … and*, *unlike* | PI §§11, 14, 18, 66–67 |
+| 1 | **Pictures of facts** (`/play/scene`) | build the scene a sentence describes, catch false reports, pin a fact down in one sentence | TLP 2.1, 2.21, 4.01, 4.023, 4.0621 |
+| 2 | **The builders** (`/play/builder`) | fetch stones for a four-word language, give the orders, tell orders from reports | PI §§2, 6, 8, 19–21 |
+| 3 | **Meaning is use** (`/play/cafe`) | answer the same words doing different jobs in a café | PI §§21, 23, 43, 87 |
+| 4 | **Family resemblance** (`/play/family`) | test claims about games, tools, languages and numbers; thread them by overlapping features | PI §§11, 18, 66–67 |
+| 5 | **Following a rule** (`/play/pupil`) | teach a pupil a rule with examples and explanations, and see neither fixes it alone | PI §§185, 198–202, 217 |
+| 6 | **The beetle in the box** (`/play/beetle`) | talk about beetles nobody else can see; keep a private diary of “S” | PI §§244–270, 293 |
+| 7 | **Hinges of certainty** (`/play/hinges`) | try to doubt; find what doubting turns on; watch the river-bed shift | On Certainty §§94–125, 282, 341–343 |
+
+Design: "The Notebook" — warm paper, ink-blue type, one vermilion accent, proposition numbers as structure —
+chosen from three gpt-image-2 mock-ups (`art/ui-v2/a.png`, `b.png`, `c.png`).
 
 No account and no server state: progress and half-finished rounds are kept in `localStorage`.
 Every quoted passage, with its translation and the limits of each game's analogy, is on `/sources`.
@@ -32,7 +39,7 @@ npm install
 npm run dev          # http://localhost:3000
 npm test             # game engines, content checks, every round has its picture (Vitest)
 npm run build && npm start
-python e2e/play_all.py http://localhost:3000            # plays every session of every game end to end (Playwright)
+python e2e/play_all.py http://localhost:3000            # plays every session of all seven games end to end (Playwright)
 python e2e/play_all.py http://localhost:3000 --desktop
 python e2e/a11y.py http://localhost:3000             # axe-core, phone and desktop
 ```

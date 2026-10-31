@@ -3,9 +3,9 @@ import { GameAbout } from "@/components/game-about";
 import { CafeGame } from "@/games/cafe/CafeGame";
 
 export const metadata: Metadata = {
-  title: "The Café — same words, different jobs",
+  title: "3. Meaning is use — Wittgenstein, played",
   description:
-    "Everyday English requests, hints and polite refusals in a small café: the same words do different jobs. Meaning is use (PI §43).",
+    "The same sentence is a request, a hint or a complaint depending on its use. Play through Philosophical Investigations §43 and §23 in a small café.",
   alternates: { canonical: "/play/cafe" },
 };
 

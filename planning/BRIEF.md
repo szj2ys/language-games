@@ -1,3 +1,8 @@
+> **Superseded on 2026-11-01 by the owner.** This brief was misread as "teach English through
+> Wittgenstein". The owner's request is the reverse: **learn Wittgenstein's philosophy, in English**.
+> The subject is the philosophy; English is only the language of the site. The current brief is
+> `planning/BRIEF-v2.md`; the text below is kept as the historical record of the first build.
+
 # Brief: Language Games
 
 Build a Next.js web app of small games that teach **English** (to non-native learners, intermediate,

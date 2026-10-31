@@ -23,17 +23,17 @@ const SESSION_SOURCES: SourceId[][] = [
 
 export function PupilGame() {
   const g = useSessions(GAME, SESSIONS, did);
-  if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" />;
+  if (!g.ready) return <GameLoading slug={GAME} poster="/art/pupil/classroom.webp" />;
   const { session, round, finished } = g;
   return (
-    <GameFrame game="Go On!" g={g}>
+    <GameFrame slug={GAME} g={g}>
       {finished ? (
         <SessionEnd
           nextGame={nextGame("pupil")}
           items={g.sessionItems()}
           art="/art/covers/pupil.webp"
           title={session.title}
-          english={session.english}
+          shows={session.shows}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
           sources={SESSION_SOURCES[g.sessionIndex]}
@@ -230,7 +230,7 @@ function Lesson({
                   <span className="font-bold">{call === level.twist.answer ? "Good call. " : "Not this time. "}</span>
                   {level.twist.why}
                 </p>
-                <p className="text-[15px] text-muted-foreground lg:text-[18px]">English practised: {level.english}.</p>
+                <p className="text-[15px] text-muted-foreground lg:text-[18px]">The rule you were teaching: {level.rule}.</p>
                 <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
                   Next
                 </Button>

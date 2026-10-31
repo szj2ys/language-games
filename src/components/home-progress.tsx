@@ -8,14 +8,14 @@ import { SOURCES } from "@/content/sources";
 import { useSave } from "@/lib/use-save";
 import { cn } from "@/lib/utils";
 
-/** Continue where you left off; first visit starts with Slab!. */
+/** Continue where you left off; a first visit starts at the first idea. */
 export function ContinueButton() {
   const { save, ready } = useSave();
   const last = ready ? GAMES.find((g) => g.slug === save.lastGame) : undefined;
   const target = last ?? GAMES[0];
   return (
     <Link href={`/play/${target.slug}`} className={cn(buttonVariants({ size: "lg" }), "h-13 px-6 text-lg")}>
-      {last ? `Continue ${last.title}` : `Play ${target.title}`} <ArrowRight className="size-5" aria-hidden />
+      {last ? `Continue: ${last.step}. ${last.title}` : "Start with the first idea"} <ArrowRight className="size-5" aria-hidden />
     </Link>
   );
 }
@@ -26,7 +26,7 @@ export function GameProgress({ rounds }: { rounds: string[] }) {
   const done = rounds.filter((id) => save.rounds[id]).length;
   if (done === 0) return null;
   return (
-    <span className="shrink-0 rounded-full bg-sage/15 px-2 py-0.5 text-sm font-bold text-sage">
+    <span className="shrink-0 rounded-full bg-sage/15 px-2 py-0.5 text-[13px] font-bold text-sage">
       {done === rounds.length ? "Done" : `${done}/${rounds.length}`}
     </span>
   );
@@ -41,13 +41,13 @@ export function LadderEnd() {
   const ladder = SOURCES["tlp-6.54"];
   const stop = SOURCES["pi-133"];
   return (
-    <section className="mt-8 rounded-2xl border border-border bg-card p-5" aria-labelledby="ladder">
+    <section className="mt-8 rounded-lg border border-border bg-card p-5" aria-labelledby="ladder">
       <h2 id="ladder" className="font-heading text-2xl font-semibold">
-        You have played every game.
+        You have walked the whole path.
       </h2>
       <p className="mt-2 text-[17px] leading-relaxed">
         That is the end — there is no streak to keep. In the Tractatus Wittgenstein says of his own book: “{ladder.quote}” ({ladder.ref}).
-        Later he put it differently: “{stop.quote}” (PI {stop.ref}). Take the English and go and use it.
+        Later he put it differently: “{stop.quote}” (PI {stop.ref}). Now read him: the passages are all on the sources page.
       </p>
     </section>
   );

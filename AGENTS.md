@@ -10,8 +10,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project
 
-Five browser games that teach intermediate English through Wittgenstein's language-games (Slab!,
-Picture Theatre, The Café, Go On!, Family Threads). No accounts; progress lives in `localStorage`.
+Browser games for learning **Wittgenstein's philosophy, in English** (owner, 2026-11-01). The subject is the
+philosophy; English is only the site's language, never a learning goal (v1 got this backwards — see
+`planning/BRIEF-v2.md`). No accounts; progress lives in `localStorage`.
 
 - Run: `npm run dev`; production check: `npm run build && npm start`. Gates: `npm test`, `npm run typecheck`,
   `npm run lint`, then `python e2e/play_all.py <url>` (and `--desktop`) and `python e2e/a11y.py <url>`.

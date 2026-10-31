@@ -45,7 +45,8 @@ export type Level = {
   /** A loose explanation the pupil misreads, and a precise one it can follow once it knows the words in it. */
   explain: [Explain, Explain];
   twist: Twist;
-  english: string;
+  /** The rule the pupil is being taught (the example practice, not the subject). */
+  rule: string;
 };
 
 export type Pupil = { shown: Item[]; favourite: string[] };
