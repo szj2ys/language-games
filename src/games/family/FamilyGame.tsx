@@ -28,6 +28,9 @@ import { SESSIONS, type ClaimRound, type NewcomerRound, type Session, type Threa
 const GAME = "family";
 type Done = (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
 
+// The end card shows the thread of the session just played: games, tools, languages.
+const END_ART = ["/art/covers/family.webp", "/art/covers/family-tools.webp", "/art/covers/family-languages.webp"];
+
 export function FamilyGame() {
   const g = useSessions(GAME, SESSIONS);
   if (!g.ready) return <GameLoading game="Family Threads" poster="/art/covers/family.webp" />;
@@ -39,7 +42,7 @@ export function FamilyGame() {
         <SessionEnd
           nextGame={nextGame("family")}
           items={g.sessionItems()}
-          art="/art/covers/family.webp"
+          art={END_ART[g.sessionIndex]}
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}

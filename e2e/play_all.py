@@ -207,6 +207,17 @@ PUPIL = [
 ]
 
 
+def show_cards_until_pass(page: Page) -> None:
+    """Show example cards until the pupil passes; the first pass is enough for the journey."""
+    passed = page.get_by_role("button", name="Now a word it hasn't seen")
+    for _ in range(8):
+        if passed.count():
+            return
+        cards = page.get_by_role("group", name="Example cards").get_by_role("button")
+        next(b for b in cards.all() if b.is_enabled()).click()
+    assert passed.count(), "pupil never passed"
+
+
 def play_pupil(page: Page) -> None:
     page.goto(f"{BASE}/play/pupil")
     expect(page.get_by_role("heading", level=1, name="Go On!")).to_be_visible()
@@ -215,15 +226,7 @@ def play_pupil(page: Page) -> None:
     expect(page.get_by_text("reads your sentence its own way")).to_be_visible()
     shot(page, "pupil-misread")
     for card, call in PUPIL:
-        group = page.get_by_role("group", name="Example cards")
-        cards = [b for b in group.get_by_role("button").all() if b.is_enabled()]
-        # Show cards until the pupil passes; the first pass is enough for the journey.
-        i = 0
-        while page.get_by_role("button", name="Now a word it hasn't seen").count() == 0:
-            cards = [b for b in page.get_by_role("group", name="Example cards").get_by_role("button").all() if b.is_enabled()]
-            cards[0].click()
-            i += 1
-            assert i < 8, "pupil never passed"
+        show_cards_until_pass(page)
         page.get_by_role("button", name="Now a word it hasn't seen").click()
         page.get_by_role("button", name="Correct it" if call == "correct" else "Both are in use").click()
         expect(page.get_by_text("Good call.")).to_be_visible()
@@ -275,6 +278,86 @@ def play_family(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a game\?"))).to_be_visible()
 
 
+# --- Later sessions, reached through the session picker ----------------------------
+
+def pick_session(page: Page, title: str) -> None:
+    page.get_by_role("navigation", name="Sessions").get_by_role("button", name=title).click()
+
+
+def play_later_sessions(page: Page) -> None:
+    # Slab! "Order or report?": the fitting response in each situation.
+    page.goto(f"{BASE}/play/builder")
+    pick_session(page, "Order or report?")
+    for answer in [
+        "Bring him three slabs.",
+        "Write “3 slabs” on the stock list.",
+        "Answer: “No — it's a beam.”",
+        "Jump out of the way.",
+        "Ask: “Which one — the big one or the small one?”",
+        "Write “2 beams” on the stock list.",
+    ]:
+        page.get_by_role("button", name=answer).click()
+        expect(page.get_by_text("What the words were doing here")).to_be_visible()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Order or report"))).to_be_visible()
+    expect(page.get_by_role("link", name="Next game: Picture Theatre")).to_be_visible()
+    shot(page, "later-builder-end")
+
+    # The Café, session 4: one wrong answer first, then the fitting ones.
+    page.goto(f"{BASE}/play/cafe")
+    pick_session(page, "Sorry, thanks, no problem")
+    page.get_by_role("button", name="“You're welcome!”").click()
+    expect(page.get_by_text("Not quite what Lena meant")).to_be_visible()
+    for answer in [
+        "“No problem — I'd nearly finished it anyway.”",
+        "Say “Oh, sorry!” and move your bags.",
+        "Keep holding the door and say “No problem!”",
+        "Stop pouring.",
+        "Smile and put the box away.",
+        "Answer it: “Sorry — I'll be quick.”",
+    ]:
+        page.get_by_role("button", name=answer).click()
+        expect(page.get_by_text("What the words were doing here")).to_be_visible()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Sorry, thanks"))).to_be_visible()
+    shot(page, "later-cafe-end")
+
+    # Family Threads, session 3: languages.
+    page.goto(f"{BASE}/play/family")
+    pick_session(page, "What is a language?")
+    for q in ["Some", "Most"]:
+        page.get_by_role("radio", name=q).click()
+        page.get_by_role("button", name="Look").click()
+        next_round(page)
+    for name, link in [("English", None), ("sign language", "can give orders"), ("Morse code", "are used with the hands"),
+                       ("road signs", "can give orders"), ("chemical formulas", "are used for one special job"),
+                       ("music notation", "can be written down")]:
+        page.get_by_role("button", name=name, exact=True).click()
+        if link:
+            page.get_by_role("button", name=link).click()
+    expect(page.get_by_text("The thread holds")).to_be_visible()
+    next_round(page)
+    page.get_by_label("Which one").select_option(label="English")
+    page.get_by_label("What they share").select_option(label="can be spoken aloud")
+    page.get_by_role("button", name="Say it").click()
+    expect(page.get_by_text("joins the family")).to_be_visible()
+    next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a language"))).to_be_visible()
+    shot(page, "later-family-end")
+
+    # Go On!, session 2: show cards until the pupil passes, then the teacher's call.
+    page.goto(f"{BASE}/play/pupil")
+    pick_session(page, "Rules with no rule")
+    for _ in range(2):
+        show_cards_until_pass(page)
+        page.get_by_role("button", name="Now a word it hasn't seen").click()
+        page.get_by_role("button", name="Both are in use").click()
+        expect(page.get_by_text("Good call.")).to_be_visible()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Rules with no rule"))).to_be_visible()
+    shot(page, "later-pupil-end")
+
+
 def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -288,7 +371,14 @@ def main() -> int:
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.set_default_timeout(8000)
-        for name, fn in [("builder", play_builder), ("scene", play_scene), ("cafe", play_cafe), ("pupil", play_pupil), ("family", play_family)]:
+        for name, fn in [
+            ("builder", play_builder),
+            ("scene", play_scene),
+            ("cafe", play_cafe),
+            ("pupil", play_pupil),
+            ("family", play_family),
+            ("later sessions", play_later_sessions),
+        ]:
             fn(page)
             print(f"PASS {name}")
         browser.close()
