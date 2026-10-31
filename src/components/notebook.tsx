@@ -19,12 +19,12 @@ export function Notebook() {
 
   if (played.length === 0)
     return (
-      <p className="mt-4 text-[17px]">
-        Nothing here yet. Play a round and the English you use will be kept here, game by game.{" "}
-        <Link href="/play/builder" className="font-bold text-cobalt underline underline-offset-4">
+      <div className="mt-4 flex flex-col items-start gap-4">
+        <p className="text-[17px]">Nothing here yet. Play a round and the English you use will be kept here, game by game.</p>
+        <Link href="/play/builder" className="inline-flex h-12 items-center rounded-lg bg-cobalt px-5 text-[17px] font-bold text-paper">
           Start with Slab!
         </Link>
-      </p>
+      </div>
     );
 
   return (

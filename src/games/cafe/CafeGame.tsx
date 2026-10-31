@@ -26,7 +26,7 @@ const NAME: Record<Speaker, string> = { rosa: "Rosa", tom: "Tom", lena: "Lena" }
 
 export function CafeGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="The Café" poster="/art/cafe/cafe.webp" />;
+  if (!g.ready) return <GameLoading game="The Café" poster="/art/cafe/rounds/c1-1.webp" />;
   const { session, round, finished } = g;
   return (
     <GameFrame game="The Café" g={g} withSpeech>
