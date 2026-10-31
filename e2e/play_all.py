@@ -24,7 +24,11 @@ def shot(page: Page, name: str) -> None:
     global step
     step += 1
     # Pictures fetched after a click (end cards, next rounds) must be in the evidence, not still loading.
-    page.wait_for_function("[...document.images].every((i) => i.complete)", timeout=10000)
+    # A polling loop, not wait_for_function: that one evaluates strings, which the site's CSP (no 'unsafe-eval') blocks.
+    for _ in range(50):
+        if page.evaluate("() => [...document.images].every((i) => i.complete)"):
+            break
+        page.wait_for_timeout(200)
     page.screenshot(path=str(SHOTS / f"{step:03d}-{name}.png"))
 
 

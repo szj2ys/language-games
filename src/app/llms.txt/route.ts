@@ -1,7 +1,6 @@
 import { GAMES } from "@/content/games";
 import { SOURCES, WORK_TITLE } from "@/content/sources";
-
-const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://language-games.example";
+import { SITE_URL } from "@/lib/site";
 
 export function GET() {
   const lines = [
@@ -12,11 +11,11 @@ export function GET() {
     "## Games",
     ...GAMES.map((g) => {
       const s = SOURCES[g.source];
-      return `- [${g.title}](${site}/play/${g.slug}): ${g.promise} English: ${g.english}. Idea: ${g.idea} (${WORK_TITLE[s.work]} ${s.ref}).`;
+      return `- [${g.title}](${SITE_URL}/play/${g.slug}): ${g.promise} English: ${g.english}. Idea: ${g.idea} (${WORK_TITLE[s.work]} ${s.ref}).`;
     }),
     "",
     "## Reference",
-    `- [Sources](${site}/sources): every quoted passage, a plain-English reading, and the limits of each game's analogy.`,
+    `- [Sources](${SITE_URL}/sources): every quoted passage, a plain-English reading, and the limits of each game's analogy.`,
   ];
   return new Response(lines.join("\n") + "\n", { headers: { "content-type": "text/plain; charset=utf-8" } });
 }

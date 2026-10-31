@@ -1,4 +1,5 @@
 import type { SourceId } from "./sources";
+import { titleOf, type GameSlug } from "./order";
 import { SESSIONS as BUILDER } from "@/games/builder/rounds";
 import { SESSIONS as SCENE } from "@/games/scene/rounds";
 import { SESSIONS as CAFE } from "@/games/cafe/rounds";
@@ -6,7 +7,7 @@ import { SESSIONS as PUPIL } from "@/games/pupil/levels";
 import { SESSIONS as FAMILY } from "@/games/family/rounds";
 
 export type GameInfo = {
-  slug: "builder" | "scene" | "cafe" | "pupil" | "family";
+  slug: GameSlug;
   title: string;
   /** What you do, in one line. */
   promise: string;
@@ -31,7 +32,7 @@ export const GAMES: GameInfo[] = [
       "Then swap roles: build the call yourself from word tiles. Your assistant does exactly what you say — and asks when your call is unclear.",
       "Finally, the same words do different jobs: an order, a report, a question, a warning. Work out which.",
     ],
-    title: "Slab!",
+    title: titleOf("builder"),
     promise: "Fetch stones for a builder — then give the orders yourself.",
     english: "Orders, numbers, plurals, “this” and “there”, asking “Which one?”",
     idea: "Words get their meaning inside an activity",
@@ -45,7 +46,7 @@ export const GAMES: GameInfo[] = [
       "Compare a report with the stage and change one word in each false sentence.",
       "Tell a partner who cannot see the stage where something is — in one sentence that leaves only one place.",
     ],
-    title: "Picture Theatre",
+    title: titleOf("scene"),
     promise: "Build the scene a sentence describes, catch false reports.",
     english: "in, on, behind, next to, to the left of",
     idea: "A sentence is a picture of how things stand",
@@ -59,7 +60,7 @@ export const GAMES: GameInfo[] = [
       "Choose what to do or say. The same words can be a request, a hint or a complaint, depending on the situation.",
       "Asking first is always allowed. After each round you see what job the words were doing.",
     ],
-    title: "The Café",
+    title: titleOf("cafe"),
     promise: "Same words, different jobs. Read the room, then respond.",
     english: "Requests, hints, polite refusals",
     idea: "For many words, meaning is use",
@@ -73,7 +74,7 @@ export const GAMES: GameInfo[] = [
       "Show it example cards. After each one it re-sits the test with whatever rule fits everything it has seen.",
       "Get all five right with as few cards as you can — then decide what to do with a word that breaks the pattern.",
     ],
-    title: "Go On!",
+    title: titleOf("pupil"),
     promise: "Teach a stubborn pupil a spelling rule with as few examples as you can.",
     english: "a/an, plurals, -ed, comparatives, -ing or to, uncountables",
     idea: "Following a rule is a practice",
@@ -87,7 +88,7 @@ export const GAMES: GameInfo[] = [
       "Thread every card into one chain, each link a feature two neighbours share.",
       "A newcomer arrives. Link it with “both”, or keep it at the edge with “unlike”.",
     ],
-    title: "Family Threads",
+    title: titleOf("family"),
     promise: "What do all games have in common? Don't think — look.",
     english: "all / most / some / none of these; both … and; unlike",
     idea: "Family resemblance, not one shared essence",
@@ -97,8 +98,5 @@ export const GAMES: GameInfo[] = [
 ];
 
 /** The game after this one, for the end of a game's last session. */
-export function nextGame(slug: GameInfo["slug"]): { title: string; href: string } {
-  const i = GAMES.findIndex((g) => g.slug === slug);
-  const g = GAMES[(i + 1) % GAMES.length];
-  return { title: g.title, href: `/play/${g.slug}` };
-}
+
+export { nextGame } from "./order";

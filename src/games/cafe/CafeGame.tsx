@@ -8,11 +8,11 @@ import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/ga
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
-import { nextGame } from "@/content/games";
+import { nextGame } from "@/content/order";
 import type { SourceId } from "@/content/sources";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
-import { SESSIONS, type CafeRound, type Speaker } from "./rounds";
+import { SESSIONS, did, type CafeRound, type Speaker } from "./rounds";
 
 const GAME = "cafe";
 
@@ -27,7 +27,7 @@ const SESSION_SOURCES: SourceId[][] = [
 const NAME: Record<Speaker, string> = { rosa: "Rosa", tom: "Tom", lena: "Lena" };
 
 export function CafeGame() {
-  const g = useSessions(GAME, SESSIONS);
+  const g = useSessions(GAME, SESSIONS, did);
   if (!g.ready) return <GameLoading game="The Café" poster="/art/cafe/rounds/c1-1.webp" />;
   const { session, round, finished } = g;
   return (
@@ -108,6 +108,7 @@ function Round({
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
+      {/* The answers follow the clues: a growing picture cost LCP, docked answers left an empty band above them. */}
       <div>
         <SceneCanvas
           label={round.clues.join(" ")}
@@ -154,7 +155,7 @@ function Round({
         )}
       </div>
 
-      <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-2 px-3 pb-4 lg:px-0">
         <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           {NAME[round.speaker]} says “{round.says}” {solved ? "You chose:" : "What do you do?"}
         </p>

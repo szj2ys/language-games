@@ -53,7 +53,7 @@ export default function SourcesPage() {
                     className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-cobalt underline-offset-4 hover:underline"
                     rel="noopener"
                   >
-                    Read the original text
+                    {s.work === "TLP" ? "Read the full text (English)" : "Read the original (German)"}
                   </a>
                 </li>
               ))}

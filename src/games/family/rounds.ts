@@ -176,3 +176,10 @@ export const SESSIONS: Session[] = [
     ],
   },
 ];
+
+/** What the English did in a round, for the end card and the notebook. */
+export function did(r: FamilyRound): string {
+  if (r.mode === "claim") return "a claim about these cards";
+  if (r.mode === "thread") return "comparisons with “both”";
+  return "a newcomer placed with “both” or “unlike”";
+}

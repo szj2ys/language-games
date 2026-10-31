@@ -6,17 +6,16 @@ import { GAMES } from "@/content/games";
 import { SOURCES, WORK_TITLE } from "@/content/sources";
 import { ContinueButton, GameProgress, LadderEnd } from "@/components/home-progress";
 import { HomeDemo } from "@/components/home-demo";
-
-const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://language-games.example";
+import { SITE_URL } from "@/lib/site";
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Language Games",
-  url: site,
+  url: SITE_URL,
   description: "Free browser games for intermediate learners of English, built on Wittgenstein's language-games.",
   inLanguage: "en",
-  hasPart: GAMES.map((g) => ({ "@type": "LearningResource", name: g.title, url: `${site}/play/${g.slug}`, teaches: g.english })),
+  hasPart: GAMES.map((g) => ({ "@type": "LearningResource", name: g.title, url: `${SITE_URL}/play/${g.slug}`, teaches: g.english })),
 };
 
 export default function Home() {

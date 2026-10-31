@@ -218,3 +218,10 @@ export const SESSIONS: Session[] = [
     ],
   },
 ];
+
+/** What the English did in a round, for the end card and the notebook. */
+export function did(r: SceneRound): string {
+  if (r.mode === "build") return "a description you made true";
+  if (r.mode === "check") return "a report you corrected";
+  return "a description you gave";
+}

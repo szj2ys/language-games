@@ -429,3 +429,8 @@ export const SESSIONS: Session[] = [
     ],
   },
 ];
+
+/** What the English did in a round, for the end card and the notebook. */
+export function did(r: CafeRound): string {
+  return r.use;
+}

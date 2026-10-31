@@ -10,7 +10,7 @@ import { track } from "@/components/analytics";
 import { onRadioKeys, radioTabIndex } from "@/components/game/radio";
 import { cn } from "@/lib/utils";
 import type { SourceId } from "@/content/sources";
-import { nextGame } from "@/content/games";
+import { nextGame } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
 import {
@@ -24,7 +24,7 @@ import {
   type Feature,
   type Quantifier,
 } from "./engine";
-import { SESSIONS, type ClaimRound, type NewcomerRound, type Session, type ThreadRound } from "./rounds";
+import { SESSIONS, did, type ClaimRound, type NewcomerRound, type Session, type ThreadRound } from "./rounds";
 
 const GAME = "family";
 type Done = (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
@@ -33,7 +33,7 @@ type Done = (marks: number, max: number, firstTry: boolean, phrases: string[], m
 const END_ART = ["/art/covers/family.webp", "/art/covers/family-tools.webp", "/art/covers/family-languages.webp"];
 
 export function FamilyGame() {
-  const g = useSessions(GAME, SESSIONS);
+  const g = useSessions(GAME, SESSIONS, did);
   if (!g.ready) return <GameLoading game="Family Threads" poster="/art/covers/family.webp" />;
   const { session, round, finished } = g;
   const props = { session, onDone: g.complete, onNext: g.next };
@@ -213,7 +213,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
           <CardTile key={c.id} card={c} light={looked ? lightFor(c, feature.id) : "plain"} />
         ))}
       </div>
-      <div className="mt-auto flex flex-col gap-3 lg:mt-0">
+      <div className="flex flex-col gap-3">
         <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           Make the strongest claim that is true of these {session.kind}. Then look.
         </p>
@@ -358,7 +358,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
           <ThreadLines chain={chain} cards={session.cards} features={session.features} />
         </div>
       </div>
-      <div className="mt-auto flex flex-col gap-3 lg:mt-0">
+      <div className="flex flex-col gap-3">
         {pending && (
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="What they share">
             {session.features.map((f) => (
@@ -486,7 +486,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
           ))}
         </div>
       </div>
-      <div className="mt-auto flex flex-col gap-3 lg:mt-0">
+      <div className="flex flex-col gap-3">
         <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           {agree(n, "Does", "Do")} {n.name} belong with these {session.kind}? Say one true sentence.
         </p>

@@ -9,7 +9,7 @@ import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { onRadioKeys, radioTabIndex } from "@/components/game/radio";
 import { cn } from "@/lib/utils";
-import { nextGame } from "@/content/games";
+import { nextGame } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
 import { useIsPhone } from "@/lib/use-phone";
 import { useShortcuts } from "@/components/game/shortcuts";
@@ -28,7 +28,7 @@ import {
   type Stone,
   type Tile,
 } from "./engine";
-import { SESSIONS, type CallRound, type FetchRound, type UseRound } from "./rounds";
+import { SESSIONS, did, type CallRound, type FetchRound, type UseRound } from "./rounds";
 import type { SourceId } from "@/content/sources";
 
 const GAME = "builder";
@@ -88,7 +88,7 @@ const PLACE_LABEL: Record<Place, string> = { builder: "Here", left: "Left", righ
 type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "count" | "place", boolean> };
 
 export function BuilderGame() {
-  const g = useSessions(GAME, SESSIONS);
+  const g = useSessions(GAME, SESSIONS, did);
   if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" posterSquare="/art/square/site.webp" />;
   const { round, session, sessionIndex, finished } = g;
   const speak = g.speech.speak;

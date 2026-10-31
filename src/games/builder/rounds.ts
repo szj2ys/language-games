@@ -304,3 +304,10 @@ export const SESSIONS: Session[] = [
 export function findRound(id: string): BuilderRound | undefined {
   for (const s of SESSIONS) for (const r of s.rounds) if (r.id === id) return r;
 }
+
+/** What the English did in a round, for the end card and the notebook. */
+export function did(r: BuilderRound): string {
+  if (r.role === "fetch") return "an order you carried out";
+  if (r.role === "call") return "an order you gave";
+  return r.use;
+}

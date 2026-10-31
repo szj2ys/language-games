@@ -7,15 +7,15 @@ import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { cn } from "@/lib/utils";
-import { nextGame } from "@/content/games";
+import { nextGame } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
 import { bestCards, explain, showExample, sitExam, startPupil, type Level, type Pupil } from "./engine";
-import { SESSIONS } from "./levels";
+import { SESSIONS, did } from "./levels";
 
 const GAME = "pupil";
 
 export function PupilGame() {
-  const g = useSessions(GAME, SESSIONS);
+  const g = useSessions(GAME, SESSIONS, did);
   if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" />;
   const { session, round, finished } = g;
   return (

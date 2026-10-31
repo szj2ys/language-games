@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible, Fraunces } from "next/font/google";
 import { Analytics } from "@/components/analytics";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
 const display = Fraunces({
   variable: "--font-display",
@@ -15,10 +16,8 @@ const body = Atkinson_Hyperlegible({
   weight: ["400", "700"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://language-games.example";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Language Games — learn English by playing Wittgenstein",
     template: "%s · Language Games",

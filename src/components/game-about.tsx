@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { GAMES, type GameInfo } from "@/content/games";
 import { SOURCES, WORK_TITLE } from "@/content/sources";
-
-const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://language-games.example";
+import { SITE_URL } from "@/lib/site";
 
 /** Server-rendered notes under each game: how to play, the English, the passage. */
 export function GameAbout({ slug }: { slug: GameInfo["slug"] }) {
@@ -13,7 +12,7 @@ export function GameAbout({ slug }: { slug: GameInfo["slug"] }) {
     "@type": "LearningResource",
     name: `${g.title} — Language Games`,
     description: g.promise,
-    url: `${site}/play/${g.slug}`,
+    url: `${SITE_URL}/play/${g.slug}`,
     learningResourceType: "Game",
     educationalLevel: "Intermediate (CEFR B1–B2)",
     inLanguage: "en",

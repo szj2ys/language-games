@@ -8,7 +8,7 @@ import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/c
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
-import { nextGame } from "@/content/games";
+import { nextGame } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
 import { useIsPhone } from "@/lib/use-phone";
 import {
@@ -30,7 +30,7 @@ import {
   type Scene,
   type Thing,
 } from "./engine";
-import { SESSIONS, type BuildRound, type CheckRound, type TellRound } from "./rounds";
+import { SESSIONS, did, type BuildRound, type CheckRound, type TellRound } from "./rounds";
 
 const GAME = "scene";
 
@@ -156,9 +156,11 @@ function Stage({
   onDrop,
   fixed,
   children,
+  className,
 }: {
   scene: Scene;
   label: string;
+  className?: string;
   selected?: Thing | null;
   onSelectPlaced?: (t: Thing) => void;
   onDrop?: (loc: Loc) => void;
@@ -172,7 +174,7 @@ function Stage({
   const placed = layout(scene, spotX, phone ? 0.42 : 1);
   const holders = placed.filter((p) => HOLDERS.includes(p.thing) && scene[p.thing] && "spot" in scene[p.thing]!);
   return (
-    <SceneCanvas label={label} frame="floor">
+    <SceneCanvas label={label} frame="floor" className={className}>
       <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       {placed
         .filter((p) => scene[p.thing] && "spot" in scene[p.thing]!)
@@ -282,7 +284,7 @@ function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 // ---------------------------------------------------------------------------
 
 export function SceneGame() {
-  const g = useSessions(GAME, SESSIONS);
+  const g = useSessions(GAME, SESSIONS, did);
   if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" />;
   const { session, round, finished } = g;
   return (
@@ -419,6 +421,8 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-1 flex-col gap-3 lg:block">
         <Stage
+          // On a tall phone the stage takes the spare height (more back wall), so no empty band opens below the message.
+          className="max-sm:aspect-auto max-sm:min-h-[100vw] max-sm:flex-1"
           scene={scene}
           label="The stage"
           selected={checked ? null : selected}
@@ -428,7 +432,7 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
         />
         <div className="px-3 lg:hidden">{message}</div>
       </div>
-      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         <div className="hidden lg:block">{message}</div>
         {!checked && (
           <div>
@@ -534,7 +538,7 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <Stage scene={round.scene} label="What is really on the stage" />
-      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           The report. Change one word in each false sentence so that it fits the stage.
         </p>
@@ -630,7 +634,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
           </div>
         )}
       </div>
-      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           Your partner has everything except the <b>{round.target}</b>. Tell them where it goes — one sentence.
         </p>

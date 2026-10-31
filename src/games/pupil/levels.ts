@@ -252,3 +252,8 @@ export const SESSIONS: Session[] = [
     rounds: LEVELS_2,
   },
 ];
+
+/** What the English did in a round, for the end card and the notebook. */
+export function did(r: Level): string {
+  return r.english;
+}

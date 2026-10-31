@@ -4,12 +4,14 @@ import { track } from "@/components/analytics";
 import { recordRound } from "@/lib/progress";
 import { useSave, useSpeech } from "@/lib/use-save";
 import { clearDrafts } from "@/lib/use-draft";
-import { NOTEBOOK } from "@/content/notebook";
 
 type SessionLike = { rounds: { id: string }[] };
 
-/** Where the player is in a game's sessions, saved locally so a reload resumes the same round. */
-export function useSessions<S extends SessionLike>(game: string, sessions: S[]) {
+/**
+ * Where the player is in a game's sessions, saved locally so a reload resumes the same round.
+ * `did` names what the English did in a round (the game's own content module defines it).
+ */
+export function useSessions<S extends SessionLike>(game: string, sessions: S[], did: (r: S["rounds"][number]) => string) {
   const { save, ready, update, storable } = useSave();
   const pos = save.positions[game] ?? { session: 0, round: 0 };
   // Clamp a saved position to the content as it is now: sessions can be added or removed between visits.
@@ -39,8 +41,8 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[]) 
     next: () => goTo(sessionIndex, roundIndex + 1),
     /** What the player said in each round of this session, and the job those words did. */
     sessionItems: () =>
-      (NOTEBOOK[game as keyof typeof NOTEBOOK]?.[sessionIndex]?.rounds ?? [])
-        .map((r) => ({ text: save.rounds[r.id]?.said?.[0], did: r.did }))
+      session.rounds
+        .map((r) => ({ text: save.rounds[r.id]?.said?.[0], did: did(r) }))
         .filter((x): x is { text: string; did: string } => !!x.text),
     finishedIn: (i: number) => sessions[i].rounds.every((r) => !!save.rounds[r.id]),
     nextSession: () => goTo(sessionIndex + 1, 0),
