@@ -152,6 +152,18 @@ export const SOURCES = {
     gloss: "Instead of hunting for a definition of 'game', look at the actual games and how they overlap.",
     url: PI_URL,
   },
+  "pi-67-number": {
+    id: "pi-67-number",
+    work: "PI",
+    ref: "§67",
+    quote:
+      "And for instance the kinds of number form a family in the same way. Why do we call something a “number”? Well, perhaps because it has a — direct — relationship with several things that have hitherto been called number; and this can be said to give an indirect relationship to other things we call the same name.",
+    gloss:
+      "Fractions earned the name “number” by measuring like whole numbers; negative numbers by being added like them. A bus number is related to the family only through its digits.",
+    limits:
+      "Wittgenstein makes the point about how we extend a concept; the game does not decide whether bus numbers are “really” numbers.",
+    url: PI_URL,
+  },
   "pi-67": {
     id: "pi-67",
     work: "PI",

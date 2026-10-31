@@ -84,7 +84,7 @@ export const GAMES: GameInfo[] = [
   {
     slug: "family",
     howTo: [
-      "Six cards show things we call by one name: games, tools or languages. Make the strongest claim that is true of them: all, most, some or none.",
+      "Six cards show things we call by one name: games, tools, languages or numbers. Make the strongest claim that is true of them: all, most, some or none.",
       "Thread every card into one chain, each link a feature two neighbours share.",
       "A newcomer arrives. Link it with “both”, or keep it at the edge with “unlike”.",
     ],

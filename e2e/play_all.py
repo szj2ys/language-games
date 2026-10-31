@@ -351,6 +351,27 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a language"))).to_be_visible()
     shot(page, "later-family-end")
 
+    # Family Threads, session 4: kinds of number (§67).
+    pick_session(page, "What is a number?")
+    for q in ["Most", "Some"]:
+        page.get_by_role("radio", name=q).click()
+        page.get_by_role("button", name="Look").click()
+        next_round(page)
+    for name, link in [("whole numbers", None), ("fractions", "can measure an amount"), ("negative numbers", "can measure an amount"),
+                       ("π (pi)", "can measure an amount"), ("zero", "can be added together"), ("bus numbers", "can be written out in digits")]:
+        page.get_by_role("button", name=name, exact=True).click()
+        if link:
+            page.get_by_role("button", name=link).click()
+    expect(page.get_by_text("The thread holds")).to_be_visible()
+    next_round(page)
+    page.get_by_label("Which one").select_option(label="bus numbers")
+    page.get_by_label("What they share").select_option(label="can name one thing among many")
+    page.get_by_role("button", name="Say it").click()
+    expect(page.get_by_text("joins the family")).to_be_visible()
+    next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a number"))).to_be_visible()
+    shot(page, "later-family4-end")
+
     # Picture Theatre, session 4: sentences with "not" leave many pictures open.
     page.goto(f"{BASE}/play/scene")
     pick_session(page, "Not here")

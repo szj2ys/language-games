@@ -30,7 +30,12 @@ const GAME = "family";
 type Done = (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
 
 // The end card shows the thread of the session just played: games, tools, languages.
-const END_ART = ["/art/covers/family.webp", "/art/covers/family-tools.webp", "/art/covers/family-languages.webp"];
+const END_ART = [
+  "/art/covers/family.webp",
+  "/art/covers/family-tools.webp",
+  "/art/covers/family-languages.webp",
+  "/art/covers/family-numbers.webp",
+];
 
 export function FamilyGame() {
   const g = useSessions(GAME, SESSIONS, did);
@@ -53,6 +58,7 @@ export function FamilyGame() {
               ["pi-66", "pi-67"],
               ["pi-11", "pi-14"],
               ["pi-18", "pi-2"],
+              ["pi-67-number", "pi-67"],
             ][g.sessionIndex] as SourceId[]
           }
           nextTitle={SESSIONS[g.sessionIndex + 1]?.title}

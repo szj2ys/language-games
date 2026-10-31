@@ -1,0 +1,7 @@
+wholenumbers|Three red apples in a neat row on a table, and a child's hand counting them with one finger.
+fractions|A round cake on a plate, cut exactly in half, one half slightly pulled away from the other.
+negativenumbers|An old outdoor thermometer on a snowy wall, its red line far below the zero mark, icicles hanging nearby; the only figures shown are simple tick marks.
+zero|An empty woven basket on a table, nothing inside it, a few crumbs beside it.
+busnumbers|A friendly red city bus at a stop, with a large route number 42 on its front sign; the number 42 is the only text in the picture.
+pi|A round wheel and a piece of string laid along its edge and then straightened out beside it, measuring the circle; the Greek letter π drawn once, large, beside them; no other text.
+shirtnumber|The back of a football player's shirt with a large number 7 on it, seen from behind, on a sunny pitch; the number 7 is the only text.

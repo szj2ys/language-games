@@ -268,7 +268,7 @@ export const LEVELS_3: Level[] = [
       item: { word: "have", forms: {}, correct: "she has" },
       prompt: "New verb: the pupil writes “She haves a dog.” Every rule you taught says just add -s.",
       answer: "correct",
-      why: "Correct it: “she has”. A few of the commonest verbs (have, be, do, go) have their own forms; speakers learn them by using them, not from the rule (§217).",
+      why: "Correct it: “she has”. Two of the commonest verbs have their own forms — have → has, be → is — and speakers learn them by using them, not from the rule (§217).",
     },
   },
   {

@@ -91,6 +91,28 @@ const LANGUAGES: Card[] = [
   lang("morse", "Morse code", ["orders", "special", "hands", "written", "stories"], ["spoken"]),
 ];
 
+const NUMBER_FEATURES: Feature[] = [
+  { id: "howmany", plural: "can say how many", singular: "can say how many", colour: "#42649a" },
+  { id: "measure", plural: "can measure an amount", singular: "can measure an amount", colour: "#b0553e" },
+  { id: "order", plural: "can be put in order", singular: "can be put in order", colour: "#64775a" },
+  { id: "add", plural: "can be added together", singular: "can be added together", colour: "#c9a24a" },
+  { id: "name", plural: "can name one thing among many", singular: "can name one thing among many", colour: "#7a5c8a" },
+  { id: "digits", plural: "can be written out in digits", singular: "can be written out in digits", colour: "#5b5f60" },
+];
+
+const num = (id: string, name: string, on: string[], blurred: string[] = []) => card(id, name, on, blurred, NUMBER_FEATURES);
+
+// PI §67: "And for instance the kinds of number form a family in the same way." Why do we call something
+// a number? Because it has a direct relationship with several things that have hitherto been called number.
+const NUMBERS: Card[] = [
+  num("wholenumbers", "whole numbers", ["howmany", "measure", "order", "add", "digits"]),
+  num("fractions", "fractions", ["measure", "order", "add", "digits"]),
+  num("negativenumbers", "negative numbers", ["measure", "order", "add", "digits"]),
+  num("zero", "zero", ["howmany", "order", "add", "digits"]),
+  num("busnumbers", "bus numbers", ["name", "digits"], ["order"]),
+  num("pi", "π (pi)", ["measure", "order", "add"]),
+];
+
 export const SESSIONS: Session[] = [
   {
     id: "family-1",
@@ -172,6 +194,32 @@ export const SESSIONS: Session[] = [
         mode: "newcomer",
         newcomer: lang("builders", "the builders' language", ["spoken", "orders", "special", "written"]),
         hint: "The builders' four words (§2): they are spoken and they give orders. Which card shares that?",
+      },
+    ],
+  },
+  {
+    id: "family-4",
+    title: "What is a number?",
+    blurb: "Wittgenstein: the kinds of number form a family too (§67). Does a bus number belong?",
+    english: "Numbers in English: 'how many', 'half', 'below zero', 'can be …'",
+    kind: "numbers",
+    source: "pi-67-number",
+    cards: NUMBERS,
+    features: NUMBER_FEATURES,
+    rounds: [
+      { id: "f4-1", mode: "claim", feature: "add", hint: "Can you add two bus numbers and get a bus?" },
+      {
+        id: "f4-2",
+        mode: "claim",
+        feature: "howmany",
+        hint: "“How many apples?” — “Three.” Can “half” or “minus five” answer that question?",
+      },
+      { id: "f4-3", mode: "thread", hint: "Start with whole numbers. Each next card must share something with the one before it." },
+      {
+        id: "f4-4",
+        mode: "newcomer",
+        newcomer: num("shirtnumber", "the number on a football shirt", ["name", "digits"]),
+        hint: "A shirt number tells you which player it is. Which card does that too?",
       },
     ],
   },

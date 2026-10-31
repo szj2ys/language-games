@@ -1,0 +1,3 @@
+Use your built-in image generation tool (gpt-image-2) to create ONE image using the attached reference image for style, then copy the resulting PNG to art/family/zero.png in the current directory. Do nothing else.
+
+Image prompt: An empty woven basket on a table, nothing inside it, a few crumbs beside it. Hand-cut paper illustration with subtle screen-print grain, charcoal #252A2D ink outlines, muted cobalt #42649A, terracotta #B0553E, sage #64775A, ochre #C9A24A on a plain warm ivory #F5F0E6 background; one clear centred vignette, soft light from upper left; friendly adult picture-book style; square 1:1. Match the style of the reference image. No words, letters, logos or watermarks, except any single number or symbol named above.
