@@ -255,6 +255,16 @@ export const SOURCES = {
     gloss: "'The key is in the box' pictures a key and a box standing in one relation. Change the relation word, change the picture.",
     url: TLP_URL,
   },
+  "tlp-4.0621": {
+    id: "tlp-4.0621",
+    work: "TLP",
+    ref: "4.0621",
+    quote: "The propositions “p” and “~p” have opposite senses, but to them corresponds one and the same reality.",
+    gloss:
+      "“The key is in the box” and “The key is not in the box” are about the same key and box; one of them fits the stage. A “not” sentence rules a picture out and leaves many open.",
+    limits: "Wittgenstein's point is about what negation does in logic; the game only uses it to practise “not” with places.",
+    url: TLP_URL,
+  },
   "tlp-5.6": {
     id: "tlp-5.6",
     work: "TLP",

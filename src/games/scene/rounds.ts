@@ -217,6 +217,63 @@ export const SESSIONS: Session[] = [
       },
     ],
   },
+  {
+    id: "scene-4",
+    title: "Not here",
+    blurb: "A sentence with “not” rules one picture out and leaves many others in. Find one that makes every sentence true.",
+    english: "Negative sentences: is not, neither … nor; reading two facts at once",
+    source: "tlp-4.0621",
+    rounds: [
+      {
+        id: "s4-1",
+        mode: "build",
+        message: [c("key", "in", "box", true), c("key", "on", "book")],
+        things: ["key"],
+        start: { box: { spot: 1, row: "front" }, book: { spot: 2, row: "front" } },
+        hint: "“Not in the box” rules out one place. The other sentence says where the key is.",
+      },
+      {
+        id: "s4-2",
+        mode: "build",
+        message: [c("ball", "next to", "box", true)],
+        things: ["ball"],
+        start: { box: { spot: 1, row: "front" } },
+        hint: "Anywhere but right beside the box. A “not” sentence allows many pictures.",
+      },
+      {
+        id: "s4-3",
+        mode: "build",
+        message: [c("lamp", "left of", "cup"), c("lamp", "next to", "cup", true)],
+        things: ["lamp"],
+        start: { cup: { spot: 3, row: "front" } },
+        hint: "On the cup's left, but leave a gap.",
+      },
+      {
+        id: "s4-4",
+        mode: "build",
+        message: [c("cup", "left of", "box", true), c("cup", "right of", "box", true)],
+        things: ["cup"],
+        start: { box: { spot: 2, row: "front" } },
+        hint: "Neither left nor right of the box. What is left? Behind it — or in it.",
+      },
+      {
+        id: "s4-5",
+        mode: "build",
+        message: [c("key", "in", "box"), c("box", "next to", "book", true), c("ball", "on", "book")],
+        things: ["key", "box", "ball"],
+        start: { book: { spot: 1, row: "front" } },
+        hint: "Place the box first, away from the book.",
+      },
+      {
+        id: "s4-6",
+        mode: "build",
+        message: [c("ball", "on", "book", true), c("ball", "in", "box", true), c("ball", "next to", "book")],
+        things: ["ball"],
+        start: { book: { spot: 1, row: "front" }, box: { spot: 2, row: "front" } },
+        hint: "Not on the book, not in the box, but beside the book: only one place is left.",
+      },
+    ],
+  },
 ];
 
 /** What the English did in a round, for the end card and the notebook. */

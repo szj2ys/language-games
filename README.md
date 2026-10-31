@@ -6,7 +6,7 @@ idea of *language-games*: words get their meaning in what people do with them.
 | Game | You… | English | Wittgenstein |
 |---|---|---|---|
 | **Slab!** (`/play/builder`) | fetch stones for a builder, give the orders, tell orders from reports | orders, numbers, plurals, *this/there*, asking "Which one?" | PI §§2, 6, 8, 19–21, 27 |
-| **Picture Theatre** (`/play/scene`) | build what a sentence says, fix false reports, describe a stage | *in, on, behind, next to, to the left of* | TLP 2.1, 2.21, 4.01 |
+| **Picture Theatre** (`/play/scene`) | build what a sentence says, fix false reports, describe a stage | *in, on, behind, next to, to the left of*, *is not, neither … nor* | TLP 2.1, 2.21, 4.01, 4.0621 |
 | **The Café** (`/play/cafe`) | read the room and respond | requests, hints, polite refusals, *Excuse me?*, *Sorry / Thank you / Never mind / Go ahead* | PI §§21, 23, 43 |
 | **Go On!** (`/play/pupil`) | teach a pupil a rule with as few examples as possible | *a/an*, plurals, *-ed*, comparatives, *-ing/to*, uncountables | PI §§84, 185, 198–202, 217 |
 | **Family Threads** (`/play/family`) | test claims about games, tools and languages, thread them by resemblance | *all/most/some/none of these*, *both … and*, *unlike* | PI §§11, 14, 18, 66–67 |

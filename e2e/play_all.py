@@ -351,6 +351,25 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a language"))).to_be_visible()
     shot(page, "later-family-end")
 
+    # Picture Theatre, session 4: sentences with "not" leave many pictures open.
+    page.goto(f"{BASE}/play/scene")
+    pick_session(page, "Not here")
+    for moves in [
+        [("key", "Put the key on the book")],
+        [("ball", "Front row, place 4 from the left")],
+        [("lamp", "Front row, place 1 from the left")],
+        [("cup", "Put the cup in the box")],
+        [("box", "Front row, place 4 from the left"), ("key", "Put the key in the box"), ("ball", "Put the ball on the book")],
+        [("ball", "Front row, place 1 from the left")],
+    ]:
+        for thing, where in moves:
+            page.get_by_role("button", name=thing, exact=True).first.click()
+            page.get_by_role("button", name=where).click()
+        page.get_by_role("button", name="Is it true?").click()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Not here"))).to_be_visible()
+    shot(page, "later-scene-end")
+
     # Go On!, session 2: show cards until the pupil passes, then the teacher's call.
     page.goto(f"{BASE}/play/pupil")
     pick_session(page, "Rules with no rule")
