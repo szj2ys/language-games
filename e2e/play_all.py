@@ -409,6 +409,17 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a number"))).to_be_visible()
     shot(page, "later-family4-end")
 
+    # Picture Theatre, session 3: one sentence must pin the thing down for a partner who cannot see.
+    page.goto(f"{BASE}/play/scene")
+    pick_session(page, "Say where it is")
+    for rel, thing in [("in", "box"), ("on", "book"), ("behind", "cup"), ("next to", "box"), ("in front of", "cup"), ("in", "box")]:
+        page.get_by_label("Change the position word").select_option(value=rel)
+        page.get_by_label("Which thing").select_option(value=thing)
+        page.get_by_role("button", name="Tell your partner").click()
+        expect(page.get_by_text("Leaves only one place.").first).to_be_visible()
+        next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*Say where it is"))).to_be_visible()
+
     # Picture Theatre, session 4: sentences with "not" leave many pictures open.
     page.goto(f"{BASE}/play/scene")
     pick_session(page, "Not here")
