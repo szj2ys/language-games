@@ -344,6 +344,27 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("heading", name=re.compile(r"Done.*Sorry, thanks"))).to_be_visible()
     shot(page, "later-cafe-end")
 
+    # Family Threads, session 2: tools (§11).
+    page.goto(f"{BASE}/play/family")
+    pick_session(page, "What is a tool?")
+    for q in ["Most", "Most", "Some"]:
+        page.get_by_role("radio", name=q).click()
+        page.get_by_role("button", name="Look").click()
+        next_round(page)
+    for name, link in [("the ruler", None), ("the hammer", "are partly made of wood"), ("the glue-pot", "are used to join things"),
+                       ("the screwdriver", "are used to join things"), ("the pliers", "are made of metal"), ("the saw", "are used to cut things")]:
+        page.get_by_role("button", name=name, exact=True).click()
+        if link:
+            page.get_by_role("button", name=link).click()
+    expect(page.get_by_text("The thread holds")).to_be_visible()
+    next_round(page)
+    page.get_by_label("Which one").select_option(label="the hammer")
+    page.get_by_label("What they share").select_option(label="are used to join things")
+    page.get_by_role("button", name="Say it").click()
+    expect(page.get_by_text("join the family")).to_be_visible()  # "nails" is plural
+    next_round(page)
+    expect(page.get_by_role("heading", name=re.compile(r"Done.*What is a tool"))).to_be_visible()
+
     # Family Threads, session 3: languages.
     page.goto(f"{BASE}/play/family")
     pick_session(page, "What is a language?")
