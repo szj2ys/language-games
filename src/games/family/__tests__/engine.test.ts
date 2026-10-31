@@ -42,7 +42,8 @@ describe("authored family sessions", () => {
     });
     it(`${s.id}: the cards can be threaded into one chain`, () => {
       const cards = s.cards;
-      const link = (a: (typeof cards)[number], b: (typeof cards)[number]) => s.features.some((f) => a.features[f.id] === true && b.features[f.id] === true);
+      const link = (a: (typeof cards)[number], b: (typeof cards)[number]) =>
+        s.features.some((f) => a.features[f.id] === true && b.features[f.id] === true);
       const search = (chain: typeof cards): boolean =>
         chain.length === cards.length || cards.some((c) => !chain.includes(c) && link(chain[chain.length - 1], c) && search([...chain, c]));
       expect(cards.some((c) => search([c]))).toBe(true);

@@ -1,7 +1,7 @@
 import type { SourceId } from "@/content/sources";
 import type { Card, Feature } from "./engine";
 
-export type ClaimRound = { id: string; mode: "claim"; feature: string; hint: string };
+export type ClaimRound = { id: string; mode: "claim"; feature: string; hint: string; blurredNote?: string };
 export type ThreadRound = { id: string; mode: "thread"; hint: string };
 export type NewcomerRound = { id: string; mode: "newcomer"; newcomer: Card; hint: string };
 export type FamilyRound = ClaimRound | ThreadRound | NewcomerRound;
@@ -80,17 +80,26 @@ export const SESSIONS: Session[] = [
     cards: GAMES,
     features: GAME_FEATURES,
     rounds: [
-      { id: "f1-1", mode: "claim", feature: "winner", hint: "Look at each card. Does every one of them have a winner?" },
-      { id: "f1-2", mode: "claim", feature: "skill", hint: "Is there one game here that needs no skill at all?" },
+      {
+        id: "f1-1",
+        mode: "claim",
+        feature: "winner",
+        hint: "Look at each card. Does every one of them have a winner?",
+        blurredNote:
+          "you can “win” at patience, but nobody loses to you — is that a winner? Wittgenstein makes the same point about patience (§66).",
+      },
+      { id: "f1-2", mode: "claim", feature: "skill", blurredNote: undefined, hint: "Is there one game here that needs no skill at all?" },
       { id: "f1-3", mode: "claim", feature: "ball", hint: "Count the balls." },
       { id: "f1-4", mode: "thread", hint: "Start with any card. Each next card must share something with the one before it." },
       {
-        id: "f1-5", mode: "newcomer",
+        id: "f1-5",
+        mode: "newcomer",
         newcomer: card("crossword", "a crossword", ["skill", "alone"]),
         hint: "What does a crossword share with one of the games — or what makes it unlike them?",
       },
       {
-        id: "f1-6", mode: "newcomer",
+        id: "f1-6",
+        mode: "newcomer",
         newcomer: card("lottery", "the lottery", ["winner", "luck", "group"]),
         hint: "Is the lottery like poker in any way? Is it unlike most of these games?",
       },
@@ -111,7 +120,8 @@ export const SESSIONS: Session[] = [
       { id: "f2-3", mode: "claim", feature: "measure", hint: "Which of these can tell you how long something is?" },
       { id: "f2-4", mode: "thread", hint: "Each next tool must share something with the one before it." },
       {
-        id: "f2-5", mode: "newcomer",
+        id: "f2-5",
+        mode: "newcomer",
         newcomer: { ...tool("nails", "nails", ["join", "metal"]), plural: true },
         hint: "Nails are on Wittgenstein's list of tools. What do they share with the hammer?",
       },

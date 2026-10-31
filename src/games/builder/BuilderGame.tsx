@@ -66,6 +66,7 @@ export function BuilderGame() {
     <GameFrame game="Slab!" g={g} withSpeech>
       {finished ? (
         <SessionEnd
+          said={g.saidInSession()}
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
@@ -86,9 +87,21 @@ export function BuilderGame() {
           onNext={g.next}
         />
       ) : round.role === "use" ? (
-        <UsePlay key={round.id} round={round} speak={speak} onDone={(firstTry) => g.complete(firstTry ? 3 : 2, 3, firstTry, [round.says])} onNext={g.next} />
+        <UsePlay
+          key={round.id}
+          round={round}
+          speak={speak}
+          onDone={(firstTry) => g.complete(firstTry ? 3 : 2, 3, firstTry, [round.says])}
+          onNext={g.next}
+        />
       ) : (
-        <CallPlay key={round.id} round={round} speak={speak} onDone={(firstTry, said, marks) => g.complete(marks, 3, firstTry, [said])} onNext={g.next} />
+        <CallPlay
+          key={round.id}
+          round={round}
+          speak={speak}
+          onDone={(firstTry, said, marks) => g.complete(marks, 3, firstTry, [said])}
+          onNext={g.next}
+        />
       )}
     </GameFrame>
   );
@@ -136,10 +149,18 @@ function Site({
               bubbleFrom === "builder" ? "left-[22%] sm:left-[30%]" : "right-[3%]",
             )}
           >
-            <p className="flex items-center gap-1.5 font-heading text-[clamp(18px,5vw,28px)] leading-tight font-semibold" aria-live="polite">
+            <p
+              className="flex items-center gap-1.5 font-heading text-[clamp(18px,5vw,28px)] leading-tight font-semibold"
+              aria-live="polite"
+            >
               {bubble}
               {onSpeak && (
-                <button type="button" onClick={onSpeak} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
+                <button
+                  type="button"
+                  onClick={onSpeak}
+                  aria-label="Hear it again"
+                  className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep"
+                >
                   <Volume2 className="size-5" aria-hidden />
                 </button>
               )}
@@ -204,12 +225,21 @@ function StonePile({ delivery, offset = 0, ghost }: { delivery: Delivery; offset
   return (
     <div
       className={cn("absolute flex -translate-x-1/2 -translate-y-full items-end", ghost && "opacity-40 grayscale")}
-      style={{ left: `${at.x + (delivery.place === "builder" ? offset * 6 : 0)}%`, top: `${at.y - (delivery.place === "builder" ? 0 : offset * 7)}%` }}
+      style={{
+        left: `${at.x + (delivery.place === "builder" ? offset * 6 : 0)}%`,
+        top: `${at.y - (delivery.place === "builder" ? 0 : offset * 7)}%`,
+      }}
       aria-hidden
     >
       {Array.from({ length: delivery.count }, (_, i) => (
         <div key={i} className="relative -mx-[2%] h-[clamp(28px,8vw,60px)] w-[clamp(34px,10vw,76px)]">
-          <Image src={`/art/builder/${delivery.stone}.webp`} alt="" fill sizes="80px" className={cn("object-contain object-bottom", ghost && "[filter:drop-shadow(0_0_0_#000)]")} />
+          <Image
+            src={`/art/builder/${delivery.stone}.webp`}
+            alt=""
+            fill
+            sizes="80px"
+            className={cn("object-contain object-bottom", ghost && "[filter:drop-shadow(0_0_0_#000)]")}
+          />
         </div>
       ))}
     </div>
@@ -224,8 +254,11 @@ function StoneCard({
   badge,
   ariaLabel,
   shortcut,
+  keyHint,
 }: {
   shortcut?: boolean;
+  /** The keyboard key that picks this stone, shown on devices with a keyboard. */
+  keyHint?: string;
   stone: Stone;
   label?: string;
   selected?: boolean;
@@ -241,11 +274,19 @@ function StoneCard({
       aria-label={ariaLabel}
       data-shortcut={shortcut ? "" : undefined}
       className={cn(
-        "relative flex min-h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-card px-2 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
+        "relative flex min-h-28 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-card px-2 py-2 sm:min-h-24 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
         selected ? "border-cobalt bg-cobalt/10" : "border-border hover:border-ink/30",
       )}
     >
-      <span className="relative h-14 w-20">
+      {keyHint && (
+        <kbd
+          className="pointer-coarse:hidden absolute top-1.5 left-2 rounded bg-paper-deep px-1.5 text-xs font-bold text-muted-foreground"
+          aria-hidden
+        >
+          {keyHint}
+        </kbd>
+      )}
+      <span className="relative h-16 w-24 sm:h-14 sm:w-20">
         <Image src={`/art/builder/${stone}.webp`} alt="" fill sizes="80px" className="object-contain" />
       </span>
       <span className={cn("text-[17px] font-bold", !label && "sr-only")}>{label ?? ""}</span>
@@ -307,16 +348,19 @@ function FetchPlay({
   const retry = () => setOutcome(null);
 
   const pickStone = (s: Stone) => {
+    if (solved) return;
+    // After a wrong delivery, the next tap is the retry.
+    if (outcome) setOutcome(null);
     if (!advanced || stone === s) {
       setStone(s);
       bring(s);
     } else setStone(s);
   };
   useShortcuts({
-    "1": outcome ? undefined : () => pickStone("block"),
-    "2": outcome ? undefined : () => pickStone("pillar"),
-    "3": outcome ? undefined : () => pickStone("slab"),
-    "4": outcome ? undefined : () => pickStone("beam"),
+    "1": () => pickStone("block"),
+    "2": () => pickStone("pillar"),
+    "3": () => pickStone("slab"),
+    "4": () => pickStone("beam"),
     Enter: solved ? onNext : outcome ? retry : advanced ? () => bring() : undefined,
   });
 
@@ -331,7 +375,7 @@ function FetchPlay({
   const pointText = round.points ? `He points to the ${round.points} platform.` : "";
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div>
         <Site
           facing={facing}
@@ -351,10 +395,10 @@ function FetchPlay({
         )}
       </div>
 
-      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
-        <fieldset disabled={!!outcome}>
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+        <fieldset disabled={solved}>
           <legend className="sr-only">Which stone?</legend>
-          <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
             {(["block", "pillar", "slab", "beam"] as const).map((s) => (
               <StoneCard
                 key={s}
@@ -362,6 +406,7 @@ function FetchPlay({
                 label={labelled ? s : undefined}
                 selected={stone === s}
                 shortcut
+                keyHint={String(["block", "pillar", "slab", "beam"].indexOf(s) + 1)}
                 // One tap brings it when there is nothing else to choose; a second tap on the chosen stone brings it too.
                 onClick={() => pickStone(s)}
                 ariaLabel={labelled ? s : SHAPE[s]}
@@ -371,14 +416,34 @@ function FetchPlay({
         </fieldset>
 
         {advanced && (
-          <fieldset disabled={!!outcome} className="flex flex-wrap items-center gap-3">
+          <fieldset disabled={solved} className="flex flex-wrap items-center gap-3">
             <legend className="sr-only">How many, and where?</legend>
             <div className="flex items-center rounded-full border border-border bg-card" role="group" aria-label="How many">
-              <button type="button" className="grid size-11 place-items-center rounded-full hover:bg-paper-deep disabled:opacity-40" onClick={() => setCount((c) => Math.max(1, c - 1))} disabled={count <= 1} aria-label="One fewer">
+              <button
+                type="button"
+                className="grid size-11 place-items-center rounded-full hover:bg-paper-deep disabled:opacity-40"
+                onClick={() => {
+                  setOutcome(null);
+                  setCount((c) => Math.max(1, c - 1));
+                }}
+                disabled={count <= 1}
+                aria-label="One fewer"
+              >
                 <Minus className="size-4" aria-hidden />
               </button>
-              <span className="w-16 text-center text-lg font-bold" aria-live="polite">{NUMBER_WORDS[count - 1]}</span>
-              <button type="button" className="grid size-11 place-items-center rounded-full hover:bg-paper-deep disabled:opacity-40" onClick={() => setCount((c) => Math.min(4, c + 1))} disabled={count >= 4} aria-label="One more">
+              <span className="w-16 text-center text-lg font-bold" aria-live="polite">
+                {NUMBER_WORDS[count - 1]}
+              </span>
+              <button
+                type="button"
+                className="grid size-11 place-items-center rounded-full hover:bg-paper-deep disabled:opacity-40"
+                onClick={() => {
+                  setOutcome(null);
+                  setCount((c) => Math.min(4, c + 1));
+                }}
+                disabled={count >= 4}
+                aria-label="One more"
+              >
                 <Plus className="size-4" aria-hidden />
               </button>
             </div>
@@ -389,8 +454,14 @@ function FetchPlay({
                   type="button"
                   role="radio"
                   aria-checked={place === p}
-                  onClick={() => setPlace(p)}
-                  className={cn("h-9 flex-1 rounded-full px-2 text-[15px] font-bold", place === p ? "bg-ink text-paper" : "hover:bg-paper-deep")}
+                  onClick={() => {
+                    setOutcome(null);
+                    setPlace(p);
+                  }}
+                  className={cn(
+                    "h-11 flex-1 rounded-full px-2 text-[15px] font-bold",
+                    place === p ? "bg-ink text-paper" : "hover:bg-paper-deep",
+                  )}
                 >
                   {PLACE_LABEL[p]}
                 </button>
@@ -402,9 +473,7 @@ function FetchPlay({
         {outcome && <Marks outcome={outcome} want={round.want} only={advanced ? undefined : "stone"} />}
 
         <div className="flex gap-2">
-          {!outcome && (
-            <HintButton used={hint} onUse={() => setHint(true)} />
-          )}
+          {!outcome && <HintButton used={hint} onUse={() => setHint(true)} />}
           {!outcome && !advanced ? (
             <p className="flex h-12 flex-1 items-center text-[16px] text-muted-foreground">Tap the stone he is calling for.</p>
           ) : !outcome ? (
@@ -412,16 +481,20 @@ function FetchPlay({
               {stone ? `Bring ${NUMBER_WORDS[count - 1]} ${plural(stone, count)}` : "Pick a stone"}
             </Button>
           ) : solved ? (
-            <Button size="lg" className="h-12 flex-1 text-lg" onClick={onNext} autoFocus>
-              Next
-            </Button>
+            <p role="status" className="flex h-12 flex-1 items-center text-[16px] font-bold text-sage">
+              Good — next call coming…
+            </p>
           ) : (
             <Button size="lg" variant="secondary" className="h-12 flex-1 text-lg" onClick={retry} autoFocus>
               <RotateCcw className="size-5" aria-hidden /> Try again
             </Button>
           )}
         </div>
-        {hint && !outcome && <p role="status" className="text-[15px]">{round.hint}</p>}
+        {hint && !outcome && (
+          <p role="status" className="text-[15px]">
+            {round.hint}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -435,18 +508,20 @@ function Marks({ outcome, want, only }: { outcome: Outcome; want: Delivery; only
   ];
   return (
     <ul className="flex flex-wrap gap-2" aria-label="How it went">
-      {rows.filter(([k]) => !only || k === only).map(([k, text]) => (
-        <li
-          key={k}
-          className={cn(
-            "flex items-center gap-1 rounded-full px-3 py-1 text-[15px] font-bold",
-            outcome.marks[k] ? "bg-sage/20 text-sage" : "bg-terracotta/15 text-terracotta",
-          )}
-        >
-          {outcome.marks[k] ? <Check className="size-4" aria-hidden /> : <X className="size-4" aria-hidden />}
-          <span className="sr-only">{k}:</span> {text}
-        </li>
-      ))}
+      {rows
+        .filter(([k]) => !only || k === only)
+        .map(([k, text]) => (
+          <li
+            key={k}
+            className={cn(
+              "flex items-center gap-1 rounded-full px-3 py-1 text-[15px] font-bold",
+              outcome.marks[k] ? "bg-sage/20 text-sage" : "bg-terracotta/15 text-terracotta",
+            )}
+          >
+            {outcome.marks[k] ? <Check className="size-4" aria-hidden /> : <X className="size-4" aria-hidden />}
+            <span className="sr-only">{k}:</span> {text}
+          </li>
+        ))}
     </ul>
   );
 }
@@ -518,8 +593,7 @@ function CallPlay({
         const firstTry = tries === 0 && !hint;
         // The outcome is scored; the English note is coaching and costs nothing (DECISIONS D5).
         onDone(firstTry, said, firstTry ? 3 : 2);
-      }
-      else track("repair_used", { game: GAME, round: round.id });
+      } else track("repair_used", { game: GAME, round: round.id });
     } else {
       setTimeout(() => speak(r.question), 900);
     }
@@ -537,7 +611,7 @@ function CallPlay({
   const bubble = reply?.kind === "asks" ? reply.question : solved ? "Done." : outcome ? "Like this?" : undefined;
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div>
         <Site
           facing={pointAt === "left" ? "left" : "right"}
@@ -556,7 +630,7 @@ function CallPlay({
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {round.thisWord && !outcome && (
           <div>
             <p className="mb-1 text-sm text-muted-foreground">The yard — tap a stone to point at it</p>
@@ -639,15 +713,13 @@ function CallPlay({
         )}
         {solved && round.teaches && (
           <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px]">
-            New word: <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>. You pointed and said “this”;
-            now the builder names it. Next time you can simply call it.
+            New word: <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>. You pointed and said “this”; now the
+            builder names it. Next time you can simply call it.
           </p>
         )}
 
         <div className="flex gap-2">
-          {!outcome && (
-            <HintButton used={hint} onUse={() => setHint(true)} />
-          )}
+          {!outcome && <HintButton used={hint} onUse={() => setHint(true)} />}
           {!outcome ? (
             <Button size="lg" className="h-12 flex-1 text-lg" onClick={call} disabled={tiles.length === 0}>
               {tiles.length ? `Call: “${sentence(tiles)}”` : "Call"}
@@ -662,7 +734,11 @@ function CallPlay({
             </Button>
           )}
         </div>
-        {hint && !outcome && <p role="status" className="text-[15px]">{round.hint}</p>}
+        {hint && !outcome && (
+          <p role="status" className="text-[15px]">
+            {round.hint}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -711,7 +787,7 @@ function UsePlay({
 
   const keeper = round.speaker === "keeper";
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div>
         <Site
           facing="right"
@@ -731,7 +807,7 @@ function UsePlay({
           ))}
         </ul>
       </div>
-      <div className="flex flex-col gap-2 px-3 pb-4 lg:px-0">
+      <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
         {!solved ? (
           <>
             <p className="text-sm text-muted-foreground">
@@ -751,6 +827,12 @@ function UsePlay({
                     tried ? "border-terracotta/40 opacity-60" : "border-border",
                   )}
                 >
+                  <kbd
+                    className="pointer-coarse:hidden mr-1 rounded bg-paper-deep px-1.5 text-xs font-bold text-muted-foreground"
+                    aria-hidden
+                  >
+                    {i + 1}
+                  </kbd>
                   {o.text}
                 </button>
               );

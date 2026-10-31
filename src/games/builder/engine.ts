@@ -46,16 +46,11 @@ export function markDelivery(want: Delivery, got: Delivery) {
 // Builder role: the player speaks, the assistant acts on exactly what was said.
 
 export type Tile =
-  | { kind: "number"; value: number }
-  | { kind: "stone"; value: Stone; plural?: boolean }
-  | { kind: "there" }
-  | { kind: "this" };
+  { kind: "number"; value: number } | { kind: "stone"; value: Stone; plural?: boolean } | { kind: "there" } | { kind: "this" };
 
 export type Utterance = { tiles: Tile[]; pointAt?: Place | { stoneIndex: number } };
 
-export type AssistantResponse =
-  | { kind: "acts"; delivery: Delivery; said: string }
-  | { kind: "asks"; question: string };
+export type AssistantResponse = { kind: "acts"; delivery: Delivery; said: string } | { kind: "asks"; question: string };
 
 /**
  * Interpret a call the way an assistant trained in the §8 game would:
@@ -136,7 +131,10 @@ export function englishNotes(tiles: Tile[]): string[] {
     if (count === 1 && stone.plural) {
       notes.push(`One stone, no -s: “${num ? "one " : ""}${stone.value}”.`);
     }
-    if (n > s && num) notes.push(`The number comes before the noun: ${NUMBER_WORDS[(num as { value: number }).value - 1]} ${stone.plural ? PLURAL[stone.value] : stone.value}.`);
+    if (n > s && num)
+      notes.push(
+        `The number comes before the noun: ${NUMBER_WORDS[(num as { value: number }).value - 1]} ${stone.plural ? PLURAL[stone.value] : stone.value}.`,
+      );
   }
   const there = tiles.findIndex((t) => t.kind === "there");
   if (there >= 0 && s > there) notes.push("Say what first, then where: “… slabs there!”");

@@ -8,8 +8,14 @@ describe("café rounds", () => {
   });
   it("each have exactly one fitting response and at least one that misreads the use", () => {
     for (const r of rounds) {
-      expect(r.options.filter((o) => o.fits), r.id).toHaveLength(1);
-      expect(r.options.some((o) => !o.fits), r.id).toBe(true);
+      expect(
+        r.options.filter((o) => o.fits),
+        r.id,
+      ).toHaveLength(1);
+      expect(
+        r.options.some((o) => !o.fits),
+        r.id,
+      ).toBe(true);
     }
   });
   it("pair the same words with different uses at least twice", () => {

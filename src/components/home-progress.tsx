@@ -46,8 +46,8 @@ export function LadderEnd() {
         You have played every game.
       </h2>
       <p className="mt-2 text-[17px] leading-relaxed">
-        That is the end — there is no streak to keep. In the Tractatus Wittgenstein says of his own book: “{ladder.quote}”
-        ({ladder.ref}). Later he put it differently: “{stop.quote}” (PI {stop.ref}). Take the English and go and use it.
+        That is the end — there is no streak to keep. In the Tractatus Wittgenstein says of his own book: “{ladder.quote}” ({ladder.ref}).
+        Later he put it differently: “{stop.quote}” (PI {stop.ref}). Take the English and go and use it.
       </p>
     </section>
   );

@@ -32,6 +32,9 @@ export function Analytics() {
 }
 
 /** Explicit learning events only; never send what the player typed. */
-export function track(event: "round_completed" | "hint_used" | "repair_used" | "game_finished", props: Record<string, string | number | boolean>) {
+export function track(
+  event: "round_completed" | "hint_used" | "repair_used" | "game_finished",
+  props: Record<string, string | number | boolean>,
+) {
   client?.capture(event, props);
 }

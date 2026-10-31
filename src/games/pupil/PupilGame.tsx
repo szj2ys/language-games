@@ -19,19 +19,20 @@ export function PupilGame() {
   const { session, round, finished } = g;
   return (
     <GameFrame game="Go On!" g={g}>
-        {finished ? (
-          <SessionEnd
-            title={session.title}
-            english={session.english}
-            firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
-            total={session.rounds.length}
-            sources={["pi-185", "pi-198", "pi-202"]}
-            onNext={g.nextSession}
-            onReplay={g.replay}
-          />
-        ) : (
-          <Lesson key={round.id} level={round} onDone={g.complete} onNext={g.next} />
-        )}
+      {finished ? (
+        <SessionEnd
+          said={g.saidInSession()}
+          title={session.title}
+          english={session.english}
+          firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
+          total={session.rounds.length}
+          sources={["pi-185", "pi-198", "pi-202"]}
+          onNext={g.nextSession}
+          onReplay={g.replay}
+        />
+      ) : (
+        <Lesson key={round.id} level={round} onDone={g.complete} onNext={g.next} />
+      )}
     </GameFrame>
   );
 }
@@ -69,7 +70,12 @@ function Lesson({
     setCall(c);
     const right = c === level.twist.answer;
     const marks = 1 + (cards <= best ? 1 : 0) + (right ? 1 : 0);
-    onDone(marks, 3, cards <= best && right, level.exam.map((i) => i.correct));
+    onDone(
+      marks,
+      3,
+      cards <= best && right,
+      level.exam.map((i) => i.correct),
+    );
     setPhase("done");
   };
 
@@ -77,34 +83,41 @@ function Lesson({
   const shown = new Set(pupil.shown.map((i) => i.word));
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div>
         <SceneCanvas
           overlay={
             <>
-          {/* The pupil's slate: what it writes is all we can see of its rule. */}
-          <div className="absolute top-[8%] right-[3%] w-[58%] sm:w-[52%] rounded-lg bg-ink/90 px-3 py-2 text-paper shadow">
-            <p className="text-xs font-bold tracking-wide text-paper/80 uppercase">The pupil&apos;s test</p>
-            <ol className="mt-1 grid grid-cols-1 gap-0.5" aria-label="The pupil's answers">
-              {exam.answers.map((a) => (
-                <li
-                  key={a.word}
-                  className={cn(
-                    "flex items-center gap-1.5 font-heading text-[clamp(14px,3.6vw,20px)] leading-tight transition-colors",
-                    changed.includes(a.word) && "text-ochre",
-                  )}
+              {/* The pupil's slate: what it writes is all we can see of its rule. */}
+              <div className="absolute top-[8%] right-[3%] w-[58%] sm:w-[52%] rounded-lg bg-ink/90 px-3 py-2 text-paper shadow">
+                <p className="text-xs font-bold tracking-wide text-paper/80 uppercase">The pupil&apos;s test</p>
+                <ol className="mt-1 grid grid-cols-1 gap-0.5" aria-label="The pupil's answers">
+                  {exam.answers.map((a) => (
+                    <li
+                      key={a.word}
+                      className={cn(
+                        "flex items-center gap-1.5 font-heading text-[clamp(14px,3.6vw,20px)] leading-tight transition-colors",
+                        changed.includes(a.word) && "text-ochre",
+                      )}
+                    >
+                      {a.ok ? (
+                        <Check className="size-4 shrink-0 text-[#9fc28e]" aria-label="right:" />
+                      ) : (
+                        <X className="size-4 shrink-0 text-[#e79a86]" aria-label="wrong:" />
+                      )}
+                      {a.said}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              {said && (
+                <div
+                  className="absolute top-[6%] left-[3%] rounded-2xl border border-ink/15 bg-card px-3 py-1 font-heading text-[clamp(15px,4vw,22px)] font-semibold shadow-sm"
+                  role="status"
                 >
-                  {a.ok ? <Check className="size-4 shrink-0 text-[#9fc28e]" aria-label="right:" /> : <X className="size-4 shrink-0 text-[#e79a86]" aria-label="wrong:" />}
-                  {a.said}
-                </li>
-              ))}
-            </ol>
-          </div>
-          {said && (
-            <div className="absolute top-[6%] left-[3%] rounded-2xl border border-ink/15 bg-card px-3 py-1 font-heading text-[clamp(15px,4vw,22px)] font-semibold shadow-sm" role="status">
-              {said}
-            </div>
-          )}
+                  {said}
+                </div>
+              )}
             </>
           }
         >
@@ -116,7 +129,7 @@ function Lesson({
         <p className="px-3 pt-2 text-[15px] lg:px-0">{level.task}</p>
       </div>
 
-      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {phase === "teach" && !exam.passed && (
           <>
             <p className="text-sm text-muted-foreground">
@@ -169,7 +182,9 @@ function Lesson({
           <>
             <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
               All five right with {cards} card{cards === 1 ? "" : "s"}
-              {cards <= best ? " — as few as possible." : `. It can be done with ${best}: ${bestSet.map((c) => `“${c.correct}”`).join(" and ")} ${best === 1 ? "rules out every wrong way at once" : "together rule out every wrong way"}.`}
+              {cards <= best
+                ? " — as few as possible."
+                : `. It can be done with ${best}: ${bestSet.map((c) => `“${c.correct}”`).join(" and ")} ${best === 1 ? "rules out every wrong way at once" : "together rule out every wrong way"}.`}
             </p>
             <Button size="lg" className="h-12 text-lg" onClick={() => setPhase("twist")} autoFocus>
               Now a word it hasn&apos;t seen
@@ -191,7 +206,13 @@ function Lesson({
               </div>
             ) : (
               <>
-                <p role="status" className={cn("rounded-xl p-3 text-[16px] leading-relaxed", call === level.twist.answer ? "bg-sage/15" : "bg-terracotta/10")}>
+                <p
+                  role="status"
+                  className={cn(
+                    "rounded-xl p-3 text-[16px] leading-relaxed",
+                    call === level.twist.answer ? "bg-sage/15" : "bg-terracotta/10",
+                  )}
+                >
                   <span className="font-bold">{call === level.twist.answer ? "Good call. " : "Not this time. "}</span>
                   {level.twist.why}
                 </p>

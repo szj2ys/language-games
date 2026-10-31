@@ -12,10 +12,7 @@ export const CONTAINERS: Thing[] = ["box"];
 export const SPOTS = 4;
 
 /** Where a thing stands: a spot on the shelf (0 = leftmost) in front or at the back, or in/on a holder. */
-export type Loc =
-  | { spot: number; row: "front" | "back" }
-  | { in: Thing }
-  | { on: Thing };
+export type Loc = { spot: number; row: "front" | "back" } | { in: Thing } | { on: Thing };
 
 export type Scene = Partial<Record<Thing, Loc>>;
 
@@ -113,9 +110,7 @@ export function removeThing(scene: Scene, t: Thing): Scene {
   // Whatever sat in or on it goes back to the tray with it.
   let orphan: Thing | undefined;
   do {
-    orphan = (Object.entries(next) as [Thing, Loc][]).find(
-      ([, l]) => l && (("in" in l && !next[l.in]) || ("on" in l && !next[l.on])),
-    )?.[0];
+    orphan = (Object.entries(next) as [Thing, Loc][]).find(([, l]) => l && (("in" in l && !next[l.in]) || ("on" in l && !next[l.on])))?.[0];
     if (orphan) delete next[orphan];
   } while (orphan);
   return next;
@@ -133,7 +128,10 @@ export function describe(scene: Scene): string[] {
     if (!l) continue;
     if ("in" in l) out.push(`The ${t} is in the ${l.in}.`);
     else if ("on" in l) out.push(`The ${t} is on the ${l.on}.`);
-    else out.push(`The ${t} is at ${["the far left", "left of centre", "right of centre", "the far right"][l.spot]}, ${l.row === "back" ? "at the back" : "at the front"}.`);
+    else
+      out.push(
+        `The ${t} is at ${["the far left", "left of centre", "right of centre", "the far right"][l.spot]}, ${l.row === "back" ? "at the back" : "at the front"}.`,
+      );
   }
   return out;
 }

@@ -32,10 +32,10 @@ export const LEVELS: Level[] = [
       { text: "Use “an” before a vowel sound — listen, don't look.", readAs: "sound", needs: { ruledOut: "letter", otherwise: "letter" } },
     ],
     twist: {
-      item: { word: "European", forms: {}, correct: "a European" },
-      prompt: "New word: the pupil writes “an European city”. It says: “E is a vowel sound, isn't it?”",
-      answer: "correct",
-      why: "The pupil has the right rule but hears the word wrong: “European” starts with a /j/ sound, like “you”, so English says “a European city”. Knowing a rule is not yet knowing how to apply it in every case — that takes practice (§201).",
+      item: { word: "historic", forms: {}, correct: "a historic" },
+      prompt: "New word: the pupil writes “a historic day”. Your old grammar book says “an historic day”.",
+      answer: "both",
+      why: "Both are in use. Most speakers sound the h and say “a historic”, as the pupil's rule predicts; some, especially in older British English, say “an historic”. The practice of speakers decides, not the rule on paper (§202).",
     },
   },
   {
@@ -53,13 +53,17 @@ export const LEVELS: Level[] = [
     deck: [pluralItem("cat"), pluralItem("bus"), pluralItem("baby"), pluralItem("key"), pluralItem("dish"), pluralItem("toy")],
     explain: [
       { text: "When a word ends in -y, change it to -ies.", readAs: "any-y" },
-      { text: "Add -es after s, x, ch or sh; change consonant + y to -ies; otherwise add -s.", readAs: "consonant-y", needs: { ruledOut: "any-y", otherwise: "any-y" } },
+      {
+        text: "Add -es after s, x, ch or sh; change consonant + y to -ies; otherwise add -s.",
+        readAs: "consonant-y",
+        needs: { ruledOut: "any-y", otherwise: "any-y" },
+      },
     ],
     twist: {
-      item: { word: "person", forms: {}, correct: "people" },
-      prompt: "The pupil writes “two persons”. Your notes only have “people”.",
-      answer: "both",
-      why: "Both are in use. “People” is the everyday plural; “persons” lives on in legal and official English (“no more than four persons”). Which is right depends on the game being played.",
+      item: { word: "child", forms: {}, correct: "children" },
+      prompt: "New word: the pupil writes “two childs”. Every rule you taught says just add -s.",
+      answer: "correct",
+      why: "Correct it: the plural is “children”. Irregular plurals (child–children, man–men, mouse–mice) follow no spelling rule; they are simply what English speakers say, learned one by one (§217: “This is simply what I do”).",
     },
   },
   {
@@ -90,7 +94,11 @@ export const LEVELS: Level[] = [
     ],
     explain: [
       { text: "Double the last letter after a short vowel.", readAs: "double-any" },
-      { text: "Drop a silent e; double a final consonant only after a short, stressed vowel.", readAs: "double-stressed", needs: { ruledOut: "double-any", otherwise: "double-any" } },
+      {
+        text: "Drop a silent e; double a final consonant only after a short, stressed vowel.",
+        readAs: "double-stressed",
+        needs: { ruledOut: "double-any", otherwise: "double-any" },
+      },
     ],
     twist: {
       item: { word: "travel", forms: {}, correct: "travelled" },
@@ -126,7 +134,11 @@ export const LEVELS: Level[] = [
     ],
     explain: [
       { text: "Long words take “more”.", readAs: "syllables" },
-      { text: "One syllable: -er. Two syllables ending in -y: -ier. Otherwise: more.", readAs: "y-too", needs: { ruledOut: "syllables", otherwise: "syllables" } },
+      {
+        text: "One syllable: -er. Two syllables ending in -y: -ier. Otherwise: more.",
+        readAs: "y-too",
+        needs: { ruledOut: "syllables", otherwise: "syllables" },
+      },
     ],
     twist: {
       item: { word: "clever", forms: {}, correct: "cleverer" },

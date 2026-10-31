@@ -32,7 +32,12 @@ export const NOTEBOOK: Record<GameInfo["slug"], NotebookSession[]> = {
     index,
     rounds: s.rounds.map((r) => ({
       id: r.id,
-      did: r.mode === "claim" ? "a claim about these cards" : r.mode === "thread" ? "comparisons with “both”" : "a newcomer placed with “both” or “unlike”",
+      did:
+        r.mode === "claim"
+          ? "a claim about these cards"
+          : r.mode === "thread"
+            ? "comparisons with “both”"
+            : "a newcomer placed with “both” or “unlike”",
     })),
   })),
 };

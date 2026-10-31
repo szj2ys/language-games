@@ -47,7 +47,14 @@ const SIZE: Record<Thing, { w: number; h: number }> = {
 const ASPECT = 16 / 9;
 
 /** `clip` hides the bottom share of a sprite that sits inside a box, behind its front wall. */
-type Placed = { thing: Thing; x: number; bottom: number; w: number; z: number; clip?: number };
+type Placed = {
+  thing: Thing;
+  x: number;
+  bottom: number;
+  w: number;
+  z: number;
+  clip?: number;
+};
 
 /** Turn the logical scene into sprite positions. Logic decides truth; this only draws it. */
 function layout(scene: Scene): Placed[] {
@@ -57,7 +64,13 @@ function layout(scene: Scene): Placed[] {
     if (!l || depth > 4) return null;
     if ("spot" in l) {
       const s = ROW_SCALE[l.row];
-      return { thing: t, x: SPOT_X[l.spot], bottom: 100 - ROW_Y[l.row], w: SIZE[t].w * s, z: l.row === "back" ? 10 : 30 };
+      return {
+        thing: t,
+        x: SPOT_X[l.spot],
+        bottom: 100 - ROW_Y[l.row],
+        w: SIZE[t].w * s,
+        z: l.row === "back" ? 10 : 30,
+      };
     }
     const holder = at("in" in l ? l.in : l.on, depth + 1);
     if (!holder) return null;
@@ -68,10 +81,23 @@ function layout(scene: Scene): Placed[] {
       const bottom = holder.bottom + holderH * 0.42;
       const rim = holder.bottom + holderH * 0.64;
       const h = w * SIZE[t].h * ASPECT;
-      return { thing: t, x: holder.x + 1, bottom, w, z: holder.z + 1, clip: Math.min(80, ((rim - bottom) / h) * 100) };
+      return {
+        thing: t,
+        x: holder.x + 1,
+        bottom,
+        w,
+        z: holder.z + 1,
+        clip: Math.min(80, ((rim - bottom) / h) * 100),
+      };
     }
     const w = SIZE[t].w * (holder.w / SIZE[holder.thing].w);
-    return { thing: t, x: holder.x, bottom: holder.bottom + holderH * 0.97, w, z: holder.z + 2 };
+    return {
+      thing: t,
+      x: holder.x,
+      bottom: holder.bottom + holderH * (holder.thing === "box" ? 0.8 : 0.85),
+      w,
+      z: holder.z + 2,
+    };
   };
   for (const t of Object.keys(scene) as Thing[]) {
     const p = at(t);
@@ -141,7 +167,8 @@ function Stage({
           onClick={onSelectPlaced && (!fixed || !fixed.has(p.thing)) ? () => onSelectPlaced(p.thing) : undefined}
         />
       ))}
-      {onDrop && selected &&
+      {onDrop &&
+        selected &&
         (["back", "front"] as const).flatMap((row) =>
           Array.from({ length: SPOTS }, (_, spot) => {
             const taken = Object.values(scene).some((l) => l && "spot" in l && l.spot === spot && l.row === row);
@@ -153,23 +180,36 @@ function Stage({
                 onClick={() => onDrop({ spot, row })}
                 aria-label={`${row === "back" ? "Back" : "Front"} row, place ${spot + 1} from the left`}
                 className="absolute z-40 -translate-x-1/2 rounded-lg border-2 border-dashed border-cobalt/70 bg-cobalt/10 hover:bg-cobalt/25"
-                style={{ left: `${SPOT_X[spot]}%`, bottom: row === "back" ? "27.5%" : "9%", width: "15.5%", height: "16.5%" }}
+                style={{
+                  left: `${SPOT_X[spot]}%`,
+                  bottom: row === "back" ? "27.5%" : "9%",
+                  width: "15.5%",
+                  height: "16.5%",
+                }}
               />
             );
           }),
         )}
-      {onDrop && selected &&
+      {onDrop &&
+        selected &&
         holders
           .filter((h) => h.thing !== selected)
           .map((h) => (
-            <div key={h.thing} className="absolute z-50 flex -translate-x-1/2 gap-1" style={{ left: `${h.x}%`, bottom: `${h.bottom + h.w * SIZE[h.thing].h * ASPECT + 2}%` }}>
+            <div
+              key={h.thing}
+              className="absolute z-50 flex -translate-x-1/2 gap-1"
+              style={{
+                left: `${h.x}%`,
+                bottom: `${h.bottom + h.w * SIZE[h.thing].h * ASPECT + 2}%`,
+              }}
+            >
               {(CONTAINERS.includes(h.thing) ? (["in", "on"] as const) : (["on"] as const)).map((rel) => (
                 <button
                   key={rel}
                   type="button"
                   onClick={() => onDrop(rel === "in" ? { in: h.thing } : { on: h.thing })}
                   aria-label={`Put the ${selected} ${rel} the ${h.thing}`}
-                  className="h-9 min-w-11 rounded-full bg-ink px-2.5 text-[15px] font-bold text-paper shadow"
+                  className="h-11 min-w-12 rounded-full bg-ink px-3 text-[16px] font-bold text-paper shadow"
                 >
                   {rel}
                 </button>
@@ -204,7 +244,11 @@ function ThingCard({ thing, selected, onClick }: { thing: Thing; selected?: bool
 function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <li className={cn("flex items-start gap-2 rounded-lg px-3 py-2 text-[17px]", ok ? "bg-sage/15" : "bg-terracotta/10")}>
-      {ok ? <Check className="mt-0.5 size-5 shrink-0 text-sage" aria-label="True:" /> : <X className="mt-0.5 size-5 shrink-0 text-terracotta" aria-label="False:" />}
+      {ok ? (
+        <Check className="mt-0.5 size-5 shrink-0 text-sage" aria-label="True:" />
+      ) : (
+        <X className="mt-0.5 size-5 shrink-0 text-terracotta" aria-label="False:" />
+      )}
       <span>{children}</span>
     </li>
   );
@@ -218,24 +262,25 @@ export function SceneGame() {
   const { session, round, finished } = g;
   return (
     <GameFrame game="Picture Theatre" g={g}>
-        {finished ? (
-          <SessionEnd
-            title={session.title}
-            english={session.english}
-            firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
-            total={session.rounds.length}
-            sources={g.sessionIndex === 2 ? [session.source, "tlp-5.6"] : [session.source]}
-            nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
-            onNext={g.nextSession}
-            onReplay={g.replay}
-          />
-        ) : round.mode === "build" ? (
-          <BuildPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
-        ) : round.mode === "check" ? (
-          <CheckPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
-        ) : (
-          <TellPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
-        )}
+      {finished ? (
+        <SessionEnd
+          said={g.saidInSession()}
+          title={session.title}
+          english={session.english}
+          firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
+          total={session.rounds.length}
+          sources={g.sessionIndex === 2 ? [session.source, "tlp-5.6"] : [session.source]}
+          nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
+          onNext={g.nextSession}
+          onReplay={g.replay}
+        />
+      ) : round.mode === "build" ? (
+        <BuildPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
+      ) : round.mode === "check" ? (
+        <CheckPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
+      ) : (
+        <TellPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
+      )}
     </GameFrame>
   );
 }
@@ -268,9 +313,7 @@ function Controls({
   return (
     <>
       <div className="flex gap-2">
-        {!checked && (
-          <HintButton used={showHint} onUse={onHint} />
-        )}
+        {!checked && <HintButton used={showHint} onUse={onHint} />}
         {!checked ? (
           <Button size="lg" className="h-12 flex-1 text-lg" onClick={onCheck} disabled={!canCheck}>
             {checkLabel}
@@ -285,7 +328,11 @@ function Controls({
           </Button>
         )}
       </div>
-      {showHint && !checked && <p role="status" className="text-[15px]">{hint}</p>}
+      {showHint && !checked && (
+        <p role="status" className="text-[15px]">
+          {hint}
+        </p>
+      )}
     </>
   );
 }
@@ -317,17 +364,17 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
-      <Stage
-        scene={scene}
-        label="The stage"
-        selected={checked ? null : selected}
-        fixed={fixed}
-        onSelectPlaced={checked ? undefined : (t) => setSelected((cur) => (cur === t ? null : t))}
-        onDrop={checked ? undefined : drop}
-      />
-      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
-        <div>
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
+      <div className="flex flex-col gap-3">
+        <Stage
+          scene={scene}
+          label="The stage"
+          selected={checked ? null : selected}
+          fixed={fixed}
+          onSelectPlaced={checked ? undefined : (t) => setSelected((cur) => (cur === t ? null : t))}
+          onDrop={checked ? undefined : drop}
+        />
+        <div className="px-3 lg:px-0">
           <p className="text-sm text-muted-foreground">The message — make every sentence true:</p>
           <ul className="mt-1 flex flex-col gap-1.5">
             {round.message.map((c, i) =>
@@ -344,10 +391,16 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
             )}
           </ul>
         </div>
+      </div>
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {!checked && (
           <div>
             <p className="mb-1 text-sm text-muted-foreground">
-              {selected ? `Now tap a place on the stage for the ${selected}.` : tray.length ? "Tap a thing, then tap where it goes." : "Tap a thing on the stage to move it."}
+              {selected
+                ? `Now tap a place on the stage for the ${selected}.`
+                : tray.length
+                  ? "Tap a thing, then tap where it goes."
+                  : "Tap a thing on the stage to move it."}
             </p>
             <div className="flex flex-wrap gap-2">
               {tray.map((t) => (
@@ -387,7 +440,17 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
 
 // Check: compare a report with the stage and fix what is false. -------------------
 
-function RelationPicker({ value, options, onChange, disabled }: { value: Relation; options: Relation[]; onChange: (r: Relation) => void; disabled?: boolean }) {
+function RelationPicker({
+  value,
+  options,
+  onChange,
+  disabled,
+}: {
+  value: Relation;
+  options: Relation[];
+  onChange: (r: Relation) => void;
+  disabled?: boolean;
+}) {
   return (
     <span className="relative inline-flex">
       <select
@@ -403,7 +466,9 @@ function RelationPicker({ value, options, onChange, disabled }: { value: Relatio
           </option>
         ))}
       </select>
-      {!disabled && <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-cobalt" aria-hidden />}
+      {!disabled && (
+        <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-cobalt" aria-hidden />
+      )}
     </span>
   );
 }
@@ -424,9 +489,9 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <Stage scene={round.scene} label="What is really on the stage" />
-      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         <p className="text-sm text-muted-foreground">The report. Change one word in each false sentence so that it fits the stage.</p>
         <ul className="flex flex-col gap-1.5">
           {report.map((c, i) => {
@@ -444,7 +509,9 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
               </span>
             );
             return checked ? (
-              <Verdict key={i} ok={checked[i]}>{line}</Verdict>
+              <Verdict key={i} ok={checked[i]}>
+                {line}
+              </Verdict>
             ) : (
               <li key={i} className="rounded-lg bg-card px-3 py-2">
                 {line}
@@ -475,7 +542,11 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
   const others = (Object.keys(round.scene) as Thing[]).filter((t) => t !== round.target);
   const [rel, setRel] = useDraft<Relation>(round.id, "rel", round.options[0]);
   const [ref, setRef] = useDraft<Thing>(round.id, "ref", others[0]);
-  const [result, setResult] = useDraft<{ clause: Clause; truth: boolean; places: Loc[] } | null>(round.id, "result", null);
+  const [result, setResult] = useDraft<{
+    clause: Clause;
+    truth: boolean;
+    places: Loc[];
+  } | null>(round.id, "result", null);
   const [tries, setTries] = useDraft(round.id, "tries", 0);
   const [hint, setHint] = useDraft(round.id, "hint", false);
   const solved = !!result && result.truth && result.places.length === 1;
@@ -503,7 +574,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
   const partnerSays = result ? partnerReply(result) : null;
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-col gap-2">
         <Stage scene={round.scene} label="Your stage, which your partner cannot see" />
         {result && (
@@ -513,19 +584,30 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
+      <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         <p className="text-sm text-muted-foreground">
           Your partner has everything except the <b>{round.target}</b>. Tell them where it goes — one sentence.
         </p>
         <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg bg-card px-3 py-2 font-heading text-[19px]">
           The {round.target} is
-          <RelationPicker value={rel} options={round.options} onChange={(r) => { setRel(r); setResult(null); }} disabled={!!result} />
+          <RelationPicker
+            value={rel}
+            options={round.options}
+            onChange={(r) => {
+              setRel(r);
+              setResult(null);
+            }}
+            disabled={!!result}
+          />
           the
           <span className="relative inline-flex">
             <select
               value={ref}
               disabled={!!result}
-              onChange={(e) => { setRef(e.target.value as Thing); setResult(null); }}
+              onChange={(e) => {
+                setRef(e.target.value as Thing);
+                setResult(null);
+              }}
               aria-label="Which thing"
               className="h-10 appearance-none rounded-lg border-2 border-cobalt/60 bg-card pr-8 pl-2.5 font-heading text-[19px] font-semibold text-cobalt disabled:border-transparent disabled:bg-transparent disabled:px-0 disabled:text-ink"
             >
@@ -535,7 +617,9 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
                 </option>
               ))}
             </select>
-            {!result && <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-cobalt" aria-hidden />}
+            {!result && (
+              <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-cobalt" aria-hidden />
+            )}
           </span>
           .
         </p>
@@ -547,7 +631,11 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
             <ul className="flex flex-col gap-1.5">
               <Verdict ok={result.truth}>{result.truth ? "True of your stage." : "Not true of your stage."}</Verdict>
               <Verdict ok={result.places.length === 1}>
-                {result.places.length === 1 ? "Leaves only one place." : result.places.length === 0 ? "Leaves no place at all." : `Leaves ${result.places.length} places.`}
+                {result.places.length === 1
+                  ? "Leaves only one place."
+                  : result.places.length === 0
+                    ? "Leaves no place at all."
+                    : `Leaves ${result.places.length} places.`}
               </Verdict>
             </ul>
           </>

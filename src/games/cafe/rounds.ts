@@ -47,7 +47,9 @@ export const SESSIONS: Session[] = [
     source: "pi-43",
     rounds: [
       {
-        id: "c1-1", speaker: "rosa", says: "It's a bit cold in here.",
+        id: "c1-1",
+        speaker: "rosa",
+        says: "It's a bit cold in here.",
         clues: ["The window beside her is wide open.", "Her tea is still steaming."],
         options: [
           act("Close the window.", true, "Oh, thank you, dear. Much better."),
@@ -59,7 +61,9 @@ export const SESSIONS: Session[] = [
         note: "Nothing in the words asks for anything. The open window turned a remark about the temperature into a request.",
       },
       {
-        id: "c1-2", speaker: "rosa", says: "It's a bit cold in here.",
+        id: "c1-2",
+        speaker: "rosa",
+        says: "It's a bit cold in here.",
         clues: ["The window is shut.", "Her cup is empty and cold.", "She is looking at the teapot on the counter."],
         options: [
           act("Close the window.", false, "It's already closed, dear."),
@@ -71,7 +75,9 @@ export const SESSIONS: Session[] = [
         note: "The same sentence as before, but a different job. Wittgenstein: for many words, meaning is their use (PI §43).",
       },
       {
-        id: "c1-3", speaker: "tom", says: "Can you pass the sugar?",
+        id: "c1-3",
+        speaker: "tom",
+        says: "Can you pass the sugar?",
         clues: ["The sugar bowl is next to your hand.", "His coffee is black."],
         options: [
           say("“Yes, I can.”", false, "…Great. Will you?"),
@@ -82,7 +88,9 @@ export const SESSIONS: Session[] = [
         note: "'Can you…?' is grammatically a question about ability, but here it does the work of a polite order.",
       },
       {
-        id: "c1-4", speaker: "tom", says: "Can you pass the exam?",
+        id: "c1-4",
+        speaker: "tom",
+        says: "Can you pass the exam?",
         clues: ["He is holding your driving-test letter.", "He looks worried for you."],
         options: [
           act("Hand him something.", false, "Er — I didn't want anything."),
@@ -93,7 +101,9 @@ export const SESSIONS: Session[] = [
         note: "Same frame, 'Can you pass…?', different game: this time it really is a question, and an answer is what fits.",
       },
       {
-        id: "c1-5", speaker: "lena", says: "Do you know what time it is?",
+        id: "c1-5",
+        speaker: "lena",
+        says: "Do you know what time it is?",
         clues: ["She keeps glancing at the door.", "The clock behind you says 4:50."],
         options: [
           say("“Yes.”", false, "…And?"),
@@ -104,7 +114,9 @@ export const SESSIONS: Session[] = [
         note: "A yes/no question in form; a request for the time in use. Answering only 'Yes' follows the grammar and misses the game.",
       },
       {
-        id: "c1-6", speaker: "lena", says: "Do you know what time it is?",
+        id: "c1-6",
+        speaker: "lena",
+        says: "Do you know what time it is?",
         clues: ["It is long past closing time.", "You are still playing music and chatting.", "She is holding the shop keys."],
         options: [
           say("“It's ten past eleven.”", false, "I know what time it is. That was a hint."),
@@ -124,8 +136,14 @@ export const SESSIONS: Session[] = [
     source: "pi-23",
     rounds: [
       {
-        id: "c2-1", speaker: "tom", says: "Could I have one of those?",
-        clues: ["He is pointing at the counter.", "On it: a lemon cake and a chocolate cake.", "He is allergic to chocolate (he told you yesterday)."],
+        id: "c2-1",
+        speaker: "tom",
+        says: "Could I have one of those?",
+        clues: [
+          "He is pointing at the counter.",
+          "On it: a lemon cake and a chocolate cake.",
+          "He is allergic to chocolate (he told you yesterday).",
+        ],
         options: [
           act("Bring the chocolate cake.", false, "Oh — I can't eat chocolate, remember?"),
           act("Bring the lemon cake.", true, "Perfect, thank you."),
@@ -136,7 +154,9 @@ export const SESSIONS: Session[] = [
         note: "'Those' needs the pointing gesture and what you know about him. Words, gestures and shared history work together.",
       },
       {
-        id: "c2-2", speaker: "rosa", says: "I'll have the usual.",
+        id: "c2-2",
+        speaker: "rosa",
+        says: "I'll have the usual.",
         clues: ["You started work here today.", "Nothing tells you what 'the usual' is."],
         options: [
           act("Guess: bring a coffee.", false, "Coffee? I never drink coffee, dear."),
@@ -147,7 +167,9 @@ export const SESSIONS: Session[] = [
         note: "'The usual' only works inside a practice you share. When you are new to the game, asking is the right move.",
       },
       {
-        id: "c2-3", speaker: "lena", says: "Is this seat free?",
+        id: "c2-3",
+        speaker: "lena",
+        says: "Is this seat free?",
         clues: ["Your coat is on the chair next to you.", "The café is full."],
         options: [
           say("“Yes.” (and do nothing)", false, "(She looks at your coat on it.) …Could you move your coat?"),
@@ -158,7 +180,9 @@ export const SESSIONS: Session[] = [
         note: "She is not collecting information about chairs. The question asks permission, and permission here means moving your coat.",
       },
       {
-        id: "c2-4", speaker: "tom", says: "Could you bring me the other one?",
+        id: "c2-4",
+        speaker: "tom",
+        says: "Could you bring me the other one?",
         clues: ["He has a small cup and a large cup in front of him.", "There are two menus on the table."],
         options: [
           act("Bring another menu.", false, "No, not a menu."),
@@ -169,7 +193,9 @@ export const SESSIONS: Session[] = [
         note: "Nothing on view settles what 'the other one' means. When the clues run out, the question is the right move — not a guess.",
       },
       {
-        id: "c2-5", speaker: "rosa", says: "That's very kind, but I couldn't possibly.",
+        id: "c2-5",
+        speaker: "rosa",
+        says: "That's very kind, but I couldn't possibly.",
         clues: ["You offered her a second slice of cake.", "She is smiling and looking at the cake."],
         options: [
           act("Take the cake away at once.", false, "Oh. (She looks a little sad.)"),
@@ -182,7 +208,9 @@ export const SESSIONS: Session[] = [
         // Not universal: in other places and with other people the first no means no.
       },
       {
-        id: "c2-6", speaker: "rosa", says: "That's very kind, but I couldn't possibly.",
+        id: "c2-6",
+        speaker: "rosa",
+        says: "That's very kind, but I couldn't possibly.",
         clues: ["You offered her a second slice of cake.", "She has her hand on her stomach.", "Her plate is pushed away."],
         options: [
           say("“Go on — it's on the house.”", false, "Really, dear, no. I'm full."),
@@ -202,7 +230,9 @@ export const SESSIONS: Session[] = [
     source: "pi-23",
     rounds: [
       {
-        id: "c3-1", speaker: "tom", says: "Would you like to wipe the tables before you go?",
+        id: "c3-1",
+        speaker: "tom",
+        says: "Would you like to wipe the tables before you go?",
         clues: ["Tom is the café manager — your boss.", "It is the end of your shift.", "The tables are covered in crumbs."],
         options: [
           say("“Sure — I'll do them now.”", true, "Thanks. See you tomorrow."),
@@ -213,7 +243,9 @@ export const SESSIONS: Session[] = [
         note: "From a manager at the end of a shift, 'Would you like to…?' is a polite way to tell you what to do. Wittgenstein notes that a question can have the job of a command (PI §21).",
       },
       {
-        id: "c3-2", speaker: "rosa", says: "Would you like to try my lemon cake?",
+        id: "c3-2",
+        speaker: "rosa",
+        says: "Would you like to try my lemon cake?",
         clues: ["Rosa baked the cake at home.", "She is holding out a plate with a small slice.", "You have a break."],
         options: [
           say("“Oh, I'd love to — thank you!”", true, "Go on, tell me honestly what you think."),
@@ -224,7 +256,9 @@ export const SESSIONS: Session[] = [
         note: "The same frame as before, 'Would you like to…?', but from a customer holding out cake it is an offer. Saying 'No, thank you' would also have been fine here.",
       },
       {
-        id: "c3-3", speaker: "lena", says: "I'm fine, thanks.",
+        id: "c3-3",
+        speaker: "lena",
+        says: "I'm fine, thanks.",
         clues: ["You just asked her “How are you?” as she came to the counter.", "She is smiling and looking at the menu."],
         options: [
           say("“Good to hear! What can I get you?”", true, "A flat white, please."),
@@ -235,7 +269,9 @@ export const SESSIONS: Session[] = [
         note: "'How are you?' — 'Fine, thanks' is part of greeting someone in English. It asks for no details.",
       },
       {
-        id: "c3-4", speaker: "lena", says: "I'm fine, thanks.",
+        id: "c3-4",
+        speaker: "lena",
+        says: "I'm fine, thanks.",
         clues: ["She has just tripped over a bag and dropped her cup.", "She is holding her ankle.", "Her face is pale."],
         options: [
           say("“Good to hear! What can I get you?”", false, "(She winces.) …Nothing right now."),
@@ -246,7 +282,9 @@ export const SESSIONS: Session[] = [
         note: "Same words, different situation. After a fall, 'I'm fine' often means 'I don't want to make a fuss'. A kind reply checks and offers help.",
       },
       {
-        id: "c3-5", speaker: "tom", says: "Excuse me.",
+        id: "c3-5",
+        speaker: "tom",
+        says: "Excuse me.",
         clues: ["Tom is carrying a heavy tray.", "Your chair is blocking the narrow way to the kitchen."],
         options: [
           say("“You're excused.”", false, "…Could you move, please?"),
@@ -257,8 +295,14 @@ export const SESSIONS: Session[] = [
         note: "Here 'Excuse me' asks you to make room. It is not an apology for anything.",
       },
       {
-        id: "c3-6", speaker: "lena", says: "Excuse me?",
-        clues: ["You just told her quietly that the card machine is broken.", "The coffee grinder was very loud.", "She is leaning towards you, frowning."],
+        id: "c3-6",
+        speaker: "lena",
+        says: "Excuse me?",
+        clues: [
+          "You just told her quietly that the card machine is broken.",
+          "The coffee grinder was very loud.",
+          "She is leaning towards you, frowning.",
+        ],
         options: [
           act("Pull your chair in.", false, "No, I mean — what did you say?"),
           say("“Sorry — I said the card machine is broken. Cash only today.”", true, "Ah, OK. I've got cash."),

@@ -38,16 +38,19 @@ export function GameAbout({ slug }: { slug: GameInfo["slug"] }) {
             <span className="font-bold">English you practise:</span> {g.english}.
           </p>
         </div>
-        <div>
-          <h3 className="font-bold">The idea</h3>
-          <p className="mt-1 text-[16px] leading-relaxed">{s.gloss}</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {WORK_TITLE[s.work]} {s.ref}.{" "}
-            <Link href={`/sources#${s.id}`} className="font-bold text-cobalt underline underline-offset-4">
-              Read the passage
-            </Link>
-          </p>
-        </div>
+        {/* Family Threads is the discovery itself; stating its conclusion here would give it away. */}
+        {slug !== "family" && (
+          <div>
+            <h3 className="font-bold">The idea</h3>
+            <p className="mt-1 text-[16px] leading-relaxed">{s.gloss}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {WORK_TITLE[s.work]} {s.ref}.{" "}
+              <Link href={`/sources#${s.id}`} className="font-bold text-cobalt underline underline-offset-4">
+                Read the passage
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </section>

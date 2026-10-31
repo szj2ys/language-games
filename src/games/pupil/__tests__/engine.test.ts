@@ -12,10 +12,16 @@ describe("the pupil", () => {
   });
   it("moves to the next consistent way as examples rule ways out (§185)", () => {
     let p = startPupil(aAn);
-    p = showExample(p, aAn.deck.find((i) => i.word === "egg")!);
+    p = showExample(
+      p,
+      aAn.deck.find((i) => i.word === "egg")!,
+    );
     expect(currentWay(aAn, p)).toBe("letter");
     expect(sitExam(aAn, p).answers.find((a) => a.word === "hour")?.said).toBe("a hour");
-    p = showExample(p, aAn.deck.find((i) => i.word === "unicorn")!);
+    p = showExample(
+      p,
+      aAn.deck.find((i) => i.word === "unicorn")!,
+    );
     expect(currentWay(aAn, p)).toBe("sound");
     expect(sitExam(aAn, p).passed).toBe(true);
   });
@@ -27,7 +33,10 @@ describe("the pupil", () => {
   it("can follow a precise explanation only once an example has shown what its words mean", () => {
     const cold = explain(aAn, startPupil(aAn), aAn.explain[1]);
     expect(currentWay(aAn, cold)).toBe("letter");
-    let p = showExample(startPupil(aAn), aAn.deck.find((i) => i.word === "unicorn")!);
+    let p = showExample(
+      startPupil(aAn),
+      aAn.deck.find((i) => i.word === "unicorn")!,
+    );
     p = explain(aAn, p, aAn.explain[1]);
     expect(sitExam(aAn, p).passed).toBe(true);
   });

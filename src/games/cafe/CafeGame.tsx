@@ -30,20 +30,21 @@ export function CafeGame() {
   const { session, round, finished } = g;
   return (
     <GameFrame game="The Café" g={g} withSpeech>
-        {finished ? (
-          <SessionEnd
-            title={session.title}
-            english={session.english}
-            firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
-            total={session.rounds.length}
-            sources={SESSION_SOURCES[g.sessionIndex]}
-            nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
-            onNext={g.nextSession}
-            onReplay={g.replay}
-          />
-        ) : (
-          <Round key={round.id} round={round} speak={g.speech.speak} onDone={g.complete} onNext={g.next} />
-        )}
+      {finished ? (
+        <SessionEnd
+          said={g.saidInSession()}
+          title={session.title}
+          english={session.english}
+          firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
+          total={session.rounds.length}
+          sources={SESSION_SOURCES[g.sessionIndex]}
+          nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
+          onNext={g.nextSession}
+          onReplay={g.replay}
+        />
+      ) : (
+        <Round key={round.id} round={round} speak={g.speech.speak} onDone={g.complete} onNext={g.next} />
+      )}
     </GameFrame>
   );
 }
@@ -96,24 +97,39 @@ function Round({
   const bubble = pick ? pick.reaction : asked && round.ask ? round.ask.answer : round.says;
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div>
         <SceneCanvas
           label={round.clues.join(" ")}
           overlay={
-          <div className="absolute top-[4%] right-[3%] max-w-[58%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
-            <p className="text-xs font-bold text-muted-foreground">{NAME[round.speaker]}</p>
-            <p className="flex items-center gap-1 font-heading text-[clamp(16px,4.4vw,24px)] leading-tight font-semibold" aria-live="polite">
-              <Line text={bubble} />
-              <button type="button" onClick={() => speak(bubble.replace(/\([^)]*\)/g, ""))} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
-                <Volume2 className="size-5" aria-hidden />
-              </button>
-            </p>
-          </div>
+            <div className="absolute top-[4%] right-[3%] max-w-[58%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
+              <p className="text-xs font-bold text-muted-foreground">{NAME[round.speaker]}</p>
+              <p
+                className="flex items-center gap-1 font-heading text-[clamp(16px,4.4vw,24px)] leading-tight font-semibold"
+                aria-live="polite"
+              >
+                <Line text={bubble} />
+                <button
+                  type="button"
+                  onClick={() => speak(bubble.replace(/\([^)]*\)/g, ""))}
+                  aria-label="Hear it again"
+                  className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep"
+                >
+                  <Volume2 className="size-5" aria-hidden />
+                </button>
+              </p>
+            </div>
           }
         >
           {/* One picture per round, drawn so the clues can be seen, not only read. */}
-          <Image src={`/art/cafe/rounds/${round.id}.webp`} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+          <Image
+            src={`/art/cafe/rounds/${round.id}.webp`}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 700px, 133vw"
+            className="object-cover"
+          />
         </SceneCanvas>
         <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
           {round.clues.map((c) => (
@@ -125,7 +141,7 @@ function Round({
         </ul>
       </div>
 
-      <div className="flex flex-col gap-2 px-3 pb-4 lg:px-0">
+      <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
         {!solved && (
           <>
             <p className="text-sm text-muted-foreground">
@@ -145,6 +161,12 @@ function Round({
                     tried ? "border-terracotta/40 opacity-60" : "border-border",
                   )}
                 >
+                  <kbd
+                    className="pointer-coarse:hidden mr-1 rounded bg-paper-deep px-1.5 text-xs font-bold text-muted-foreground"
+                    aria-hidden
+                  >
+                    {i + 1}
+                  </kbd>
                   {o.kind === "do" ? (
                     <Hand className="size-5 shrink-0 text-terracotta" aria-label="Do" />
                   ) : (
@@ -161,7 +183,8 @@ function Round({
             )}
             {pick && !pick.fits && (
               <p role="status" className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px]">
-                <RotateCcw className="size-4 shrink-0" aria-hidden /> Not quite what {NAME[round.speaker]} meant. Look at the clues and try another response.
+                <RotateCcw className="size-4 shrink-0" aria-hidden /> Not quite what {NAME[round.speaker]} meant. Look at the clues and try
+                another response.
               </p>
             )}
           </>

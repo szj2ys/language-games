@@ -20,14 +20,14 @@ export default function SourcesPage() {
   const works: Work[] = ["PI", "TLP", "OC"];
   return (
     <main id="main" className="mx-auto w-full max-w-3xl px-4 py-8">
-      <Link href="/" className="text-sm font-bold text-cobalt underline-offset-4 hover:underline">
+      <Link href="/" className="inline-flex min-h-11 items-center text-[15px] font-bold text-cobalt underline-offset-4 hover:underline">
         ← All games
       </Link>
       <h1 className="mt-3 font-heading text-4xl font-semibold">Sources</h1>
       <p className="mt-3 text-[17px] leading-relaxed">
-        The games are inspired by Wittgenstein&apos;s writing; they do not summarise it. Each passage below is quoted
-        briefly, read in plain English, and paired with a note on where the game&apos;s analogy stops. Section
-        numbers (§) refer to the numbered remarks; Tractatus numbers are proposition numbers.
+        The games are inspired by Wittgenstein&apos;s writing; they do not summarise it. Each passage below is quoted briefly, read in plain
+        English, and paired with a note on where the game&apos;s analogy stops. Section numbers (§) refer to the numbered remarks; Tractatus
+        numbers are proposition numbers.
       </p>
       <Link href="/" className="mt-4 inline-flex h-12 items-center rounded-lg bg-cobalt px-5 text-[17px] font-bold text-paper">
         Play the games
@@ -48,7 +48,11 @@ export default function SourcesPage() {
                   <blockquote className="mt-1 font-heading text-[17px] leading-snug italic">“{s.quote}”</blockquote>
                   <p className="mt-2 text-[15px] leading-relaxed">{s.gloss}</p>
                   {s.limits && <p className="mt-1 text-sm text-muted-foreground">Where the game stops: {s.limits}</p>}
-                  <a href={s.url} className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-cobalt underline-offset-4 hover:underline" rel="noopener">
+                  <a
+                    href={s.url}
+                    className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-cobalt underline-offset-4 hover:underline"
+                    rel="noopener"
+                  >
                     Read the original text
                   </a>
                 </li>

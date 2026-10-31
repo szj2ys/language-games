@@ -33,24 +33,25 @@ export function FamilyGame() {
   const props = { session, onDone: g.complete, onNext: g.next };
   return (
     <GameFrame game="Family Threads" g={g}>
-        {finished ? (
-          <SessionEnd
-            title={session.title}
-            english={session.english}
-            firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
-            total={session.rounds.length}
-            sources={g.sessionIndex === 0 ? ["pi-66", "pi-67"] : ["pi-11", "pi-14"]}
-            nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
-            onNext={g.nextSession}
-            onReplay={g.replay}
-          />
-        ) : round.mode === "claim" ? (
-          <ClaimPlay key={round.id} round={round} {...props} />
-        ) : round.mode === "thread" ? (
-          <ThreadPlay key={round.id} round={round} {...props} />
-        ) : (
-          <NewcomerPlay key={round.id} round={round} {...props} />
-        )}
+      {finished ? (
+        <SessionEnd
+          said={g.saidInSession()}
+          title={session.title}
+          english={session.english}
+          firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
+          total={session.rounds.length}
+          sources={g.sessionIndex === 0 ? ["pi-66", "pi-67"] : ["pi-11", "pi-14"]}
+          nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
+          onNext={g.nextSession}
+          onReplay={g.replay}
+        />
+      ) : round.mode === "claim" ? (
+        <ClaimPlay key={round.id} round={round} {...props} />
+      ) : round.mode === "thread" ? (
+        <ThreadPlay key={round.id} round={round} {...props} />
+      ) : (
+        <NewcomerPlay key={round.id} round={round} {...props} />
+      )}
     </GameFrame>
   );
 }
@@ -74,13 +75,25 @@ function CardTile({
 }) {
   const body = (
     <>
-      <span className={cn("relative block aspect-square w-full overflow-hidden rounded-lg bg-paper-deep", light === "off" && "opacity-35 grayscale", light === "blurred" && "opacity-70 blur-[1.5px]")}>
+      <span
+        className={cn(
+          "relative block aspect-square w-full overflow-hidden rounded-lg bg-paper-deep",
+          light === "off" && "opacity-35 grayscale",
+          light === "blurred" && "opacity-70 blur-[1.5px]",
+        )}
+      >
         <Image src={`/art/family/${card.id}.webp`} alt="" fill sizes="(min-width: 1024px) 160px, 33vw" className="object-cover" />
       </span>
       <span className={cn("mt-1 block text-center leading-tight font-bold", small ? "text-[13px]" : "text-[15px]")}>{card.name}</span>
       {light !== "plain" && (
         <span className="absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-full bg-card shadow">
-          {light === "on" ? <Check className="size-4 text-sage" aria-label="yes" /> : light === "off" ? <X className="size-4 text-terracotta" aria-label="no" /> : <CircleHelp className="size-4 text-ochre" aria-label="unclear" />}
+          {light === "on" ? (
+            <Check className="size-4 text-sage" aria-label="yes" />
+          ) : light === "off" ? (
+            <X className="size-4 text-terracotta" aria-label="no" />
+          ) : (
+            <CircleHelp className="size-4 text-ochre" aria-label="unclear" />
+          )}
         </span>
       )}
       {badge}
@@ -134,30 +147,53 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
     if (!ok) {
       setMisses((m) => m + 1);
       track("repair_used", { game: GAME, round: round.id });
-    }
+    } else if (q === best) finish(q);
   };
   useShortcuts({
-    "1": done ? undefined : () => { setQ("All"); setLooked(null); },
-    "2": done ? undefined : () => { setQ("Most"); setLooked(null); },
-    "3": done ? undefined : () => { setQ("Some"); setLooked(null); },
-    "4": done ? undefined : () => { setQ("None"); setLooked(null); },
-    Enter: done ? onNext : looked && truth ? () => finish() : q && looked !== q ? look : undefined,
+    "1": done
+      ? undefined
+      : () => {
+          setQ("All");
+          setLooked(null);
+        },
+    "2": done
+      ? undefined
+      : () => {
+          setQ("Most");
+          setLooked(null);
+        },
+    "3": done
+      ? undefined
+      : () => {
+          setQ("Some");
+          setLooked(null);
+        },
+    "4": done
+      ? undefined
+      : () => {
+          setQ("None");
+          setLooked(null);
+        },
+    Enter: done ? onNext : looked && truth ? () => finish(looked) : q && looked !== q ? look : undefined,
   });
 
-  const finish = () => {
-    const strongestToo = looked === best;
-    onDone(1 + (strongestToo ? 1 : 0) + (misses === 0 ? 1 : 0), 3, misses === 0 && strongestToo && !hint, [claimText(looked!, session.kind, feature)]);
+  function finish(claim: Quantifier) {
+    const strongestToo = claim === best;
+    onDone(1 + (strongestToo ? 1 : 0) + (misses === 0 ? 1 : 0), 3, misses === 0 && strongestToo && !hint, [
+      claimText(claim, session.kind, feature),
+    ]);
     setDone(true);
-  };
+  }
+  const blurred = session.cards.filter((c) => c.features[feature.id] === "blurred");
 
   return (
-    <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-6">
+    <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="grid grid-cols-3 gap-2" aria-label={`These ${session.kind}`}>
         {session.cards.map((c) => (
           <CardTile key={c.id} card={c} light={looked ? lightFor(c, feature.id) : "plain"} />
         ))}
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="mt-auto flex flex-col gap-3 lg:mt-0">
         <p className="text-sm text-muted-foreground">Make the strongest claim that is true of these {session.kind}. Then look.</p>
         <p className="font-heading text-[21px] leading-snug">
           {q ? claimText(q, session.kind, feature) : `… of these ${session.kind} ${feature.plural}.`}
@@ -165,7 +201,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
         {!looked || (!truth && !done) ? (
           <>
             <div className="grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="How many">
-              {QUANTIFIERS.map((x) => (
+              {QUANTIFIERS.map((x, i) => (
                 <button
                   key={x}
                   type="button"
@@ -176,8 +212,14 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
                     setQ(x);
                     setLooked(null);
                   }}
-                  className={cn("h-12 rounded-lg border-2 text-[17px] font-bold", q === x ? "border-ink bg-ink text-paper" : "border-border bg-card hover:border-ink/30")}
+                  className={cn(
+                    "h-12 rounded-lg border-2 text-[17px] font-bold",
+                    q === x ? "border-ink bg-ink text-paper" : "border-border bg-card hover:border-ink/30",
+                  )}
                 >
+                  <kbd className="pointer-coarse:hidden mr-1 text-xs font-bold opacity-60" aria-hidden>
+                    {i + 1}
+                  </kbd>
                   {x}
                 </button>
               ))}
@@ -187,34 +229,44 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
                 <span className="font-bold">Objection!</span> What about {objector.name}? Look at it again.
               </p>
             )}
-            <Button size="lg" className="h-12 text-lg" disabled={!q || looked === q} onClick={look}>
-              Look
-            </Button>
-            <HintRow hint={round.hint} shown={hint} onShow={() => setHint(true)} />
+            <div className="flex gap-2">
+              <HintButton used={hint} onUse={() => setHint(true)} />
+              <Button size="lg" className="h-12 flex-1 text-lg" disabled={!q || looked === q} onClick={look}>
+                Look
+              </Button>
+            </div>
+            {hint && (
+              <p role="status" className="text-[15px]">
+                {round.hint}
+              </p>
+            )}
           </>
         ) : !done ? (
           <>
             <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
-              True of these {session.kind}.{" "}
-              {looked === best ? "And it is the strongest true claim." : `But you can say more than “${looked?.toLowerCase()}”.`}
-              {session.cards.some((c) => c.features[feature.id] === "blurred") && " The blurred card is unclear, so it is set aside."}
+              True of these {session.kind} — but you can say more than “{looked?.toLowerCase()}”.
             </p>
             <div className="flex gap-2">
-              {looked !== best && (
-                <Button size="lg" variant="outline" className="h-12 flex-1" onClick={() => setLooked(null)}>
-                  <RotateCcw className="size-4" aria-hidden /> Say more
-                </Button>
-              )}
-              <Button size="lg" className="h-12 flex-1 text-lg" onClick={finish} autoFocus>
-                Keep this claim
+              <Button size="lg" className="h-12 flex-1 text-lg" onClick={() => setLooked(null)} autoFocus>
+                <RotateCcw className="size-4" aria-hidden /> Say more
+              </Button>
+              <Button size="lg" variant="outline" className="h-12 flex-1" onClick={() => finish(looked!)}>
+                Keep it
               </Button>
             </div>
           </>
         ) : (
           <>
-            <p className="text-[15px] text-muted-foreground">
-              Note the words “of these”: the claim is about the {session.kind} on the table, not every {session.kind.slice(0, -1)} there is.
+            <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
+              {looked === best ? "True — and the strongest true claim. " : "True. "}
+              Note “of these”: the claim is about the {session.kind} on the table, not every {session.kind.slice(0, -1)} there is.
             </p>
+            {blurred.length > 0 && (
+              <p className="text-[15px]">
+                <span className="font-bold">{blurred.map((c) => c.name).join(", ")}</span> was set aside as unclear
+                {round.blurredNote ? `: ${round.blurredNote}` : "."}
+              </p>
+            )}
             <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
               Next
             </Button>
@@ -260,7 +312,12 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
       setPending(null);
       if (next.length === session.cards.length) {
         const r = checkChain(next);
-        onDone(1 + (r.fibres >= 3 ? 1 : 0) + (misses === 0 ? 1 : 0), 3, misses === 0 && !hint, next.slice(1).map((s, i) => `${cap(next[i].card.name)} and ${s.card.name} both ${feature(s.link)!.plural}.`));
+        onDone(
+          1 + (r.fibres >= 3 ? 1 : 0) + (misses === 0 ? 1 : 0),
+          3,
+          misses === 0 && !hint,
+          next.slice(1).map((s, i) => `${cap(next[i].card.name)} and ${s.card.name} both ${feature(s.link)!.plural}.`),
+        );
         setDone(true);
       }
     } else {
@@ -271,11 +328,9 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-6">
+    <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-muted-foreground">
-          {threadPrompt()}
-        </p>
+        <p className="text-sm text-muted-foreground">{threadPrompt()}</p>
         <div className="grid grid-cols-3 gap-2">
           {session.cards.map((c) => (
             <CardTile
@@ -289,7 +344,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
           ))}
         </div>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="mt-auto flex flex-col gap-3 lg:mt-0">
         {pending && (
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="What they share">
             {session.features.map((f) => (
@@ -315,7 +370,10 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
             {chain.map((s, i) => (
               <li key={s.card.id} className="flex flex-col">
                 {s.link && (
-                  <span className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px]" style={{ borderColor: feature(s.link)?.colour }}>
+                  <span
+                    className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px]"
+                    style={{ borderColor: feature(s.link)?.colour }}
+                  >
                     both {feature(s.link)?.plural}
                   </span>
                 )}
@@ -342,7 +400,8 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
         {done && (
           <>
             <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
-              The thread holds with {result.fibres} different fibres — and no single fibre runs through all {session.cards.length} {session.kind}. That is what Wittgenstein calls a family resemblance (§67).
+              The thread holds with {result.fibres} different fibres — and no single fibre runs through all {session.cards.length}{" "}
+              {session.kind}. That is what Wittgenstein calls a family resemblance (§67).
             </p>
             <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
               Next
@@ -386,7 +445,8 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
     } else {
       const most = claimHolds(session.cards, f.id, "Most");
       ok = n.features[f.id] === false && most;
-      if (ok) why = `True — ${n.name} ${agree(n, "sits", "sit")} at the edge of the family. Both answers can be right: the edges are blurred (§71).`;
+      if (ok)
+        why = `True — ${n.name} ${agree(n, "sits", "sit")} at the edge of the family. Both answers can be right: the edges are blurred (§71).`;
       else if (!most) why = `That doesn't set it apart: no more than half of these ${session.kind} ${f.plural} anyway.`;
       else why = `Not true: ${n.name} ${n.plural ? f.plural : f.singular}.`;
     }
@@ -399,7 +459,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-6">
+    <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-col gap-2">
         <div className="mx-auto w-40">
           <CardTile card={n} badge={<span className="absolute top-1.5 left-1.5 rounded-full bg-ochre px-2 text-xs font-bold">New</span>} />
@@ -410,7 +470,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
           ))}
         </div>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="mt-auto flex flex-col gap-3 lg:mt-0">
         <p className="text-sm text-muted-foreground">
           {agree(n, "Does", "Do")} {n.name} belong with these {session.kind}? Say one true sentence.
         </p>
@@ -426,7 +486,10 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
                 setMode(m);
                 setResult(null);
               }}
-              className={cn("h-11 rounded-lg border-2 text-[16px] font-bold", mode === m ? "border-ink bg-ink text-paper" : "border-border bg-card")}
+              className={cn(
+                "h-11 rounded-lg border-2 text-[16px] font-bold",
+                mode === m ? "border-ink bg-ink text-paper" : "border-border bg-card",
+              )}
             >
               {m === "both" ? "It belongs: “both”" : "At the edge: “unlike”"}
             </button>
@@ -436,14 +499,34 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
           {mode === "both" ? (
             <>
               {cap(n.name)} and
-              <Select value={other} onChange={setOther} disabled={!!result?.ok} label="Which one" options={session.cards.map((c) => [c.id, c.name])} />
+              <Select
+                value={other}
+                onChange={setOther}
+                disabled={!!result?.ok}
+                label="Which one"
+                options={session.cards.map((c) => [c.id, c.name])}
+              />
               both
-              <Select value={feat} onChange={setFeat} disabled={!!result?.ok} label="What they share" options={session.features.map((x) => [x.id, x.plural])} />.
+              <Select
+                value={feat}
+                onChange={setFeat}
+                disabled={!!result?.ok}
+                label="What they share"
+                options={session.features.map((x) => [x.id, x.plural])}
+              />
+              .
             </>
           ) : (
             <>
               Unlike most of these {session.kind}, {n.name}
-              <Select value={feat} onChange={setFeat} disabled={!!result?.ok} label="What it lacks" options={session.features.map((x) => [x.id, negate(x, n.plural)])} />.
+              <Select
+                value={feat}
+                onChange={setFeat}
+                disabled={!!result?.ok}
+                label="What it lacks"
+                options={session.features.map((x) => [x.id, negate(x, n.plural)])}
+              />
+              .
             </>
           )}
         </div>
@@ -483,7 +566,19 @@ function agree(c: Card, singular: string, plural: string): string {
   return c.plural ? plural : singular;
 }
 
-function Select({ value, onChange, options, label, disabled }: { value: string; onChange: (v: string) => void; options: [string, string][]; label: string; disabled?: boolean }) {
+function Select({
+  value,
+  onChange,
+  options,
+  label,
+  disabled,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: [string, string][];
+  label: string;
+  disabled?: boolean;
+}) {
   return (
     <select
       value={value}

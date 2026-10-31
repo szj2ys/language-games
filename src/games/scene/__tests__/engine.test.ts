@@ -73,7 +73,10 @@ describe("authored scene rounds", () => {
       const wrong = r.report.filter((c) => !holds(r.scene, c));
       expect(wrong.length, r.id).toBeGreaterThan(0);
       for (const c of wrong) {
-        expect(r.options.some((rel) => holds(r.scene, { ...c, rel })), `${r.id}: ${say(c)}`).toBe(true);
+        expect(
+          r.options.some((rel) => holds(r.scene, { ...c, rel })),
+          `${r.id}: ${say(c)}`,
+        ).toBe(true);
       }
     }
   });

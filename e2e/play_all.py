@@ -36,11 +36,8 @@ def next_round(page: Page) -> None:
 
 def advance(page: Page, before: str = "") -> None:
     """Fetch rounds move on by themselves after a right answer; click Next if it is still there."""
-    try:
-        page.get_by_role("button", name="Next", exact=True).click(timeout=600)
-    except Exception:
-        pass
-    page.wait_for_timeout(300)
+    # A right delivery moves on by itself after about 1.4 s.
+    page.wait_for_timeout(1700)
 
 
 # --- Slab! -----------------------------------------------------------------
@@ -199,8 +196,8 @@ def play_cafe(page: Page) -> None:
 # --- Go On! -------------------------------------------------------------------
 
 PUPIL = [
-    ("an honest man", "correct"),
-    ("a baby", "both"),
+    ("an honest man", "both"),
+    ("a baby", "correct"),
     ("opened", "both"),
     ("easier", "both"),
 ]
@@ -243,12 +240,10 @@ def play_family(page: Page) -> None:
     shot(page, "family-objection")
     page.get_by_role("radio", name="Most").click()
     page.get_by_role("button", name="Look").click()
-    page.get_by_role("button", name="Keep this claim").click()
     next_round(page)
     for q in ["Most", "Some"]:
         page.get_by_role("radio", name=q).click()
         page.get_by_role("button", name="Look").click()
-        page.get_by_role("button", name="Keep this claim").click()
         next_round(page)
     # Thread: chess -skill- poker -cards- patience -alone- wall -ball- football -group- ring
     for name, link in [("chess", None), ("poker", "both need skill"), ("patience", "both are played with cards"),

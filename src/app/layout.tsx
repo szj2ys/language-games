@@ -29,7 +29,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Language Games",
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "A paper-theatre builder and assistant beneath a ladder into a sky of words" }],
+    images: [
+      { url: "/og.jpg", width: 1200, height: 630, alt: "A paper-theatre builder and assistant beneath a ladder into a sky of words" },
+    ],
   },
   twitter: { card: "summary_large_image" },
 };

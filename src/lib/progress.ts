@@ -37,9 +37,7 @@ export function emptySave(): Save {
   };
 }
 
-export type LoadResult =
-  | { ok: true; save: Save }
-  | { ok: false; save: Save; reason: "unavailable" | "corrupt" | "newer" };
+export type LoadResult = { ok: true; save: Save } | { ok: false; save: Save; reason: "unavailable" | "corrupt" | "newer" };
 
 export function parseSave(raw: string | null): LoadResult {
   if (raw === null) return { ok: true, save: emptySave() };
@@ -58,7 +56,12 @@ export function parseSave(raw: string | null): LoadResult {
   if (d.rounds && typeof d.rounds === "object") {
     for (const [id, r] of Object.entries(d.rounds)) {
       if (r && typeof r.marks === "number" && typeof r.max === "number") {
-        rounds[id] = { marks: r.marks, max: r.max, firstTry: Boolean(r.firstTry), said: Array.isArray(r.said) ? r.said.filter((x) => typeof x === "string") : undefined };
+        rounds[id] = {
+          marks: r.marks,
+          max: r.max,
+          firstTry: Boolean(r.firstTry),
+          said: Array.isArray(r.said) ? r.said.filter((x) => typeof x === "string") : undefined,
+        };
       }
     }
   }
@@ -89,7 +92,7 @@ function parsePositions(raw: unknown): Record<string, Position> {
 /** Merge a finished round into a save, keeping the best result. Idempotent. */
 export function recordRound(save: Save, id: string, rec: RoundRecord, phrases: string[] = []): Save {
   const prev = save.rounds[id];
-  const said = phrases.length ? phrases : rec.said ?? prev?.said;
+  const said = phrases.length ? phrases : (rec.said ?? prev?.said);
   const best: RoundRecord = prev
     ? { marks: Math.max(prev.marks, rec.marks), max: rec.max, firstTry: prev.firstTry || rec.firstTry, ...(said ? { said } : {}) }
     : { ...rec, ...(said ? { said } : {}) };

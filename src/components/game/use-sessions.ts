@@ -7,6 +7,10 @@ import { clearDrafts } from "@/lib/use-draft";
 
 type SessionLike = { rounds: { id: string }[] };
 
+function firstLines(said?: string[]): string[] {
+  return said ? said.slice(0, 2) : [];
+}
+
 /** Where the player is in a game's sessions, saved locally so a reload resumes the same round. */
 export function useSessions<S extends SessionLike>(game: string, sessions: S[]) {
   const { save, ready, update, storable } = useSave();
@@ -36,6 +40,8 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[]) 
     speech,
     toggleSpeech: () => update((s) => ({ ...s, settings: { ...s.settings, speech: !s.settings.speech } })),
     next: () => goTo(sessionIndex, roundIndex + 1),
+    /** What the player said in the current session, for the end card. */
+    saidInSession: () => session.rounds.flatMap((r) => firstLines(save.rounds[r.id]?.said)),
     finishedIn: (i: number) => sessions[i].rounds.every((r) => !!save.rounds[r.id]),
     nextSession: () => goTo(sessionIndex + 1, 0),
     replay: () => goTo(sessionIndex, 0),

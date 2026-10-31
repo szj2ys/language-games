@@ -35,7 +35,9 @@ describe("progress", () => {
 
 describe("saved positions", () => {
   it("drops impossible positions instead of crashing the game", () => {
-    const r = parseSave(JSON.stringify({ version: 1, rounds: {}, positions: { builder: { session: -1, round: 0 }, scene: { session: 1, round: 2 } } }));
+    const r = parseSave(
+      JSON.stringify({ version: 1, rounds: {}, positions: { builder: { session: -1, round: 0 }, scene: { session: 1, round: 2 } } }),
+    );
     expect(r.save.positions).toEqual({ scene: { session: 1, round: 2 } });
   });
 });

@@ -72,9 +72,13 @@ export function ShortcutTip() {
   }, [show]);
   if (!show) return null;
   return (
-    <div role="status" className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-ink px-4 py-2 text-[15px] text-paper shadow-lg">
+    <div
+      role="status"
+      className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-ink px-4 py-2 text-[15px] text-paper shadow-lg"
+    >
       <span>
-        Faster: press <kbd className="rounded bg-paper/20 px-1.5 font-bold">1</kbd>–<kbd className="rounded bg-paper/20 px-1.5 font-bold">4</kbd> to choose and{" "}
+        Faster: press <kbd className="rounded bg-paper/20 px-1.5 font-bold">1</kbd>–
+        <kbd className="rounded bg-paper/20 px-1.5 font-bold">4</kbd> to choose and{" "}
         <kbd className="rounded bg-paper/20 px-1.5 font-bold">Enter</kbd> to confirm.
       </span>
       <button type="button" onClick={() => setShow(false)} className="h-11 rounded-lg px-3 font-bold hover:bg-paper/15">
