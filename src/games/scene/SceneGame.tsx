@@ -156,11 +156,9 @@ function Stage({
   onDrop,
   fixed,
   children,
-  className,
 }: {
   scene: Scene;
   label: string;
-  className?: string;
   selected?: Thing | null;
   onSelectPlaced?: (t: Thing) => void;
   onDrop?: (loc: Loc) => void;
@@ -174,7 +172,7 @@ function Stage({
   const placed = layout(scene, spotX, phone ? 0.42 : 1);
   const holders = placed.filter((p) => HOLDERS.includes(p.thing) && scene[p.thing] && "spot" in scene[p.thing]!);
   return (
-    <SceneCanvas label={label} frame="floor" className={className}>
+    <SceneCanvas label={label} frame="floor">
       <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       {placed
         .filter((p) => scene[p.thing] && "spot" in scene[p.thing]!)
@@ -419,10 +417,9 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div className="flex flex-1 flex-col gap-3 lg:block">
+      {/* The controls follow the message: a taller stage only showed more empty wall (Jobs round 5, acceptor). */}
+      <div className="flex flex-col gap-3 lg:block">
         <Stage
-          // On a tall phone the stage takes the spare height (more back wall), so no empty band opens below the message.
-          className="max-sm:aspect-auto max-sm:min-h-[100vw] max-sm:flex-1"
           scene={scene}
           label="The stage"
           selected={checked ? null : selected}
