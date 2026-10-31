@@ -632,7 +632,8 @@ The `items` list above is shortened; a real round lists every deck and exam item
 
 - A concept has:
   - `features [{id, sg, pl}]`: the singular and plural verb phrase, so agreement can be checked.
-  - `cards [{id, label, has[], blurred[], art?, sourceId?}]`.
+  - `cards [{id, label, has[], blurred[], art?, artPrompt?, icon?, sourceId?}]`: each card has `art` (an
+    approved image) or `icon` (the word-card fallback, §4.8).
   - `counterLines [{card, feature, line, sourceId?}]`: `sourceId` is set only where Wittgenstein used that
     card for that feature.
 - A round's payload has `type`, `concept`, `cards` (6 ids), `newCard`, `purpose` (edge rounds only), and
@@ -689,7 +690,7 @@ How claims are judged:
 |---|---|---|
 | *all* | k = n | always |
 | *most* | k > n/2 | k < n |
-| *some* | k ≥ 1 | k ≤ n/2, or the claim is open for every stronger quantifier |
+| *some* | k ≥ 1 | k ≤ n/2 |
 | *not all* | k < n | k ≤ n/2 |
 | *no* | k = 0 | always |
 
@@ -769,7 +770,7 @@ cited at all in v1.
 | Sources | ~35 entries | §3.4 |
 | English targets | ~40 entries | Each with a rule, an example and a common error |
 | Notes | 3 articles | One per game, about 600 words, at most 2 short quotes each |
-| Images | 24 (+3 if Logical Space ships) | §4.8 |
+| Images | 24 core (+3 if Logical Space ships), plus up to 42 concept cards with a word-card fallback | §4.8 |
 
 Each game needs at least 20 shipped rounds (B7). We author 24, so up to 4 weak rounds can be cut. At 5 rounds per
 session, 24 rounds is about 5 sessions per game, roughly an hour and a half of play across v1.
@@ -950,3 +951,416 @@ Each CAST line is pasted word for word into every prompt where that character ap
    prompts are in the repository.
 9. **If Codex image generation fails on 2 routes,** follow the kill rule (§5.14): use typographic and SVG art,
    and mark the art criterion BLOCKED with the exact error.
+
+### 4.8 Images to generate, with prompts
+
+**STYLE block** (stored in `art-src/style.txt`, appended word for word to every prompt):
+
+> Ink line art with flat watercolour washes on warm cream paper, like a page from a sketchbook; restrained 1920s
+> Viennese modernism; simple geometric shapes; lots of empty paper around the subject; palette limited to ink
+> brown-black, brick red, slate blue, ochre and stone grey; soft light from the upper left; subtle paper grain;
+> no text, letters, numbers, signs or logos; no photorealism, no 3D, no heavy shading.
+
+**Each full prompt is:** subject + the CAST lines of the characters named in capitals (§4.4) + STYLE.
+
+**Core set (v1 must-have, 24 images):**
+
+| # | Key | Size | Where | Subject prompt | Alt text |
+|---|---|---|---|---|---|
+| 1 | `hero` | 1536×1024 | Home hero; **style anchor** | A quiet building site drawn like a sketchbook page. On the left the BUILDER raises one hand and calls out; on the right the ASSISTANT walks towards him carrying a flat stone slab. A few stone blocks, pillars and beams lie neatly on the ground. Low houses far away, wide empty paper above. | A builder calls out while his assistant carries a stone slab across a quiet building site. |
+| 2 | `og-base` | 1536×1024, cropped to 1200×630 | Site-wide OG background | At the right edge, a low half-built wall of stone blocks with one pillar and a beam resting on it. The left two-thirds of the picture is empty cream paper. No people. | Set for each page by `next/og` |
+| 3 | `notebook-empty` | 1024×1024 | Notebook empty state | An open notebook with blank pages on a wooden table, a pencil beside it and a small flat stone used as a paperweight. | An open, empty notebook with a pencil and a small stone as a paperweight. |
+| 4 | `fly-bottle` | 1024×1024 | 404 page (PI §309) | A clear glass bottle lying on its side on a windowsill, its cork beside it; a small fly walks out of the open neck towards the light of the window. | A fly walks out of the open neck of a glass bottle towards a window. |
+| 5 | `slab-key` | 1536×1024 | Hub card, Slab! intro | The BUILDER stands on a half-built low wall, pointing down and calling out; below him the ASSISTANT lifts a stone slab from a neat stack. Pillars and beams lie ready nearby. | A builder on a half-built wall calls out; his assistant lifts a slab from a stack. |
+| 6 | `slab-site` | 1536×1024 | Slab! stage, behind the SVG grid | An empty, level building plot seen from the front at eye level: flat earth, a low horizon with a few trees and two small houses, a pale sky wash. The middle of the picture is plain and empty. No people, no stones. | "" (decorative) |
+| 7 | `builder-call` | 1024×1024 | Slab!: an order is given | The BUILDER, half-length, facing right, one hand cupped beside his mouth, calling out. | The builder calls out an order. |
+| 8 | `builder-point` | 1024×1024 | Slab!: *there* with pointing (§8) | The BUILDER, full-length, facing right, pointing at a spot on the ground with his arm stretched out. | The builder points at a spot on the ground. |
+| 9 | `builder-pleased` | 1024×1024 | Slab!: build complete | The BUILDER, half-length, facing right, smiling and nodding, wiping his hands on a cloth. | The builder smiles and wipes his hands, pleased with the work. |
+| 10 | `assistant-carry` | 1024×1024 | Slab!: the assistant acts | The ASSISTANT, full-length, facing left, carrying a long stone beam on her shoulder with quick, steady steps. | The assistant carries a stone beam on her shoulder. |
+| 11 | `assistant-shrug` | 1024×1024 | Slab!: an order cannot be understood | The ASSISTANT, half-length, facing left, shrugging with open palms and a friendly, puzzled look. | The assistant shrugs, unsure what was meant. |
+| 12 | `go-on-key` | 1536×1024 | Hub card, Go On! intro (§185) | A schoolroom moment seen from the side: a teacher's arm enters from the left edge and points with one finger along a row of plain chalk dots on a slate board. The PUPIL, instead of looking where the finger points, looks back along the arm towards the wrist. | A teacher points along a row of chalk dots; the pupil looks back along the arm instead. |
+| 13 | `classroom` | 1536×1024 | Go On! stage background | An empty village schoolroom of the 1920s seen from the back: wooden desks, a blank slate board, a tall window with soft light. No people. | "" (decorative) |
+| 14 | `pupil-proud` | 1024×1024 | Go On!: the pupil graduates | The PUPIL, half-length, facing left, chin up and grinning, holding a closed exercise book against his chest. | The pupil grins, holding his exercise book. |
+| 15 | `pupil-puzzled` | 1024×1024 | Go On!: a wrong way of going on | The PUPIL, half-length, facing left, frowning and scratching his head with a pencil. | The pupil frowns and scratches his head with a pencil. |
+| 16 | `pupil-eureka` | 1024×1024 | Go On!: "Now I can go on!" (§151) | The PUPIL, half-length, facing left, eyes wide, one finger raised as an idea arrives, a pencil in his other hand. | The pupil raises a finger as he suddenly understands. |
+| 17 | `family-key` | 1536×1024 | Hub card, Family Likeness intro (§66-67) | Seen from above: a wooden table with a chessboard, a fanned hand of face-down playing cards, a football, a skipping rope and a small wooden spinning top. One thick rope of overlapping fibres in brick red, slate blue, ochre and stone grey winds between them; no single fibre runs the whole length. | Games on a table — chess, cards, a ball, a top — joined by one rope of overlapping coloured fibres. |
+| 18 | `objector` | 1024×1024 | Family Likeness: a counterexample | The OBJECTOR, half-length, facing right, holding up a small blank card between two fingers, one eyebrow raised, amused rather than stern. | The Objector raises an eyebrow and holds up a card. |
+| 19 | `card-chess` | 1024×1024 | Card | A chessboard in the middle of a game with a few pieces, seen at a slight angle. | A chessboard in the middle of a game. |
+| 20 | `card-football` | 1024×1024 | Card | Two players in brick-red and slate-blue shirts running for one ball on a strip of grass. | Two players run for the ball in a football match. |
+| 21 | `card-poker` | 1024×1024 | Card | Seen from above, four players' hands holding face-down playing cards over a green table with a few round counters. | Players hold cards over a table with counters. |
+| 22 | `card-patience` | 1024×1024 | Card | One person's hands laying out playing cards with plain faces in neat rows on a table. | One person lays out cards in rows for a game of patience. |
+| 23 | `card-wall` | 1024×1024 | Card (PI §66) | A child throwing a ball at a brick wall and getting ready to catch it, alone in a quiet yard. | A child throws a ball at a wall and waits to catch it. |
+| 24 | `card-ring` | 1024×1024 | Card (PI §66) | Four small children holding hands and dancing in a ring on the grass. | Children hold hands and dance in a ring. |
+
+**Gated set (3 images, only if Logical Space passes the gate in §5.11):**
+
+| # | Key | Size | Where | Subject prompt | Alt text |
+|---|---|---|---|---|---|
+| 25 | `ls-key` | 1536×1024 | Hub card, Logical Space intro | Eight small framed pictures of the same simple sitting room, pinned in two rows on a wall; in each one the cat, the number of cups or the lamp is slightly different. | Eight small pictures of one room; in each, the cat, the cups or the lamp is different. |
+| 26 | `ls-room` | 1536×1024 | Logical Space stage, under the SVG objects | A plain, empty sitting room seen straight on: a sofa on the left, a low table in the middle, a standing lamp on the right, a window behind. No people, no animals, no cups. | "" (decorative) |
+| 27 | `ls-tea` | 1024×1024 | Logical Space finale (§21) | The TEA WOMAN sitting in an armchair, laughing, holding out a cup of tea towards the viewer. | A woman laughs and holds out a cup of tea. |
+
+**Concept cards beyond *game* (should-have, up to 42 images).**
+
+- These are the other 7 Family Likeness concepts, with 6 cards each. Every card in `family-concepts.json` has
+  an `artPrompt`, a one-line subject written together with the card.
+- **Prompt template:** "A single {artPrompt}, alone in the middle of empty paper, drawn simply with a clear
+  outline." + STYLE.
+- They are generated in background batches of one concept (6 cards), starting after the *game* deck passes
+  review.
+- A card with no approved image renders as a word card: the label in Fraunces, a lucide `icon`, and a thin
+  rule. That fallback is designed to look intended, so a missing image never blocks a release.
+- Content test: every card has either `art` or `icon`.
+
+**Totals:**
+
+| Set | Images | Status |
+|---|---|---|
+| Core | 24 | Required for v1 |
+| Gated | 3 | Only if Logical Space ships |
+| Concept cards | up to 42 | Best effort; word cards otherwise |
+| Code-drawn | — | Favicon, stones, tiles and OG text (§4.6) |
+
+## 5. Technical architecture, risks and failure modes
+
+### 5.1 Stack
+
+| Layer | Choice | Note |
+|---|---|---|
+| Framework | Next.js, latest stable at build time, App Router, React 19, TypeScript `strict` with `noUncheckedIndexedAccess` | Exact version pinned in `package.json` |
+| Styling and UI | Tailwind CSS v4, shadcn/ui, lucide-react | shadcn parts only where they earn it: Button, Dialog, Sheet (Notebook on phones), Tabs, Switch, Separator |
+| Validation | zod | One schema module for content and storage |
+| State | `useReducer` per game plus one storage hook | No state library, database, API routes or server actions |
+| Notes | MDX in `content/notes/` via `@next/mdx`, compiled at build | Local files only, never remote MDX |
+| Tests | Vitest with Testing Library and jsdom; Playwright with `@axe-core/playwright` | §5.10 |
+| Lint | ESLint flat config with `eslint-config-next` | `npm run lint` |
+| Tooling | npm with a committed lockfile; Node LTS pinned in `.nvmrc` and `engines` | sharp is a dev dependency for the art script only |
+| Analytics | `posthog-js`, loaded only when env-gated (§5.7) | Optional |
+
+### 5.2 Rendering and hosting
+
+- **Static rendering.** Every route renders at build:
+  - `/play/[game]` and `/notes/[slug]` through `generateStaticParams`.
+  - Each game is a client component inside a server-rendered shell. The shell holds the h1, how-to-play text,
+    the English target and the idea with its citations, so pages read fine without JavaScript (§5.8).
+- **Run with `next build && next start`** (B3).
+- **No `output: 'export'`.** Static export drops `next/image` optimisation and `headers()` from
+  `next.config`, and both are needed (B9, B13).
+- **Hosting is the owner's decision** after v1. Any Node host works. Cloudflare through the OpenNext adapter is
+  one option. Before launch, confirm that image optimisation and the headers survive on the chosen host.
+
+### 5.3 Folders
+
+```
+app/                      routes: page.tsx, play/[game]/, notebook/, sources/, notes/[slug]/, about/,
+                          privacy/, terms/, not-found.tsx, sitemap.ts, robots.ts, opengraph-image.tsx, llms.txt/
+components/               shared UI: round-shell, composer (tile tray), feedback-line, citation-chip,
+                          result-card, session-summary, ui/ (shadcn)
+games/<game>/             engine (pure), stage (React view), scoring, copy  — slab, go-on, family, logical-space
+lib/grammar/              tile lexicon, templates, parser, slip detectors
+lib/storage/              schema, load/save, migrations, hook
+lib/analytics/            env-gated PostHog wrapper with an event allowlist
+lib/content/              loaders + zod schemas for content/*
+content/                  sources.json, english.json, art.json, family-concepts.json, rounds/, notes/, AUTHORING.md
+public/art/               processed WebP images
+art-src/                  style.txt, cast.md, ref/, prompts; out/ is git-ignored
+scripts/                  process-art, flag-rare-words (dev only)
+tests/                    unit/, content/, e2e/
+logs/                     worklog.md, art-log.md, screenshots/
+```
+
+### 5.4 Engine contract
+
+Every game exposes the same five pure functions. Pages and tests depend only on these.
+
+| Function | Input → output | Rule |
+|---|---|---|
+| `initialState` | round (+ seed) → state | Deterministic for a given seed |
+| `reduce` | state + action → state | Pure and total. An invalid action returns the state with a reason, never throws |
+| `score` | state + round → marks 0-3 plus the reason for each mark | Shown on the result card, so every mark is explained |
+| `isComplete` | state → boolean | Drives the result screen |
+| `solve` | round → actions | Used by tests and e2e to prove par is reachable |
+
+**The round shell** is shared. It owns the composer, feedback line, citation chip, Notebook writes, persistence
+and analytics, so a game only supplies its engine and its stage. That is why a fourth game costs about 2.5 h
+rather than 5 h.
+
+### 5.5 Composer and grammar
+
+- **Tiles.** Each tile has:
+  - a word id and surface form;
+  - a category: verb, determiner, number, colour, noun (sg/pl), preposition, place adverb, auxiliary, pronoun,
+    quantifier or conjunction;
+  - features: number, countability, and whether it starts with a vowel sound (for *a/an*).
+- **Templates.** Each game enables a few small patterns, for example:
+  - Slab!: order = verb + noun phrase + *there* or a prepositional phrase.
+  - Family Likeness: claim = quantifier + plural noun + verb phrase; link = noun phrase + *and* + noun phrase +
+    *are both* + verb phrase.
+  - Logical Space: yes/no question = auxiliary + noun phrase + predicate.
+- **Parser.** A deterministic parser over at most 12 tokens.
+  - It returns a parse tree, or *unparsed* together with the nearest template.
+  - It also returns a list of *slips*: agreement (*two pillar*), articles (*a/an*, *a/the* with known objects),
+    word order (*pillar red*), *do*-support and inversion.
+  - Each slip maps to an `english.json` target, which supplies the "why" note.
+- **Leniency.** Slips that do not block meaning are coached, not punished: the builder still understands *two
+  pillar*, and the note explains the plural. Unparsed attempts do not count against par. Ambiguity is part of the
+  game: *the pillar* when there are two pillars makes the assistant ask "Which pillar?".
+- **No free text, NLP or LLM at runtime.** That means no cost, no privacy questions, and deterministic tests.
+  - **Trade-off:** tiles test recognition more than production. The mitigation is distractor forms in the tray
+    (*pillar/pillars*, *a/an*, *do/does*), so the learner must choose every form. A v2 can add typed input,
+    parsed by the same grammar.
+- **Keyboard and screen readers.**
+  - Tiles are buttons. Enter adds a tile and Backspace removes the last one.
+  - The sentence built so far is announced through a polite live region.
+
+### 5.6 Persistence (localStorage)
+
+- **One key, `lg:v1`**, holding zod-validated JSON:
+  - `version`;
+  - `games[game].rounds[roundId] = {best, done, tries}`;
+  - `current = {game, roundId, contentHash, state, savedAt}`, where `state` includes the tiles placed so far,
+    so in-progress input survives a reload (B10);
+  - `session = {game, roundIds, index, marks}`;
+  - `notebook = {passages: sourceId[], english: targetId[]}`;
+  - `settings = {analytics, motion}`.
+- **Writes** are debounced by about 250 ms after each action and flushed on `pagehide` and when the page becomes
+  hidden.
+- **Reads** happen only after mount, through `useSyncExternalStore` with an empty server snapshot. That avoids
+  hydration mismatches. Progress counts show a neutral placeholder until the read finishes.
+- **Failure handling.**
+  - If storage is unavailable or full (private mode, quota), the app falls back to memory and shows one quiet
+    line: "Progress can't be saved in this browser."
+  - If the JSON is corrupt or fails the schema, the raw value is copied to `lg:backup:<timestamp>`, the app
+    starts fresh, and it sends `storage_error` with the error kind only.
+  - Each version bump gets a migration function, with a test.
+- **Content changes.**
+  - Progress is keyed by round id, and unknown ids are ignored.
+  - An in-progress round whose `contentHash` changed is restarted rather than replayed into a different round.
+- **Multiple tabs.** A `storage` event refreshes progress. For the in-progress round, the last write wins,
+  which is acceptable for v1.
+- **Reset.** Settings has "Clear my progress", behind a confirmation dialog.
+
+### 5.7 Analytics (PostHog, optional)
+
+- **When it loads.** Only when `NEXT_PUBLIC_POSTHOG_KEY` is set at build time *and* the user has not switched it
+  off in Settings. It is a dynamic import, so the bundle carries no PostHog bytes when it is off.
+- **Configuration:**
+  - autocapture off; session recording and surveys off;
+  - `persistence: 'memory'`, so there are no cookies and nothing in storage;
+  - Do Not Track is respected;
+  - "discard client IP" is enabled in the PostHog project.
+- **Event allowlist** (the wrapper drops anything else):
+  - `session_started {game}`;
+  - `round_completed {game, roundId, marks, tries}`;
+  - `session_completed {game, marks}`;
+  - `notebook_opened`;
+  - `storage_error {kind}`.
+  - Composer content is never sent, and there is no user id.
+- **Purpose.** Find rounds that are too hard (many tries) or skipped. It is never used to drive engagement, and
+  there are no re-engagement prompts. `/privacy` says all of this in plain words.
+
+### 5.8 SEO and GEO
+
+- **Metadata.**
+  - Every route exports `metadata` or `generateMetadata`: a title template "%s · Language Games", a
+    description of at most 155 characters, and a canonical URL.
+  - `metadataBase` comes from `NEXT_PUBLIC_SITE_URL`.
+- **OG images.** `app/opengraph-image.tsx` covers the whole site, and each game has its own (§4.6).
+- **Crawling.** `app/sitemap.ts` lists every static route and note; `app/robots.ts` allows everything and points
+  to the sitemap.
+- **JSON-LD** (B12):
+  - `WebSite` on the home page.
+  - `LearningResource` on each game page, with `educationalLevel` "CEFR B1-B2", `teaches` (the English target and
+    the idea), `inLanguage` "en" and `isAccessibleForFree` true.
+  - `Article` on notes.
+  - The data comes from our own content, with `<` escaped.
+- **Semantic HTML.** One h1 per page and a logical heading order. Game pages render "How to play", "What you
+  practise" and "The idea" with citation links on the server.
+- **GEO.**
+  - `/llms.txt` summarises the site and links to the games, notes and `/sources`.
+  - Each note opens with a two-sentence plain answer (for example, "What is a language-game?") followed by its
+    citation.
+  - `/sources` is a crawlable registry page of every passage the site relies on.
+- **Performance budget.**
+  - LCP under 2.5 s on a mid-range phone over 4G.
+  - First-load JS for a game route of at most about 170 KB gzipped.
+  - Lighthouse (mobile) a11y ≥95, SEO ≥95 and performance ≥85, measured locally.
+
+### 5.9 Security
+
+- **Headers,** set in `next.config` `headers()` for every route:
+  - **CSP:** `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob:; font-src 'self'; connect-src 'self'` plus the PostHog host only when the key is
+    set; `frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'`; and
+    `upgrade-insecure-requests` in production.
+  - **Why `'unsafe-inline'` for scripts:**
+    - Statically rendered pages cannot carry per-request nonces, and Next.js inlines its bootstrap scripts.
+    - The risk is bounded: there is no user-generated HTML, the composer only ever renders known tiles, the only
+      third-party code is the optional bundled PostHog, and JSON-LD is built from our own data.
+    - A hash-based CSP is a v2 option.
+  - **Also:**
+    - `X-Content-Type-Options: nosniff`;
+    - `Referrer-Policy: strict-origin-when-cross-origin`;
+    - `Permissions-Policy` with camera, microphone and geolocation disabled;
+    - `X-Frame-Options: DENY`;
+    - `Cross-Origin-Opener-Policy: same-origin`;
+    - `Strict-Transport-Security` in production only;
+    - `poweredByHeader: false`.
+- **Secrets.** v1 needs none.
+  - `.env.example` lists only `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`.
+    These are public by design: a PostHog project key is meant for browsers.
+  - `.env*` files other than the example are git-ignored.
+- **Dependencies.** `npm audit --omit=dev` must report no high or critical issues (B13). Dev-only advisories are
+  listed in the worklog, not hidden.
+- **Content.** MDX notes and JSON content are ours and compiled at build time. Nothing is fetched or evaluated
+  at runtime.
+
+### 5.10 Tests and quality gates
+
+- **npm scripts** (B2):
+  - `lint` (ESLint);
+  - `typecheck` (`tsc --noEmit`);
+  - `test` (Vitest: unit and content tests);
+  - `test:e2e` (Playwright against `next build && next start`);
+  - `build`, `start`;
+  - `check`, which runs lint, typecheck, test, build and test:e2e in that order.
+- **Unit tests** (B8):
+  - the grammar parser on at least 60 fixture sentences (valid sentences, each kind of slip, unparsed);
+  - every engine's state transitions, including invalid actions;
+  - the scoring table for each game, every mark and its reason;
+  - the Go On! pupil model (hypothesis update) and the brute-force par;
+  - the Family claim judge, with a true/false/open table including blurred cards;
+  - storage: save, load, migrate, corrupt JSON, quota, content-hash change;
+  - the analytics allowlist: no field can carry text.
+- **Content tests:** every check in §3.6.
+- **E2E** (Playwright, production build; B3, B10, B11, B14):
+  - **Full sessions.** Each game is played start → result → summary at 390×844 and at 1440×900, driven by
+    each round's `solution`.
+  - **Resume.** Reload in the middle of a round: the tiles placed so far and the progress are still there.
+  - **Console.** A console-error listener fails any test.
+  - **Accessibility.**
+    - axe runs on every route and allows no serious or critical violations.
+    - Each game has one keyboard-only round.
+    - Under emulated `prefers-reduced-motion`, there are no transform animations.
+  - **Phone layout.**
+    - No horizontal scroll at 360 px.
+    - Every interactive element is at least 44×44 px, measured from bounding boxes.
+  - **Screenshots.** Every route and every game state at both sizes, saved to `logs/screenshots/` for the
+    acceptor.
+- **Manual:** Lighthouse mobile on `/`, one game page and one note; the English and citation reviews (§3.6); the
+  jobs-review (§5.11 M7).
+- **CI:** if the repository has a GitHub remote, a workflow runs `npm run check` on every push.
+
+### 5.11 Build order and gates
+
+The plan is for about 10.5 hours of build work, above the 8-hour floor (A6). Each step ends with a commit and a
+timestamped line in `logs/worklog.md`; there is a commit at least every 45 minutes, so no idle gap reaches 90
+minutes. Art generation runs in the background from M0 to M5.
+
+| Step | Time | Work | Exit evidence |
+|---|---|---|---|
+| **M0 De-risk** | 0:00-0:45 | (1) Generate the `hero` anchor through Codex, with the command logged. (2) Scaffold Next.js, Tailwind and shadcn; run `next build && next start`; take a Playwright screenshot at both sizes. (3) Spike the parser on 20 fixture sentences, including slips. | The anchor image and its art-log line; screenshots; 20/20 fixtures pass. If the anchor fails on 2 routes, take the typographic art path. If the parser fails, simplify the templates before going on. |
+| **M1 Foundation** | 0:45-2:00 | Design tokens (§4.2-4.3); layout and hub; round shell (stage slot, composer, feedback line, citation chip, result card, session summary); storage with resume; content schemas and content tests; the `sources.json` seed and the `/sources` page | Unit and content tests pass; a dummy round can be played and resumed |
+| **M2 Slab!** | 2:00-4:00 | Engine, SVG stage, the assist and build modes, report-or-order; 24 rounds drafted, at least 12 reviewed | Unit tests; an e2e session at both sizes; self-play note in the worklog |
+| **M3 Go On!** | 4:00-5:30 | Engine, pupil model, brute-force par, Explain card, the 1000 twist; 24 rounds | Same as M2 |
+| **M4 Family Likeness** | 5:30-7:00 | Engine, claim judge, light-up cards, rope; the *game* deck and 24 rounds | Same as M2 |
+| **G4 Gate** | ~7:00 | Logical Space goes in only if **all** of these hold: the three games pass e2e at both sizes; each has at least 20 reviewed rounds; at least 18 of the 24 core images are approved; self-play of each game passes "would I play a second session?" honestly | Gate decision written in the worklog. If it passes, Logical Space takes 7:00-9:30 and every later step moves by 2.5 h. If it fails, the 2.5 h goes to content and polish |
+| **M5 Site** | 7:00-8:15 | Notebook, `/notes` (3), `/about`, `/privacy`, `/terms`, 404; SEO and GEO (§5.8); headers (§5.9); the PostHog gate (§5.7) | Header check with curl; sitemap, robots and JSON-LD validated |
+| **M6 Quality** | 8:15-9:30 | `npm run check`; axe; Lighthouse; English review (10 random items per game by a fresh reviewer); citation review (at least 8 spot checks against the texts); fix everything found | Reports in `logs/`; findings and fixes listed |
+| **M7 Acceptance** | 9:30-10:30 | jobs-review by a fresh reviewer on phone and desktop; fix the findings; README and `content/AUTHORING.md`; final `npm run check` | jobs-review record; README covers run, test, build, content and art locations, and how to add a round (B16) |
+
+### 5.12 Risks
+
+| # | Risk | Likelihood / impact | Mitigation |
+|---|---|---|---|
+| 1 | **Trivia drift**: debriefs turn into lectures, or a "which § says…" round slips in | Medium / high | Every round needs an `enacted` citation, meaning the player performs the idea; debriefs ≤280 chars; no question rounds about the text; B4 judged per game in M6 |
+| 2 | **A misquote or misattribution** | Medium / high | Quotes live only in the registry with `verified` required; paraphrase by default; at least 8 spot checks in M6; † and ‡ references stay out of the game |
+| 3 | **Translation copyright** | Low / medium | Our own translations of the German for PI and OC; Ogden (public domain in the US) for the TLP; ≤25 words |
+| 4 | **Wrong or unnatural English from LLM drafts** | High / medium | B1-B2 rules in AUTHORING; the rare-word flag; a fresh English review; "why" notes come from the once-reviewed `english.json`, not from text written per round |
+| 5 | **Tile monotony**, or tiles making the English too easy | Medium / medium | Distractor forms; templates that change across levels; 60-90 s rounds; the three games interact differently (orders, example cards, claims and rope) |
+| 6 | **Grammar brittleness**: a correct sentence is rejected | Medium / high (it feels unfair) | 60+ parser fixtures; a polite "unparsed" reply that shows the nearest template and costs nothing; every unparsed case found in review becomes a fixture |
+| 7 | **Inconsistent images** | Medium / medium | Anchor plus references, CAST lines, contact-sheet review, 2 retries, word-card fallback |
+| 8 | **Codex unavailable or hanging** | Medium / medium | stdin closed, timeouts, cleanup by PID; two routes (cmd with `< NUL`, Node spawn); then the kill rule |
+| 9 | **`next start` versus static export** confusion | Low / high | Decided in §5.2: no static export |
+| 10 | **localStorage edge cases** | Medium / medium | §5.6 handling, each case unit-tested |
+| 11 | **Scope creep** (more games, accounts, leaderboards, typed answers) | High / high | Gate G4, the backlog, the cut order (§5.14) |
+| 12 | **Philosophical misreadings** | Medium / high | Every debrief is checked against four known traps: (a) Kripke's sceptical reading presented as Wittgenstein's; (b) the beetle read as behaviourism (§307 denies it); (c) "meaning is use" stated without §43's "for a large class of cases"; (d) family resemblance read as "anything goes", when §69 and §71 allow boundaries drawn for a purpose |
+| 13 | **Fun is unproven** | High / high | M0-M2 self-play before the next game is built; the G4 honesty test; jobs-review; dull rounds cut |
+| 14 | **Slow on low-end phones** | Medium / medium | Light SVG stage, lazy images, the JS budget, reduced motion |
+| 15 | **Building games that exclude keyboard or screen-reader users** | Medium / high | Nothing needs dragging: tap a stone or tile, then a cell; arrow keys move on the grid; results are announced in a live region |
+
+### 5.13 What would make this fail
+
+1. **A worksheet in costume.** Remove the art and the story from a round. If what is left is a gap-fill
+   exercise, the round fails B4 and the brief. Every round must be describable without the words "choose the
+   correct…".
+2. **"Wrong" with no "why".** If feedback only marks errors, nobody learns any English (B6). Every slip maps to a
+   reviewed rule with a right and a wrong example.
+3. **One misquote.** In a product about a philosopher, one invented or misattributed line costs the trust of
+   exactly the readers who would recommend it.
+4. **Philosophy only in the debrief.** If the idea lives only in text, players skip it. The mechanic must carry
+   it. For example, in Go On! the pupil's deviant ways *are* §185, felt as a problem the player solves.
+5. **Overload at B1.** Tiles plus grammar plus puzzle can be too much. Level 1 of every game must be winnable in
+   under 60 seconds with at most 8 tiles.
+6. **A long core flow.** The flow is hub → game → 5 rounds → summary. If rounds run past 90 seconds, the
+   session no longer fits in "a few minutes". Sessions target ≤8 minutes, and self-play times them.
+7. **Phone ergonomics.** If the stage, tray and feedback line do not fit 390×844 without scrolling during a
+   round, phone play fails. This is checked in M2 for the first game, not at the end.
+8. **Generic AI-looking art.** That reads as cheap. The anchor discipline, the cast lines and the fallback rule
+   guard against it.
+
+### 5.14 Cut order and kill criteria
+
+**Cut order**, first to go: Logical Space → notes (3 down to 1) → Slab! report-or-order mode (L4 becomes bigger
+builds) → special-purpose Edge rounds → per-game OG images → concept-card art (word cards instead) → the English
+half of the Notebook (passages stay).
+
+**Never cut:** tests, citations and their verification, accessibility, resume after reload, and the English
+"why" feedback.
+
+**Kill or redesign:**
+
+- **Slab! feels like a worksheet.** If after M2 the honest answer to "would I play a second session?" is no,
+  stop and redesign the composer interaction before building Go On!. The composer is shared, so its failure
+  would repeat in every game.
+- **The parser falls short.** If it handles fewer than 95% of fixtures one hour after M0, shrink the templates
+  (fewer forms per level). Do not add NLP.
+- **Codex image generation fails on 2 routes.** Switch to typographic and SVG art, and report B9 as BLOCKED
+  with the exact error.
+- **A citation cannot be verified** against the text. Delete the claim; do not soften it.
+
+### 5.15 How the plan meets the acceptance criteria
+
+| Criterion | Where in this plan | Evidence produced |
+|---|---|---|
+| B1 stack | §5.1 | `package.json`, `components.json`, `app/` |
+| B2 lint, typecheck, build | §5.10 | `npm run check` output |
+| B3 games playable in production | §2.2, §5.2, §5.10 | e2e sessions at 390×844 and 1440×900; console listener |
+| B4 mechanics, not quizzes | §0, §1, §5.12 #1, §5.13 #1 | Per-game `enacted` citations; M6 judgment |
+| B5 accurate citations | §3.4, §3.6, §5.11 M6 | `verified` flags; `/sources`; spot-check record |
+| B6 real English | §1 (targets), §3.1, §3.6, §5.5 | `english.json`; slip → "why" notes; review of 10 items per game |
+| B7 enough content | §3.5 | 24 typed rounds per game, at least 20 reviewed |
+| B8 tests | §3.6, §5.10 | `npm test` |
+| B9 gpt-image-2 art used | §4.7, §4.8 | `logs/art-log.md`; `public/art/`; `next/image`; screenshots |
+| B10 owner preferences | §2.5, §5.6, §5.7 | Resume e2e; env gate; no streaks or locks |
+| B11 accessibility | §2.5, §4.2, §5.5, §5.10 | axe, keyboard and reduced-motion e2e; Lighthouse |
+| B12 SEO and GEO | §5.8 | Metadata, OG, sitemap, robots, JSON-LD, `llms.txt` |
+| B13 security | §5.9 | Header check with curl; `npm audit --omit=dev` |
+| B14 phone and desktop | §2.4, §5.10 | 360 px scroll test, 44 px targets, screenshots |
+| B15 jobs-review | §5.11 M7 | Review record with fixes |
+| B16 README | §5.11 M7, §3.1 | README and `content/AUTHORING.md` |
+| A6 eight hours of work | §5.11 | `logs/worklog.md`; commits at least every 45 min |
+
+### 5.16 Not covered by this plan
+
+- **Fun with real learners.** There is no playtest with B1-B2 Chinese-speaking learners before v1. Self-play,
+  the jobs-review and the acceptor are proxies.
+- **CEFR level** is judged by review, not calibrated against a learner corpus. The notes on Chinese speakers'
+  errors come from contrastive grammar and are generalisations.
+- **Unchecked references.**
+  - PPF numbering (†) was not checked against print. It is not cited in v1.
+  - Blackwell page numbers for the Blue Book (‡) were not checked; until they are, it is cited by Ts-309 page.
+- **No legal review** of short translated quotes or of AI-generated art.
+- **Production hosting** (OpenNext and Cloudflare or another host), real PostHog data, and browsers other than
+  Playwright's Chromium.
+- **Image sizes.** The gpt-image-2 sizes are assumed until M0 confirms them.

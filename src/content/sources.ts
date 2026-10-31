@@ -69,6 +69,24 @@ export const SOURCES = {
       "Add numbers and pointing words, and the same four-word game can do much more: 'Two slabs — there!'",
     url: PI_URL,
   },
+  "pi-11": {
+    id: "pi-11",
+    work: "PI",
+    ref: "§11",
+    quote:
+      "Think of the tools in a tool-box: there is a hammer, pliers, a saw, a screw-driver, a rule, a glue-pot, glue, nails and screws.—The functions of words are as diverse as the functions of these objects. (And in both cases there are similarities.)",
+    gloss: "Tools share no single job, yet they are not a random heap: there are similarities. Words are like that too.",
+    url: PI_URL,
+  },
+  "pi-14": {
+    id: "pi-14",
+    work: "PI",
+    ref: "§14",
+    quote:
+      "Imagine someone's saying: \"All tools serve to modify something. … \"—And what is modified by the rule, the glue-pot, the nails?",
+    gloss: "You can force one definition onto every tool, but only by twisting the words. The ruler was the counterexample.",
+    url: PI_URL,
+  },
   "pi-19": {
     id: "pi-19",
     work: "PI",

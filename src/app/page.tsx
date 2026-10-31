@@ -1,69 +1,113 @@
 import Image from "next/image";
+import Link from "next/link";
+import { GAMES } from "@/content/games";
+import { SOURCES, WORK_TITLE } from "@/content/sources";
+import { ContinueButton, GameProgress } from "@/components/home-progress";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main id="main" className="mx-auto w-full max-w-5xl px-4 pb-12">
+      <section className="grid items-center gap-5 pt-4 sm:pt-8 lg:grid-cols-[1fr_1.1fr] lg:gap-10">
+        <div className="order-2 flex flex-col gap-4 lg:order-1">
+          <h1 className="font-heading text-[clamp(34px,8vw,60px)] leading-[1.02] font-semibold tracking-tight">
+            Learn English by playing Wittgenstein&apos;s language-games
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="max-w-prose text-[18px] leading-relaxed">
+            Five short games for intermediate learners. You give orders, describe scenes, read a room and teach a
+            pupil — and the English, and the philosophy, come from what you do.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <ContinueButton />
+            <a href="#games" className="text-[16px] font-bold text-cobalt underline-offset-4 hover:underline">
+              Choose a game
+            </a>
+          </div>
+          <p className="text-sm text-muted-foreground">No account. Your progress stays in this browser.</p>
+        </div>
+        <div className="relative order-1 -mx-4 aspect-[16/9] overflow-hidden sm:mx-0 sm:rounded-2xl lg:order-2">
+          <Image
+            src="/art/hero.webp"
+            alt="A paper-theatre builder calls out while his assistant carries a stone slab; a ladder rises into a sky of paper shapes."
+            fill
+            priority
+            sizes="(min-width: 1024px) 540px, 100vw"
+            className="object-cover"
+          />
+        </div>
+      </section>
+
+      <section id="games" className="mt-10 scroll-mt-4" aria-labelledby="games-title">
+        <h2 id="games-title" className="font-heading text-3xl font-semibold">
+          The games
+        </h2>
+        <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {GAMES.map((g) => {
+            const s = SOURCES[g.source];
+            return (
+              <li key={g.slug}>
+                <Link
+                  href={`/play/${g.slug}`}
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
+                >
+                  <span className="relative block aspect-[16/9] bg-paper-deep">
+                    <Image src={`/art/covers/${g.slug}.webp`} alt="" fill sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform group-hover:scale-[1.02]" />
+                  </span>
+                  <span className="flex flex-1 flex-col gap-1.5 p-4">
+                    <span className="flex items-baseline justify-between gap-2">
+                      <span className="font-heading text-2xl font-semibold">{g.title}</span>
+                      <GameProgress rounds={g.rounds} />
+                    </span>
+                    <span className="text-[16px] leading-snug">{g.promise}</span>
+                    <span className="mt-auto pt-2 text-sm">
+                      <span className="font-bold">English:</span> {g.english}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {g.idea} — {WORK_TITLE[s.work]} {s.ref}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="mt-12 grid gap-6 lg:grid-cols-2" aria-labelledby="why-title">
+        <div>
+          <h2 id="why-title" className="font-heading text-3xl font-semibold">
+            Why Wittgenstein?
+          </h2>
+          <p className="mt-3 text-[17px] leading-relaxed">
+            In the <em>Philosophical Investigations</em>, Wittgenstein asks us to look at language as part of what
+            people do: builders calling for stones, shopkeepers counting apples, someone asking, thanking, joking.
+            He called these activities <em>language-games</em>. Each game here turns one of his examples into
+            something you play, so you learn the English the way he says words are learned: by using them.
+          </p>
+          <p className="mt-3 text-[17px] leading-relaxed">
+            The games are inspired by his writing, not a summary of it. After each session you get the passage, a
+            plain-English reading, and a note on where the game&apos;s analogy stops.{" "}
+            <Link href="/sources" className="font-bold text-cobalt underline underline-offset-4">
+              All sources
+            </Link>
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <figure className="self-center rounded-2xl border border-border bg-card p-5">
+          <blockquote className="font-heading text-[22px] leading-snug italic">“{SOURCES["tlp-5.6"].quote}”</blockquote>
+          <figcaption className="mt-3 text-sm text-muted-foreground">
+            {WORK_TITLE.TLP} {SOURCES["tlp-5.6"].ref}, tr. C. K. Ogden
+          </figcaption>
+        </figure>
+      </section>
+
+      <footer className="mt-14 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-sm text-muted-foreground">
+        <Link href="/sources" className="hover:text-ink">
+          Sources
+        </Link>
+        <Link href="/notebook" className="hover:text-ink">
+          Your notebook
+        </Link>
+        <span>Illustrations made with gpt-image-2.</span>
+      </footer>
+    </main>
   );
 }

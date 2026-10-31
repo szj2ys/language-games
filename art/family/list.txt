@@ -1,0 +1,15 @@
+chess|Two adults playing chess at a small table, a chessboard with pieces between them.
+football|Two small teams of adults playing football in a park, one player kicking the ball toward a goal.
+poker|Four friends around a table playing cards for small coins, cards held in hand, chips in the middle.
+patience|One person alone at a kitchen table laying out playing cards in rows for a game of patience (solitaire).
+wall|A child alone throwing a ball against a brick wall and catching it.
+ring|Small children holding hands in a circle, dancing ring-a-ring-a-roses on grass.
+crossword|An adult on a sofa with a pencil, doing a crossword puzzle in a folded newspaper (no readable letters).
+videogame|Two friends on a sofa playing a video game with controllers, a glowing screen with abstract shapes.
+lottery|A person at a shop counter holding a lottery ticket, watching numbered balls tumble in a clear drum (no readable numbers).
+hammer|A hammer driving a nail into a wooden plank.
+saw|A hand saw cutting through a wooden board on a workbench.
+ruler|A wooden ruler lying across a sheet of paper with a pencil line being drawn along it.
+gluepot|An old-fashioned glue pot with a brush, gluing two pieces of wood together.
+screwdriver|A screwdriver turning a screw into a wooden board.
+pliers|A pair of pliers gripping and bending a piece of wire.
