@@ -5,10 +5,10 @@ idea of *language-games*: words get their meaning in what people do with them.
 
 | Game | You… | English | Wittgenstein |
 |---|---|---|---|
-| **Slab!** (`/play/builder`) | fetch stones for a builder, then give the orders | orders, numbers, plurals, *this/there* | PI §§2, 6, 8, 19–20 |
+| **Slab!** (`/play/builder`) | fetch stones for a builder, give the orders, tell orders from reports | orders, numbers, plurals, *this/there*, asking "Which one?" | PI §§2, 6, 8, 19–21, 27 |
 | **Picture Theatre** (`/play/scene`) | build what a sentence says, fix false reports, describe a stage | *in, on, behind, next to, left of* | TLP 2.1, 2.21, 4.01 |
-| **The Café** (`/play/cafe`) | read the room and respond | requests, hints, polite refusals | PI §§23, 43 |
-| **Go On!** (`/play/pupil`) | teach a pupil a spelling rule with few examples | *a/an*, plurals, *-ed*, comparatives | PI §§185, 198–202, 217 |
+| **The Café** (`/play/cafe`) | read the room and respond | requests, hints, polite refusals, *Excuse me?* | PI §§21, 23, 43 |
+| **Go On!** (`/play/pupil`) | teach a pupil a rule with as few examples as possible | *a/an*, plurals, *-ed*, comparatives, *-ing/to*, uncountables | PI §§84, 185, 198–202, 217 |
 | **Family Threads** (`/play/family`) | test claims about games and tools, thread them by resemblance | *all/most/some/none of these*, *both … and*, *unlike* | PI §§11, 14, 66–67 |
 
 No account and no server state: progress and half-finished rounds are kept in `localStorage`.
@@ -18,6 +18,10 @@ Every quoted passage, with its translation and the limits of each game's analogy
 
 Three agents planned independently from the same brief, critiqued each other and merged:
 `planning/plan-{claude,codex,copilot}.md` → `planning/critique-*.md` → `planning/DECISIONS.md`.
+After the build, Codex reviewed the code (`planning/code-review-codex.md`), Copilot the English and the
+citations (`planning/content-review-copilot.md`), and fresh "Steve Jobs" reviewers played the running site
+round after round (`reports/language-games-2026-10-31/jobs/jobs-review.json`). Every finding and the change it
+caused is in `planning/DECISIONS.md`.
 
 ## Run
 
