@@ -278,9 +278,7 @@ export function HintButton({ used, onUse }: { used: boolean; onUse: () => void }
 
 /**
  * A 16:9 scene on desktop. On a phone it is framed around the action instead:
- * `frame="square"` shows a square crop of the middle of the 16:9 canvas (the
- * game moves its objects inward to stay inside it); `frame="own"` means the game
- * draws its own square picture for phones; `frame="floor"` shows the lower middle of
+ * `frame="own"` means the game draws its own square picture for phones; `frame="floor"` shows the lower middle of
  * the canvas close up, for stages where everything happens on the floor. Without `frame`, the phone sees a 4:3
  * crop. Positions in % of the canvas land on the same spot in the art.
  * `overlay` sits on the visible frame (speech bubbles), not on the canvas.
@@ -296,7 +294,7 @@ export function SceneCanvas({
   overlay?: React.ReactNode;
   label?: string;
   className?: string;
-  frame?: "square" | "own" | "floor";
+  frame?: "own" | "floor";
 }) {
   return (
     <figure
@@ -310,7 +308,6 @@ export function SceneCanvas({
       <div
         className={cn(
           "@container absolute inset-y-0 sm:left-0 sm:w-full",
-          frame === "square" && "left-[-38.889%] w-[177.778%]",
           // The floor of a 16:9 stage, close up: the canvas is drawn at 320% and anchored at the bottom.
           frame === "floor" && "top-auto left-[-110%] aspect-[16/9] w-[320%] sm:top-0 sm:aspect-auto",
           frame === "own" && "left-0 w-full",
