@@ -104,3 +104,12 @@ describe("authored scene rounds", () => {
     }
   });
 });
+
+import { whyFalse } from "../engine";
+
+describe("explaining a false sentence", () => {
+  it("names the relation that does hold", () => {
+    const s: Scene = { box: { spot: 1, row: "front" }, key: { on: "box" } };
+    expect(whyFalse(s, { a: "key", rel: "in", b: "box" })).toBe("The key is on the box, not in it.");
+  });
+});

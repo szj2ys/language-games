@@ -7,6 +7,7 @@ controls (taps, not state injection). A reload in the middle of a round
 checks that the half-done work survives. Exits non-zero on the first failure.
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -33,6 +34,15 @@ def next_round(page: Page) -> None:
     tap(page, "button", "Next")
 
 
+def advance(page: Page, before: str = "") -> None:
+    """Fetch rounds move on by themselves after a right answer; click Next if it is still there."""
+    try:
+        page.get_by_role("button", name="Next", exact=True).click(timeout=600)
+    except Exception:
+        pass
+    page.wait_for_timeout(300)
+
+
 # --- Slab! -----------------------------------------------------------------
 
 def play_builder(page: Page) -> None:
@@ -43,14 +53,13 @@ def play_builder(page: Page) -> None:
         call = page.locator("p[aria-live=polite]").first.inner_text().strip().lower()
         stone = next(s for s in ["block", "pillar", "slab", "beam"] if s in call)
         # Stones are labelled only in the first rounds; fall back to position.
-        order = ["block", "pillar", "slab", "beam"]
+        shapes = {"block": "A solid cube of stone", "pillar": "A tall round stone", "slab": "A broad flat stone", "beam": "A long narrow stone"}
         btn = page.get_by_role("button", name=stone, exact=True)
         if btn.count() == 0:
-            btn = page.get_by_role("button", name=f"Stone {order.index(stone) + 1}", exact=True)
-        btn.click()
-        page.get_by_role("button", name="Bring", exact=False).click()
+            btn = page.get_by_role("button", name=shapes[stone], exact=True)
+        btn.click()  # one tap brings it in the first session
         shot(page, f"builder-fetch-{stone}")
-        next_round(page)
+        advance(page, call)
     shot(page, "builder-session-1-end")
     expect(page.get_by_text("Four words: done")).to_be_visible()
     page.get_by_role("button", name="Next: Two slabs — there!").click()
@@ -61,7 +70,7 @@ def play_builder(page: Page) -> None:
         call = page.locator("p.sr-only[aria-live=polite]").first.inner_text().lower()
         stone = next(s for s in ["block", "pillar", "slab", "beam"] if s in call)
         count = next((n for w, n in words.items() if f"{w} " in call), 1)
-        place = "Left" if "left platform" in call else "Right" if "right platform" in call else "To him"
+        place = "Left" if "left platform" in call else "Right" if "right platform" in call else "Here"
         page.get_by_role("button", name=stone, exact=True).click()
         for _ in range(count - 1):
             page.get_by_role("button", name="One more").click()
@@ -71,7 +80,7 @@ def play_builder(page: Page) -> None:
             expect(page.get_by_role("radio", name=place)).to_be_checked()
         page.get_by_role("button", name="Bring", exact=False).click()
         shot(page, f"builder-there-{i}")
-        next_round(page)
+        advance(page, call)
     page.get_by_role("button", name="Next: Your turn to call").click()
 
     # Session 3: the player calls. Round 1: "Pillar!"
@@ -81,34 +90,34 @@ def play_builder(page: Page) -> None:
             bank.get_by_role("button", name=t, exact=True).click()
 
     say("pillar")
-    page.get_by_role("button", name="Call", exact=False).click()
+    page.get_by_role("button", name=re.compile(r"^Call")).click()
     shot(page, "builder-call-1")
     next_round(page)
     # Round 2: a deliberate slip ("two pillar") still works and earns an English note.
     say("two", "pillar", "there")
     page.get_by_role("button", name="Point at the left platform").click()
-    page.get_by_role("button", name="Call", exact=False).click()
+    page.get_by_role("button", name=re.compile(r"^Call")).click()
     expect(page.get_by_text("English needs the plural")).to_be_visible()
     shot(page, "builder-call-note")
     next_round(page)
     say("one", "beam", "there")
     page.get_by_role("button", name="Point at the left platform").click()
-    page.get_by_role("button", name="Call", exact=False).click()
+    page.get_by_role("button", name=re.compile(r"^Call")).click()
     next_round(page)
     say("three", "slabs", "there")
     page.get_by_role("button", name="Point at the right platform").click()
-    page.get_by_role("button", name="Call", exact=False).click()
+    page.get_by_role("button", name=re.compile(r"^Call")).click()
     next_round(page)
     # Round 5: no word for the curved stone; point and say "this".
     say("this")
     page.get_by_role("button", name="Point at the curved stone").click()
-    page.get_by_role("button", name="Call", exact=False).click()
+    page.get_by_role("button", name=re.compile(r"^Call")).click()
     expect(page.get_by_text("New word:")).to_be_visible()
     shot(page, "builder-ostension")
     next_round(page)
     say("arch", "there")
     page.get_by_role("button", name="Point at the right platform").click()
-    page.get_by_role("button", name="Call", exact=False).click()
+    page.get_by_role("button", name=re.compile(r"^Call")).click()
     next_round(page)
     expect(page.get_by_text("Your turn to call: done")).to_be_visible()
     shot(page, "builder-done")

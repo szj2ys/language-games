@@ -258,3 +258,245 @@ My backlog already has Aspect Flip and Hinges, so Claude's Duck–Rabbit and Mus
   │ Untersuchungen.wiki)
   └ 11 lines found
 
+/ Search (grep)
+  │ "Philosophieren abzubrechen" (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\file
+  │ s\sources\lwp-Philosophische_Untersuchungen.wiki)
+  └ 1 line found
+
+/ Search (grep)
+  │ "\{\{ParPUde\|13[2-4]\}\}" (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\
+  │ sources\lwp-Philosophische_Untersuchungen.wiki)
+  └ 3 lines found
+
+Every quotation is verified, including PI §133 (line 808 sits between the §133 and §134 markers). Before writing, I'll confirm the baseline hash and the plans' line counts that the critique cites.
+
+● Verify plan line counts, baseline hash (shell)
+  │ Set-Location D:\githubprojects\language-games\planning; foreach ($f in
+  │ 'plan-copilot.md','plan-claude.md','plan-codex.md') { $i = Get-Item $f; "{0}: {1} lines, mtime
+  │ {2:HH:mm:ss}" -f $f, (Get-Content $f).Count, $i.LastWriteTime }; (Get-FileHash plan-copilot.md
+  │ -Algorithm SHA256).Hash; Test-Path critique-copilot.md
+  └ 5 lines…
+
+The baseline is intact (hash E39D8593…, 1366 lines, mtime 23:04:16), so I'm writing the critique now.
+
+● Create critique-copilot.md +138
+  └ planning\critique-copilot.md
+
+● Verify line count, hash, git status (shell)
+  │ Set-Location D:\githubprojects\language-games; "critique lines: " + (Get-Content
+  │ planning\critique-copilot.md).Count; "plan hash: " + (Get-FileHash planning\plan-copilot.md
+  │ -Algorithm SHA256).Hash; "plan mtime: {0:HH:mm:ss}" -f (Get-Item
+  │ planning\plan-copilot.md).LastWriteTime; git --no-pager status --short -- planning
+  └ 5 lines…
+
+● Write a1ef2474
+  └ Ready for verdict. Please judge against your 14 done-criteria; read-only.
+
+I've sent the critique to the acceptor and am waiting for its verdict.
+
+● Read (Rubber-duck agent — Acceptor for Copilot critique)                                     3m 1s
+  └ Running
+
+While the acceptor works, I'm checking every quotation in the critique against the three plans. This is my own check, not a repeat of the review.
+
+● Verify every critique quotation exists in source plans (shell)
+  │ Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+  │ @'
+  │ import re, sys
+  │ sys.stdout.reconfigure(encoding='ascii', errors='backslashreplace')
+  │ base = 'D:\\githubprojects\\language-games\\planning\\'…
+  └ 157 lines…
+
+Most quotations match exactly. A few did not: Claude's ladder and Slab! lines, Codex's repair phrases, "All meaning is use", "period", and §9 "BRIEF.md". I'm checking the exact source text for each.
+
+● Read plan-codex.md
+  │ planning\plan-codex.md
+  └ L1:70 (69 lines read)
+
+● Read plan-claude.md
+  │ planning\plan-claude.md
+  └ 65 lines read
+
+● Read plan-codex.md
+  │ planning\plan-codex.md
+  └ L125:277 (127 lines read)
+
+/ Search (grep)
+  │ "ed pronunciation|-ed sounds|second session|After \*two\*|Put two red pillar"
+  │ (planning\plan-copilot.md)
+  └ 4 lines found
+
+● Read plan-codex.md
+  │ planning\plan-codex.md
+  └ L252:278 (26 lines read)
+
+● Read plan-codex.md
+  │ planning\plan-codex.md
+  └ L70:124 (55 lines read)
+
+/ Search (grep)
+  │ "B(3|4|5|6|7|8|9|11|13)\b|rule|next start|header|Anscombe|copyright" (planning\ACCEPTANCE.md)
+  └ 14 lines found
+
+/ Search (grep)
+  │ "außer Zweifel ist|setzt schon die Gewißheit
+  │ voraus|^\{\{.*(115|519|520)\b|id="(115|519|520)"|^'''(115|519|520)'''"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\lwp-UG.wiki)
+  └ 25 lines found
+
+/ Search (grep)
+  │ "pronunciation|ed sounds|^### (1\.5|2\.1|3\.2|3\.5|5\.7|5\.14)|\bM0\b|[Rr]everse round|analytics
+  │ (is|are|on|load)|unless|opt.?out" (planning\plan-copilot.md)
+  └ 18 lines found
+
+/ Search (grep)
+  │ "next start|next build|header|static|export|ACCEPTANCE|rule" (planning\BRIEF.md)
+  └ No matches found
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L326:342 (17 lines read)
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L530:550 (20 lines read)
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L374:392 (19 lines read)
+
+● Read plan-copilot.md                                                                            5s
+  │ planning\plan-copilot.md
+  └ L1143:1160 (18 lines read)
+
+/ Search (grep)                                                                                   5s
+  │ "intermediate|B1|learner|timer|quiz" (planning\BRIEF.md)
+  └ 2 lines found
+
+/ Search (grep)                                                                                   5s
+  │ "sounds|^### 1\.(2|3|7|8)" (planning\plan-copilot.md)
+  └ 8 lines found
+
+● Edit critique-copilot.md +3 -3
+  └ planning\critique-copilot.md
+
+● Edit critique-copilot.md +3 -2
+  └ planning\critique-copilot.md
+
+● Edit critique-copilot.md +4 -3
+  └ planning\critique-copilot.md
+
+● Edit critique-copilot.md +2 -1
+  └ planning\critique-copilot.md
+
+● Re-verify line count, hash, git status (shell)
+  │ Set-Location D:\githubprojects\language-games; "critique lines: " + (Get-Content
+  │ planning\critique-copilot.md).Count; "max line length: " + ((Get-Content
+  │ planning\critique-copilot.md -Encoding UTF8 | ForEach-Object { $_.Length }) | Measure-Object
+  │ -Maximum).Maximum; "plan hash: " + (Get-FileHash planning\plan-copilot.md -Algorithm
+  │ SHA256).Hash; git --no-pager status --short -- planning
+  └ 5 lines…
+
+● Inspect who committed the critique file (shell)
+  │ Set-Location D:\githubprojects\language-games; git --no-pager log -4 --format="%h %ad %an | %s"
+  │ --date=format:"%Y-%m-%d %H:%M:%S"; ""; git --no-pager log -1 --stat --format="%h %s" --
+  │ planning/critique-copilot.md; ""; git --no-pager diff --stat -- planning/critique-copilot.md
+  └ 12 lines…
+
+● Write a1ef2474
+  └ Update while you review: my own quote-by-quote check (a script matched every …
+
+## Overall: **FAIL**
+
+Judged snapshot: 141 lines, SHA-256 `137065B7…B10EB3`.
+
+1. Section 5 complete — **PASS**
+2. At most 80 plan lines added — **PASS** (0 added)
+3. Plan frozen before competing-plan reads — **PASS**
+4. Critique exists and is under 150 lines — **PASS**
+5. Three Claude strengths — **PASS**
+6. Three Claude flaws — **PASS**
+7. Three Codex strengths — **PASS**
+8. Three Codex flaws — **PASS**
+9. No fabricated or unsupported claims — **FAIL**
+10. “Where my plan was weaker” — **PASS**
+11. Valid four-game merged v1 — **PASS**
+12. Exactly one defended decision — **PASS**
+13. No critic-attributable collateral edits — **PASS**
+14. Authentic Copilot CLI authorship — **PASS**
+
+### Concrete defects
+
+- `D:\githubprojects\language-games\planning\critique-copilot.md:36-38`  
+  Overstates Claude’s schema: `answer` is per `CertaintyItem`, which also contains contextual `evidence`; it does not necessarily impose one immutable hinge status per proposition. Criticize missing explicit role-changing rounds instead.
+
+- `D:\githubprojects\language-games\planning\critique-copilot.md:46`  
+  “Saved progress would key on array positions” is invented. Claude provides no persistence-key design. The supported criticism is only that the schema lacks stable round IDs.
+
+- `D:\githubprojects\language-games\planning\critique-copilot.md:97-98`  
+  Attributes PI §§21, 23 to Codex’s Café. `D:\githubprojects\language-games\planning\plan-codex.md:55` actually cites PI §§23, 43; §21 comes from Copilot’s own §1.5.
+
+**Not covered:** real learner outcomes or fun, exhaustive philosophical interpretation beyond the cited passages, and OS-level writes absent from Copilot’s event log.● Read (Rubber-duck agent — Acceptor for Copilot critique)                                    2m 21s
+  └ idle
+
+● Read critique-copilot.md
+  │ planning\critique-copilot.md
+  └ L30:48 (19 lines read)
+
+● Read critique-copilot.md
+  │ planning\critique-copilot.md
+  └ L94:100 (7 lines read)
+
+/ Search (grep)                                                                                   5s
+  │ "^#{1,3} " (planning\ACCEPTANCE.md)
+  └ 7 lines found
+
+● Edit critique-copilot.md +5 -3                                                                  5s
+  └ planning\critique-copilot.md
+
+● Edit critique-copilot.md +1 -1                                                                  6s
+  └ planning\critique-copilot.md
+
+● Edit critique-copilot.md +1 -1                                                                  7s
+  └ planning\critique-copilot.md
+
+ACCEPTANCE §4 ("Not covered by these checks") does contain the Anscombe note, so that citation stands. I'm re-verifying the new quotations, the line count and the hash.
+
+● Verify new quotes, line count, hashes (shell)
+  │ Set-Location D:\githubprojects\language-games
+  │ @'
+  │ import re
+  │ t = re.sub(r'\s+', ' ', open(r'D:\githubprojects\language-games\planning\plan-claude.md',
+  │ encoding='utf-8').read())…
+  └ 20 lines…
+
+● Write a1ef2474
+  └ All three criterion-9 defects are fixed in planning/critique-copilot.md only …
+
+**Criterion 9: PASS.** All three factual defects are corrected and supported by the cited plans.
+
+**Overall verdict: PASS — all 14 criteria pass.**
+
+Judged snapshot: 143 lines, SHA-256 `5B0D3B8D…2A15745A`.
+
+**Not covered:** real learner outcomes/fun, exhaustive philosophical interpretation, and OS-level writes absent from Copilot logs.● Read (Rubber-duck agent — Acceptor for Copilot critique)                                       52s
+  └ idle
+
+I wrote `planning/critique-copilot.md` (143 lines), and the independent reviewer passed it on all 14 checks after I fixed seven wording errors. §5 of my plan was already complete, so I added nothing to it.
+
+- **Merged v1:** Slab!, Go On!, Family Likeness, Repair Café.
+- **The decision I'd fight for:** learners can make real English form mistakes, and each one gets an honest consequence plus a one-line explanation.
+
+Flags:
+- Commit 2287902 merged my earlier draft into the decisions record, so the seven fixes are uncommitted. DECISIONS.md may repeat the errors, e.g. "BRIEF.md alone" or Codex's truncated §1 quote.
+- Commit cd366aa tests five games; the acceptance criteria allow three or four.
+- plan-codex.md §9 links a private local wiki path.
+
+Not covered: no learner testing or fun check; translation copyright not reviewed.
+
+
+
+Changes    +1536 -27
+AI Credits 1903.9 (1h 43m 38s)
+Tokens     ↑ 14.3m (13.1m cached, 1.1m written) • ↓ 493.7k (403.4k reasoning)
+Resume     copilot --resume=c930032f-629f-47fe-9878-bd8195b99925

@@ -51,12 +51,12 @@ export const SESSIONS: Session[] = [
     id: "scene-1",
     title: "Make it true",
     blurb: "A sentence is a little model of how things stand. Build the scene it describes.",
-    english: "Prepositions of place: in, on, left of, right of, next to",
+    english: "Prepositions of place: in, on, to the left of, to the right of, next to",
     source: "tlp-2.1",
     rounds: [
       { id: "s1-1", mode: "build", message: [c("key", "in", "box")], things: ["key", "box"], start: { box: { spot: 1, row: "front" } }, hint: "In = inside it." },
       { id: "s1-2", mode: "build", message: [c("cup", "on", "book")], things: ["cup", "book"], start: { book: { spot: 2, row: "front" } }, hint: "On = on top of it." },
-      { id: "s1-3", mode: "build", message: [c("lamp", "left of", "cup")], things: ["lamp", "cup"], start: { cup: { spot: 2, row: "front" } }, hint: "Left of the cup: anywhere on the cup's left." },
+      { id: "s1-3", mode: "build", message: [c("lamp", "left of", "cup")], things: ["lamp", "cup"], start: { cup: { spot: 2, row: "front" } }, hint: "To the left of the cup: anywhere on the cup's left." },
       { id: "s1-4", mode: "build", message: [c("ball", "right of", "box"), c("key", "in", "box")], things: ["ball", "key", "box"], start: { box: { spot: 1, row: "front" } }, hint: "Two sentences: both must be true at once." },
       { id: "s1-5", mode: "build", message: [c("book", "next to", "lamp"), c("ball", "on", "book")], things: ["book", "lamp", "ball"], start: { lamp: { spot: 1, row: "front" } }, hint: "Next to = in the very next place, on the same row." },
       { id: "s1-6", mode: "build", message: [c("cup", "left of", "box"), c("key", "in", "box"), c("lamp", "right of", "box")], things: ["cup", "key", "box", "lamp"], hint: "Place the box first, then the others around it." },
@@ -111,7 +111,7 @@ export const SESSIONS: Session[] = [
     id: "scene-3",
     title: "Say where it is",
     blurb: "Your partner cannot see the stage. One true sentence must be enough for them to put the thing in the right place.",
-    english: "Describing position precisely; 'next to' versus 'left of'",
+    english: "Describing position precisely; 'next to' versus 'to the left of'",
     source: "tlp-4.01",
     rounds: [
       { id: "s3-1", mode: "tell", scene: { box: { spot: 1, row: "front" }, key: { in: "box" } }, target: "key", options: ["in", "on", "next to"], hint: "Name the thing it is in." },

@@ -24,6 +24,17 @@ export type Relation = (typeof RELATIONS)[number];
 
 export type Clause = { a: Thing; rel: Relation; b: Thing; negated?: boolean };
 
+/** How each relation is said in standard English: "to the left of", not "left of". */
+export const REL_TEXT: Record<Relation, string> = {
+  "left of": "to the left of",
+  "right of": "to the right of",
+  "next to": "next to",
+  behind: "behind",
+  "in front of": "in front of",
+  in: "in",
+  on: "on",
+};
+
 /** Where a thing sits on the shelf, following holders down to the ground. */
 function ground(scene: Scene, t: Thing, seen = new Set<Thing>()): { spot: number; row: "front" | "back" } | null {
   const loc = scene[t];
@@ -62,7 +73,7 @@ function relate(scene: Scene, { a, rel, b }: Clause): boolean {
 
 export function say(c: Clause): string {
   const verb = c.negated ? "is not" : "is";
-  return `The ${c.a} ${verb} ${c.rel} the ${c.b}.`;
+  return `The ${c.a} ${verb} ${REL_TEXT[c.rel]} the ${c.b}.`;
 }
 
 /** Is a cell free for a thing? One thing per shelf cell, one inside and one on top of each holder. */
@@ -145,4 +156,16 @@ export function allLocs(scene: Scene, t: Thing): Loc[] {
 export function placesFor(scene: Scene, clause: Clause): Loc[] {
   const without = removeThing(scene, clause.a);
   return allLocs(scene, clause.a).filter((l) => holds({ ...without, [clause.a]: l }, clause));
+}
+
+/** Why a sentence is false of a scene, in one line: "The key is on the box, not in it." */
+export function whyFalse(scene: Scene, c: Clause): string {
+  if (!scene[c.a] || !scene[c.b]) return `The ${!scene[c.a] ? c.a : c.b} is not on the stage yet.`;
+  if (c.negated) return `The ${c.a} is ${REL_TEXT[c.rel]} the ${c.b}, so “is not” is false.`;
+  const actual = (["in", "on", "behind", "in front of", "next to", "left of", "right of"] as const).find((rel) =>
+    holds(scene, { a: c.a, rel, b: c.b }),
+  );
+  return actual
+    ? `The ${c.a} is ${REL_TEXT[actual]} the ${c.b}, not ${REL_TEXT[c.rel]} it.`
+    : `The ${c.a} is not ${REL_TEXT[c.rel]} the ${c.b}.`;
 }

@@ -84,21 +84,29 @@ export function sitExam(level: Level, p: Pupil) {
 }
 
 /** The fewest deck examples that bring the pupil to a full exam, found by breadth-first search. */
-export function par(level: Level): number {
+export function bestCards(level: Level): Item[] {
   const n = level.deck.length;
   for (let k = 0; k <= n; k++) {
-    const pick = (start: number, chosen: Item[]): boolean => {
+    const pick = (start: number, chosen: Item[]): Item[] | null => {
       if (chosen.length === k) {
         let p = startPupil(level);
         for (const it of chosen) p = showExample(p, it);
-        return sitExam(level, p).passed;
+        return sitExam(level, p).passed ? chosen : null;
       }
-      for (let i = start; i < n; i++) if (pick(i + 1, [...chosen, level.deck[i]])) return true;
-      return false;
+      for (let i = start; i < n; i++) {
+        const found = pick(i + 1, [...chosen, level.deck[i]]);
+        if (found) return found;
+      }
+      return null;
     };
-    if (pick(0, [])) return k;
+    const found = pick(0, []);
+    if (found) return found;
   }
-  return n;
+  return level.deck;
+}
+
+export function par(level: Level): number {
+  return bestCards(level).length;
 }
 
 // ---------------------------------------------------------------------------

@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Check, CircleHelp, Lightbulb, RotateCcw, Undo2, X } from "lucide-react";
+import { Check, CircleHelp, RotateCcw, Undo2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameFrame, GameLoading, HintButton, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
 import { useDraft } from "@/lib/use-draft";
+import { useShortcuts } from "@/components/game/shortcuts";
 import {
   QUANTIFIERS,
   checkChain,
@@ -31,14 +32,7 @@ export function FamilyGame() {
   const { session, round, finished } = g;
   const props = { session, onDone: g.complete, onNext: g.next };
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader game="Family Threads" title={session.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
-      {!g.storable && (
-        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
-          Progress cannot be saved in this browser. You can still play.
-        </p>
-      )}
-      <main id="main" className="flex flex-1 flex-col">
+    <GameFrame game="Family Threads" g={g}>
         {finished ? (
           <SessionEnd
             title={session.title}
@@ -57,8 +51,7 @@ export function FamilyGame() {
         ) : (
           <NewcomerPlay key={round.id} round={round} {...props} />
         )}
-      </main>
-    </div>
+    </GameFrame>
   );
 }
 
@@ -109,12 +102,15 @@ function lightFor(card: Card, feature: string): Light {
 }
 
 function HintRow({ hint, shown, onShow }: { hint: string; shown: boolean; onShow: () => void }) {
-  return shown ? (
-    <p role="status" className="text-[15px]">{hint}</p>
-  ) : (
-    <Button variant="ghost" className="h-11 self-start text-[15px]" onClick={onShow}>
-      <Lightbulb className="size-4" aria-hidden /> Hint
-    </Button>
+  return (
+    <div className="flex items-center gap-3">
+      <HintButton used={shown} onUse={onShow} />
+      {shown && (
+        <p role="status" className="text-[15px]">
+          {hint}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -140,6 +136,14 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
       track("repair_used", { game: GAME, round: round.id });
     }
   };
+  useShortcuts({
+    "1": done ? undefined : () => { setQ("All"); setLooked(null); },
+    "2": done ? undefined : () => { setQ("Most"); setLooked(null); },
+    "3": done ? undefined : () => { setQ("Some"); setLooked(null); },
+    "4": done ? undefined : () => { setQ("None"); setLooked(null); },
+    Enter: done ? onNext : looked && truth ? () => finish() : q && looked !== q ? look : undefined,
+  });
+
   const finish = () => {
     const strongestToo = looked === best;
     onDone(1 + (strongestToo ? 1 : 0) + (misses === 0 ? 1 : 0), 3, misses === 0 && strongestToo && !hint, [claimText(looked!, session.kind, feature)]);
@@ -166,6 +170,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
                   key={x}
                   type="button"
                   role="radio"
+                  data-shortcut=""
                   aria-checked={q === x}
                   onClick={() => {
                     setQ(x);

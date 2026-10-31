@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { BookOpen, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { cn } from "@/lib/utils";
 import { useDraft } from "@/lib/use-draft";
-import { explain, par, showExample, sitExam, startPupil, type Level, type Pupil } from "./engine";
+import { bestCards, explain, showExample, sitExam, startPupil, type Level, type Pupil } from "./engine";
 import { SESSIONS } from "./levels";
 
 const GAME = "pupil";
@@ -18,14 +18,7 @@ export function PupilGame() {
   if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" />;
   const { session, round, finished } = g;
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader game="Go On!" title={finished ? session.title : round.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
-      {!g.storable && (
-        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
-          Progress cannot be saved in this browser. You can still play.
-        </p>
-      )}
-      <main id="main" className="flex flex-1 flex-col">
+    <GameFrame game="Go On!" g={g}>
         {finished ? (
           <SessionEnd
             title={session.title}
@@ -39,8 +32,7 @@ export function PupilGame() {
         ) : (
           <Lesson key={round.id} level={round} onDone={g.complete} onNext={g.next} />
         )}
-      </main>
-    </div>
+    </GameFrame>
   );
 }
 
@@ -60,7 +52,8 @@ function Lesson({
   const [explained, setExplained] = useDraft<number[]>(level.id, "explained", []);
   const [phase, setPhase] = useDraft<Phase>(level.id, "phase", "teach");
   const [call, setCall] = useDraft<"correct" | "both" | null>(level.id, "call", null);
-  const best = useMemo(() => par(level), [level]);
+  const bestSet = useMemo(() => bestCards(level), [level]);
+  const best = bestSet.length;
   const exam = sitExam(level, pupil);
   const [changed, setChanged] = useState<string[]>([]);
 
@@ -84,15 +77,13 @@ function Lesson({
   const shown = new Set(pupil.shown.map((i) => i.word));
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.2fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <div>
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
-          <Image src="/art/pupil/classroom.webp" alt="" fill priority sizes="(min-width: 1024px) 600px, 100vw" className="object-cover" />
-          <div className="absolute bottom-0 left-[4%] h-[80%] w-[34%]">
-            <Image src="/art/pupil/pupil.webp" alt="" fill sizes="220px" className="object-contain object-bottom" />
-          </div>
+        <SceneCanvas
+          overlay={
+            <>
           {/* The pupil's slate: what it writes is all we can see of its rule. */}
-          <div className="absolute top-[8%] right-[4%] w-[56%] rounded-lg bg-ink/90 px-3 py-2 text-paper shadow">
+          <div className="absolute top-[8%] right-[3%] w-[58%] sm:w-[52%] rounded-lg bg-ink/90 px-3 py-2 text-paper shadow">
             <p className="text-xs font-bold tracking-wide text-paper/80 uppercase">The pupil&apos;s test</p>
             <ol className="mt-1 grid grid-cols-1 gap-0.5" aria-label="The pupil's answers">
               {exam.answers.map((a) => (
@@ -114,7 +105,14 @@ function Lesson({
               {said}
             </div>
           )}
-        </div>
+            </>
+          }
+        >
+          <Image src="/art/pupil/classroom.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+          <div className="absolute bottom-0 left-[13%] h-[80%] w-[34%] sm:left-[4%]">
+            <Image src="/art/pupil/pupil.webp" alt="" fill sizes="220px" className="object-contain object-bottom" />
+          </div>
+        </SceneCanvas>
         <p className="px-3 pt-2 text-[15px] lg:px-0">{level.task}</p>
       </div>
 
@@ -170,7 +168,8 @@ function Lesson({
         {phase === "teach" && exam.passed && (
           <>
             <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
-              All five right with {cards} card{cards === 1 ? "" : "s"}{cards <= best ? " — as few as possible." : `. It can be done with ${best}.`}
+              All five right with {cards} card{cards === 1 ? "" : "s"}
+              {cards <= best ? " — as few as possible." : `. It can be done with ${best}: ${bestSet.map((c) => `“${c.correct}”`).join(" and ")} ${best === 1 ? "rules out every wrong way at once" : "together rule out every wrong way"}.`}
             </p>
             <Button size="lg" className="h-12 text-lg" onClick={() => setPhase("twist")} autoFocus>
               Now a word it hasn&apos;t seen

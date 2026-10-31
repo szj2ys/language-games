@@ -26,16 +26,18 @@ concept-table rows; Codex and I are cited by §.
 
 1. **Slab! is A1 recognition against a clock** (concept 1): "Builder shouts (TTS) 'Slab!' → drag the right block to him
    within a timer". The player never produces English; the decision is which of four nouns (later a number and
-   "there") was heard. That is below the brief's intermediate learner and B6's B1-B2, and the timer works against B11
-   (keyboard, reduced motion) and WCAG 2.2.1 (Timing Adjustable). TTS voices vary by browser, and the text fallback
-   (Tech) turns the game into a reading drill. Codex (§2A) and I (§1.1) both have the player give the orders.
+   "there") was heard. That is below the brief's intermediate learner and B6's B1-B2, and dragging against a timer
+   works against B11's keyboard play and WCAG 2.2.1 (Timing Adjustable). TTS voices vary by browser, and the text
+   fallback (Tech) turns the game into a reading drill. Codex (§2A) and I (§1.1) both have the player give the orders.
 2. **Its On Certainty game gets On Certainty wrong twice** (concept 5, Content model):
    - "doubt itself rests on what is beyond doubt" is credited to OC §115, but those words are §519 ("der Zweifel beruht
      nur auf dem, was außer Zweifel ist"); §115 says "Das Spiel des Zweifelns selbst setzt schon die Gewißheit voraus".
      B5 allows zero misattributions, and this one sits inside a v1 game.
-   - `answer: 'cant'|'might'|'must'|'hinge'` fixes hinge status per statement, while OC §98 says the same proposition
-     can be treated "einmal als von der Erfahrung zu prüfen, einmal als Regel der Prüfung". The answer key would score
-     a misreading; Codex's Doubt Desk (§2F) gets this right.
+   - The mechanic says "some statements are hinges ('I have two hands') where doubting is the mistake", and
+     `answer: 'cant'|'might'|'must'|'hinge'` makes "hinge" one answer among the modals; nothing in the plan lets a
+     statement change its role. OC §98 says the same proposition can be treated "einmal als von der Erfahrung zu prüfen,
+     einmal als Regel der Prüfung". The game would teach hinges as a class of sentences; Codex's Doubt Desk (§2F) plays
+     the role change.
    - The Thesis shows the same habit: "meaning is use (PI §43)" drops §43's "für eine große Klasse von Fällen … – wenn
      auch nicht für alle", and "*is* a theory of language learning" runs into §109: "wir dürfen keinerlei Theorie aufstellen".
 3. **The content model cannot hold what the plan promises** (Content model, Failure modes): no round type has an `id`
@@ -43,7 +45,7 @@ concept-table rows; Codex and I are cited by §.
    promises "every English answer has a gloss". `Citation.quote` is mandatory, so every PI citation needs a quotation
    from an in-copyright translation (Anscombe, Hacker & Schulte; see ACCEPTANCE §4). "~60 items total" across four games
    is ~15 per game against B7's ~20. B6's "why" and B8's "every round has a citation" have no field to attach to, and
-   saved progress would key on array positions that shift whenever content is edited.
+   the "Progress in localStorage" promised under Information architecture has no stable round id to key on.
 
 ## 2. plan-codex.md
 
@@ -69,11 +71,13 @@ concept-table rows; Codex and I are cited by §.
    runtime image optimizer and request-dependent server features do not fit this choice." `next start` refuses an
    export (`"next start" does not work with "output: export" configuration`, `next/dist/server/next.js:260`), and Next's
    static-export guide lists Headers and default-loader Image Optimization as unsupported. That fails B3 (`next build &&
-   next start`) and B13 (headers from `next.config`) as written, and takes B9's `next/image` off its default optimiser.
-   Codex worked from BRIEF.md alone (§9), so this is a merge hazard rather than carelessness.
-2. **English form can never go wrong, so it is never explained** (§1, §3, §4): "Model useful language rather than
-   penalizing every deviation"; the Language field holds "grammatical combinations, … equivalent forms, clarification
-   prompts, and consequences"; the authored feedback is hints, consequence summaries, session explanations and the
+   next start`) as written, leaves B13's security headers to an unnamed static host, and takes B9's `next/image` off
+   its default optimiser. Codex's §9 lists BRIEF.md, which names neither `next start` nor headers, but not
+   ACCEPTANCE.md, so this is a merge hazard rather than carelessness.
+2. **A wrong English form has no defined outcome, so it is never explained** (§1, §3, §4). Codex rightly refuses to
+   penalise "every deviation from one preferred sentence" (§1), but the Language field lists phrase components and
+   "grammatical combinations, … equivalent forms, clarification prompts, and consequences", with no entry for a form
+   the learner gets wrong; the authored feedback is hints, consequence summaries, session explanations and the
    explanation for "a failed precondition", none tied to an English form. Nothing says what happens to *two slab* or
    *the key is in box*. So the named targets "count nouns and plurals" (§2A) and "articles" (§2B) are never at stake,
    B6's "why … in English terms" has no home, and "four to six visible components" invites the "Guessing through
@@ -92,7 +96,7 @@ concept-table rows; Codex and I are cited by §.
   makes its decisions in 277 lines. A builder has to dig mine out.
 - **No transfer stage.** The round fields (§3.2) have `level` and `order` but no stage or paired-round link; context
   shifts exist only inside two games (§1.1 "Report or order?", §1.5 reverse rounds).
-- **No pragmatics in v1.** §2.1 sends Would You Mind? to v1.1. Codex's café enacts PI §§21, 23 through action and is
+- **No pragmatics in v1.** §2.1 sends Would You Mind? to v1.1. Codex's café enacts PI §§23, 43 through action and is
   its first prototype.
 - **Storage.** One `current` slot serves every game, and across tabs "the last write wins" (§5.6). Nothing protects a
   newer version's save: whatever the schema rejects is backed up and replaced. Codex: "Do not overwrite an unknown newer
@@ -104,7 +108,8 @@ concept-table rows; Codex and I are cited by §.
   Claude's no-panel test can be run by someone else, and Codex's test (§7) by learners.
 - **Pronunciation without sound.** Go On! teaches "-ed pronunciation (/t/, /d/, /ɪd/)" (§1.2, §3.5), yet the plan never
   mentions audio. Codex states and justifies its exclusion (§6, "No audio dependency").
-- **Analytics on by default.** PostHog loads unless the user switches it off (§5.7); Codex keeps it off until opt-in.
+- **Analytics opt-out, not opt-in.** Once a key is set, PostHog loads unless the user switches it off in Settings
+  (§5.7); Codex keeps it off until the player opts in.
 
 ## 4. Recommended merged v1
 

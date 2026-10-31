@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Check, ChevronDown, Lightbulb, MessageCircleQuestion, RotateCcw, X } from "lucide-react";
+import { Check, ChevronDown, MessageCircleQuestion, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,9 @@ import {
   place,
   placesFor,
   removeThing,
+  REL_TEXT,
   say,
+  whyFalse,
   type Clause,
   type Loc,
   type Relation,
@@ -31,7 +33,7 @@ const GAME = "scene";
 
 // Stage geometry, in % of the stage picture (16:9). Back row first so the front row draws over it.
 const SPOT_X = [23, 41, 59, 77];
-const ROW_Y = { back: 74, front: 87 };
+const ROW_Y = { back: 71, front: 87 };
 const ROW_SCALE = { back: 0.82, front: 1 };
 /** Sprite width in % of the stage width, and height as a multiple of width. */
 const SIZE: Record<Thing, { w: number; h: number }> = {
@@ -129,8 +131,8 @@ function Stage({
   const placed = layout(scene);
   const holders = placed.filter((p) => HOLDERS.includes(p.thing) && scene[p.thing] && "spot" in scene[p.thing]!);
   return (
-    <figure className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl" aria-label={label}>
-      <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
+    <SceneCanvas label={label}>
+      <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       {placed.map((p) => (
         <Sprite
           key={p.thing}
@@ -151,7 +153,7 @@ function Stage({
                 onClick={() => onDrop({ spot, row })}
                 aria-label={`${row === "back" ? "Back" : "Front"} row, place ${spot + 1} from the left`}
                 className="absolute z-40 -translate-x-1/2 rounded-lg border-2 border-dashed border-cobalt/70 bg-cobalt/10 hover:bg-cobalt/25"
-                style={{ left: `${SPOT_X[spot]}%`, bottom: `${100 - ROW_Y[row]}%`, width: "15%", height: row === "back" ? "11%" : "13%" }}
+                style={{ left: `${SPOT_X[spot]}%`, bottom: row === "back" ? "27.5%" : "9%", width: "15.5%", height: "16.5%" }}
               />
             );
           }),
@@ -175,8 +177,8 @@ function Stage({
             </div>
           ))}
       {children}
-      <figcaption className="sr-only">{describe(scene).join(" ") || "The stage is empty."}</figcaption>
-    </figure>
+      <p className="sr-only">{describe(scene).join(" ") || "The stage is empty."}</p>
+    </SceneCanvas>
   );
 }
 
@@ -215,14 +217,7 @@ export function SceneGame() {
   if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" />;
   const { session, round, finished } = g;
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader game="Picture Theatre" title={session.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
-      {!g.storable && (
-        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
-          Progress cannot be saved in this browser. You can still play.
-        </p>
-      )}
-      <main id="main" className="flex flex-1 flex-col">
+    <GameFrame game="Picture Theatre" g={g}>
         {finished ? (
           <SessionEnd
             title={session.title}
@@ -241,8 +236,7 @@ export function SceneGame() {
         ) : (
           <TellPlay key={round.id} round={round} onDone={g.complete} onNext={g.next} />
         )}
-      </main>
-    </div>
+    </GameFrame>
   );
 }
 
@@ -275,9 +269,7 @@ function Controls({
     <>
       <div className="flex gap-2">
         {!checked && (
-          <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={onHint} disabled={showHint} aria-label="Hint">
-            <Lightbulb className="size-5" aria-hidden />
-          </Button>
+          <HintButton used={showHint} onUse={onHint} />
         )}
         {!checked ? (
           <Button size="lg" className="h-12 flex-1 text-lg" onClick={onCheck} disabled={!canCheck}>
@@ -325,7 +317,7 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <Stage
         scene={scene}
         label="The stage"
@@ -340,7 +332,10 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
           <ul className="mt-1 flex flex-col gap-1.5">
             {round.message.map((c, i) =>
               checked ? (
-                <Verdict key={i} ok={checked[i]}>{say(c)}</Verdict>
+                <Verdict key={i} ok={checked[i]}>
+                  {say(c)}
+                  {!checked[i] && <span className="block text-[15px] text-muted-foreground">{whyFalse(scene, c)}</span>}
+                </Verdict>
               ) : (
                 <li key={i} className="rounded-lg bg-card px-3 py-2 font-heading text-[19px]">
                   {say(c)}
@@ -404,7 +399,7 @@ function RelationPicker({ value, options, onChange, disabled }: { value: Relatio
       >
         {options.map((o) => (
           <option key={o} value={o}>
-            {o}
+            {REL_TEXT[o]}
           </option>
         ))}
       </select>
@@ -429,7 +424,7 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <Stage scene={round.scene} label="What is really on the stage" />
       <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         <p className="text-sm text-muted-foreground">The report. Change one word in each false sentence so that it fits the stage.</p>
@@ -502,7 +497,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
   const partnerSays = !result
     ? null
     : result.places.length === 0
-      ? `I can't put the ${round.target} ${rel} the ${ref} — there's no room for that.`
+      ? `I can't put the ${round.target} ${REL_TEXT[rel]} the ${ref} — there's no room for that.`
       : !result.truth
         ? `Done — but that's not where it is on your stage.`
         : result.places.length > 1
@@ -510,7 +505,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
           : "Got it.";
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <div className="flex flex-col gap-2">
         <Stage scene={round.scene} label="Your stage, which your partner cannot see" />
         {result && (

@@ -4,11 +4,12 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { Eye, Hand, MessageCircleQuestion, RotateCcw, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
 import { useDraft } from "@/lib/use-draft";
+import { useShortcuts } from "@/components/game/shortcuts";
 import { SESSIONS, type CafeRound, type Speaker } from "./rounds";
 
 const GAME = "cafe";
@@ -20,21 +21,7 @@ export function CafeGame() {
   if (!g.ready) return <GameLoading game="The Café" poster="/art/cafe/cafe.webp" />;
   const { session, round, finished } = g;
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader
-        game="The Café"
-        title={session.title}
-        round={finished ? session.rounds.length : g.roundIndex}
-        total={session.rounds.length}
-        speech={g.speech.available ? g.save.settings.speech : undefined}
-        onToggleSpeech={g.speech.available ? g.toggleSpeech : undefined}
-      />
-      {!g.storable && (
-        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
-          Progress cannot be saved in this browser. You can still play.
-        </p>
-      )}
-      <main id="main" className="flex flex-1 flex-col">
+    <GameFrame game="The Café" g={g} withSpeech>
         {finished ? (
           <SessionEnd
             title={session.title}
@@ -49,8 +36,7 @@ export function CafeGame() {
         ) : (
           <Round key={round.id} round={round} speak={g.speech.speak} onDone={g.complete} onNext={g.next} />
         )}
-      </main>
-    </div>
+    </GameFrame>
   );
 }
 
@@ -87,26 +73,27 @@ function Round({
     }
   };
 
+  useShortcuts({
+    "1": solved ? undefined : () => choose(0),
+    "2": solved ? undefined : () => choose(1),
+    "3": solved ? undefined : () => choose(2),
+    Enter: solved ? onNext : undefined,
+  });
+
   const ask = () => {
     setAsked(true);
     if (round.ask) speak(round.ask.answer);
   };
 
   const bubble = pick ? pick.reaction : asked && round.ask ? round.ask.answer : round.says;
-  const sprite = round.speaker;
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <div>
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
-          <Image src="/art/cafe/cafe.webp" alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
-          <div className="absolute bottom-0 left-[6%] h-[78%] w-[30%]">
-            <Image src={`/art/cafe/${sprite}.webp`} alt="" fill sizes="200px" className="object-contain object-bottom" />
-          </div>
-          <div className="absolute bottom-0 right-[4%] h-[74%] w-[24%]">
-            <Image src="/art/cafe/host.webp" alt="" fill sizes="160px" className="object-contain object-bottom" />
-          </div>
-          <div className="absolute top-[6%] left-[30%] max-w-[64%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
+        <SceneCanvas
+          label={round.clues.join(" ")}
+          overlay={
+          <div className="absolute top-[4%] right-[3%] max-w-[58%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
             <p className="text-xs font-bold text-muted-foreground">{NAME[round.speaker]}</p>
             <p className="flex items-center gap-1 font-heading text-[clamp(16px,4.4vw,24px)] leading-tight font-semibold" aria-live="polite">
               <Line text={bubble} />
@@ -115,7 +102,11 @@ function Round({
               </button>
             </p>
           </div>
-        </div>
+          }
+        >
+          {/* One picture per round, drawn so the clues can be seen, not only read. */}
+          <Image src={`/art/cafe/rounds/${round.id}.webp`} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+        </SceneCanvas>
         <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
           {round.clues.map((c) => (
             <li key={c} className="flex items-start gap-2 text-[15px]">
@@ -140,6 +131,7 @@ function Round({
                   type="button"
                   onClick={() => choose(i)}
                   disabled={tried}
+                  data-shortcut=""
                   className={cn(
                     "flex min-h-14 items-center gap-2.5 rounded-xl border-2 bg-card px-3 py-2 text-left text-[17px] transition-colors hover:border-ink/30",
                     tried ? "border-terracotta/40 opacity-60" : "border-border",

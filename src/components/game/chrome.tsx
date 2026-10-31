@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Check, Lightbulb, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { ShortcutTip } from "./shortcuts";
 import { SOURCES, WORK_TITLE, type Source, type SourceId } from "@/content/sources";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -34,8 +36,8 @@ export function GameHeader({
         <ArrowLeft className="size-5" aria-hidden />
       </Link>
       <div className="min-w-0 flex-1 leading-tight">
-        <h1 className="truncate font-heading text-lg font-semibold">{game}</h1>
-        <p className="truncate text-sm text-muted-foreground">{title}</p>
+        <h1 className="truncate font-heading text-xl font-semibold lg:text-2xl">{game}</h1>
+        <p className="truncate text-sm text-muted-foreground lg:text-base">{title}</p>
       </div>
       <ol className="flex items-center gap-1.5" aria-label={`Round ${round + 1} of ${total}`}>
         {Array.from({ length: total }, (_, i) => (
@@ -132,13 +134,119 @@ export function SessionEnd({
  */
 export function GameLoading({ game, poster }: { game: string; poster: string }) {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col" aria-busy="true">
+    <div className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col" aria-busy="true">
       <GameHeader game={game} title="Loading…" round={0} total={0} />
-      <div className="lg:grid lg:grid-cols-[1.4fr_1fr] lg:px-3">
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
-          <Image src={poster} alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
-        </div>
+      <div className="lg:grid lg:grid-cols-[1.5fr_1fr] lg:px-3">
+        <SceneCanvas>
+          <Image src={poster} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+        </SceneCanvas>
       </div>
     </div>
+  );
+}
+
+type FrameGame = {
+  ready: boolean;
+  storable: boolean;
+  session: { title: string; rounds: { id: string }[] };
+  sessionIndex: number;
+  roundIndex: number;
+  round: { id: string };
+  finished: boolean;
+  sessions: { title: string }[];
+  finishedIn: (i: number) => boolean;
+  goToSession: (i: number) => void;
+  speech: { available: boolean };
+  save: { settings: { speech: boolean } };
+  toggleSpeech: () => void;
+};
+
+/** Header, session picker and main area shared by every game. */
+export function GameFrame({ game, g, withSpeech, children }: { game: string; g: FrameGame; withSpeech?: boolean; children: React.ReactNode }) {
+  const top = useRef<HTMLDivElement>(null);
+  const key = g.finished ? `end-${g.sessionIndex}` : g.round.id;
+  useEffect(() => {
+    // Each new round starts at the top: the call or the scene is the task.
+    window.scrollTo({ top: 0 });
+  }, [key]);
+  return (
+    <div ref={top} className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col">
+      <GameHeader
+        game={game}
+        title={g.session.title}
+        round={g.finished ? g.session.rounds.length : g.roundIndex}
+        total={g.session.rounds.length}
+        speech={withSpeech && g.speech.available ? g.save.settings.speech : undefined}
+        onToggleSpeech={withSpeech && g.speech.available ? g.toggleSpeech : undefined}
+      />
+      {g.sessions.length > 1 && (
+        <nav aria-label="Sessions" className="px-3 pb-2">
+          <ol className="flex gap-1.5 overflow-x-auto">
+            {g.sessions.map((s, i) => {
+              const current = i === g.sessionIndex;
+              return (
+                <li key={s.title} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => g.goToSession(i)}
+                    aria-current={current ? "step" : undefined}
+                    className={cn(
+                      "flex h-10 items-center gap-1.5 rounded-full border px-3 text-sm font-bold whitespace-nowrap",
+                      current ? "border-ink bg-ink text-paper" : "border-border bg-card hover:bg-paper-deep",
+                    )}
+                  >
+                    {g.finishedIn(i) ? <Check className="size-4" aria-label="done:" /> : <span aria-hidden>{i + 1}</span>}
+                    {s.title}
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+      )}
+      {!g.storable && (
+        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
+          Progress cannot be saved in this browser. You can still play.
+        </p>
+      )}
+      <main id="main" className="flex flex-1 flex-col lg:justify-center lg:pb-10">
+        {children}
+      </main>
+      <ShortcutTip />
+    </div>
+  );
+}
+
+/** The same hint control in every game: a bulb button, then the hint in words. */
+export function HintButton({ used, onUse }: { used: boolean; onUse: () => void }) {
+  return (
+    <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={onUse} disabled={used} aria-label="Hint">
+      <Lightbulb className="size-5" aria-hidden />
+    </Button>
+  );
+}
+
+/**
+ * A 16:9 scene that fills more of a phone: below `sm` the frame is 4:3 and the
+ * 16:9 canvas inside it is shown at 133% with its sides trimmed, so every
+ * position given in % of the canvas still lands on the same spot in the art.
+ * `overlay` sits on the visible frame (speech bubbles), not on the canvas.
+ */
+export function SceneCanvas({
+  children,
+  overlay,
+  label,
+  className,
+}: {
+  children: React.ReactNode;
+  overlay?: React.ReactNode;
+  label?: string;
+  className?: string;
+}) {
+  return (
+    <figure aria-label={label} className={cn("relative aspect-[4/3] w-full overflow-hidden bg-paper-deep sm:aspect-[16/9] sm:rounded-2xl", className)}>
+      <div className="absolute inset-y-0 left-[-16.667%] w-[133.333%] sm:left-0 sm:w-full">{children}</div>
+      {overlay}
+    </figure>
   );
 }

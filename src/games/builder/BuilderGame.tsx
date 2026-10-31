@@ -1,16 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Check, Hand, Lightbulb, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { GameLoading, GameHeader, MarginNote } from "@/components/game/chrome";
+import { Check, Hand, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
+import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
-import { recordRound } from "@/lib/progress";
-import { useSave, useSpeech } from "@/lib/use-save";
 import { cn } from "@/lib/utils";
-import { clearDrafts, useDraft } from "@/lib/use-draft";
+import { useDraft } from "@/lib/use-draft";
+import { useShortcuts } from "@/components/game/shortcuts";
 import {
   NUMBER_WORDS,
   callFor,
@@ -45,79 +44,42 @@ const SHAPE: Record<Stone, string> = {
   arch: "A curved stone",
 };
 
-const PLACE_LABEL: Record<Place, string> = { builder: "To him", left: "Left", right: "Right" };
+const PLACE_LABEL: Record<Place, string> = { builder: "Here", left: "Left", right: "Right" };
 
 type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "count" | "place", boolean> };
 
 export function BuilderGame() {
-  const { save, ready, update, storable } = useSave();
-  const pos = save.positions[GAME] ?? { session: 0, round: 0 };
-  const sessionIndex = Math.min(pos.session, SESSIONS.length - 1);
-  const session = SESSIONS[sessionIndex];
-  const finished = pos.round >= session.rounds.length;
-  const round = session.rounds[Math.min(pos.round, session.rounds.length - 1)];
-  const { speak, available: canSpeak } = useSpeech(save.settings.speech);
-
-  const goTo = (session: number, round: number) => {
-    for (const r of SESSIONS[sessionIndex].rounds) clearDrafts(r.id);
-    update((s) => ({ ...s, lastGame: GAME, positions: { ...s.positions, [GAME]: { session, round } } }));
-  };
-
-  const complete = (firstTry: boolean, phrase: string, marks = 3) => {
-    update((s) => recordRound(s, round.id, { marks, max: 3, firstTry }, [phrase]));
-    track("round_completed", { game: GAME, round: round.id, firstTry });
-  };
-
-  const toggleSpeech = () =>
-    update((s) => ({ ...s, settings: { ...s.settings, speech: !s.settings.speech } }));
-
-  if (!ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" />;
-
+  const g = useSessions(GAME, SESSIONS);
+  if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" />;
+  const { round, session, sessionIndex, finished } = g;
+  const speak = g.speech.speak;
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader
-        game="Slab!"
-        title={`${session.title}`}
-        round={finished ? session.rounds.length : pos.round}
-        total={session.rounds.length}
-        speech={canSpeak ? save.settings.speech : undefined}
-        onToggleSpeech={canSpeak ? toggleSpeech : undefined}
-      />
-      {!storable && (
-        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
-          Progress cannot be saved in this browser. You can still play.
-        </p>
+    <GameFrame game="Slab!" g={g} withSpeech>
+      {finished ? (
+        <SessionEnd
+          title={session.title}
+          english={session.english}
+          firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
+          total={session.rounds.length}
+          sources={sessionIndex === 2 ? [session.source, "pi-6"] : [session.source, "pi-7"]}
+          nextTitle={SESSIONS[sessionIndex + 1]?.title}
+          onNext={g.nextSession}
+          onReplay={g.replay}
+        />
+      ) : round.role === "fetch" ? (
+        <FetchPlay
+          key={round.id}
+          round={round}
+          sessionIndex={sessionIndex}
+          roundIndex={g.roundIndex}
+          speak={speak}
+          onDone={(firstTry) => g.complete(3, 3, firstTry, [callFor(round.want)])}
+          onNext={g.next}
+        />
+      ) : (
+        <CallPlay key={round.id} round={round} speak={speak} onDone={(firstTry, said, marks) => g.complete(marks, 3, firstTry, [said])} onNext={g.next} />
       )}
-      <main id="main" className="flex flex-1 flex-col">
-        {finished ? (
-          <SessionEnd
-            sessionIndex={sessionIndex}
-            onNext={() => goTo(sessionIndex + 1, 0)}
-            onReplay={() => goTo(sessionIndex, 0)}
-          />
-        ) : round.role === "fetch" ? (
-          <FetchPlay
-            key={round.id}
-            round={round}
-            sessionIndex={sessionIndex}
-            roundIndex={pos.round}
-            speak={speak}
-            onDone={(firstTry) => {
-              complete(firstTry, callFor(round.want));
-            }}
-            onNext={() => goTo(sessionIndex, pos.round + 1)}
-          />
-        ) : (
-          <CallPlay
-            key={round.id}
-            round={round}
-            speak={speak}
-            onDone={(firstTry, said, marks) => complete(firstTry, said, marks)}
-            onNext={() => goTo(sessionIndex, pos.round + 1)}
-          />
-        )}
-      </main>
-    </div>
+    </GameFrame>
   );
 }
 
@@ -151,8 +113,28 @@ function Site({
   walking?: Place | null;
 }) {
   return (
-    <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
-      <Image src="/art/builder/site.webp" alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
+    <SceneCanvas
+      overlay={
+        bubble && (
+          <div
+            className={cn(
+              "absolute top-[5%] max-w-[70%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm",
+              bubbleFrom === "builder" ? "left-[22%] sm:left-[30%]" : "right-[3%]",
+            )}
+          >
+            <p className="flex items-center gap-1.5 font-heading text-[clamp(18px,5vw,28px)] leading-tight font-semibold" aria-live="polite">
+              {bubble}
+              {onSpeak && (
+                <button type="button" onClick={onSpeak} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
+                  <Volume2 className="size-5" aria-hidden />
+                </button>
+              )}
+            </p>
+          </div>
+        )
+      }
+    >
+      <Image src="/art/builder/site.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       {/* The builder, A. He turns to point; facing right is his resting pose. */}
       <div
         className="absolute bottom-[3%] h-[64%] w-[22%] transition-transform duration-300"
@@ -177,23 +159,6 @@ function Site({
       {delivered.map((d, i) => (
         <StonePile key={i} delivery={d} offset={i} />
       ))}
-      {bubble && (
-        <div
-          className={cn(
-            "absolute top-[6%] max-w-[62%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm",
-            bubbleFrom === "builder" ? "left-[30%]" : "right-[3%]",
-          )}
-        >
-          <p className="flex items-center gap-1.5 font-heading text-[clamp(17px,4.6vw,28px)] leading-tight font-semibold" aria-live="polite">
-            {bubble}
-            {onSpeak && (
-              <button type="button" onClick={onSpeak} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
-                <Volume2 className="size-5" aria-hidden />
-              </button>
-            )}
-          </p>
-        </div>
-      )}
       {pointTargets &&
         (["left", "right"] as const).map((p) => (
           <button
@@ -211,7 +176,7 @@ function Site({
             {pointedPlace === p && <Hand className="mx-auto size-7 text-ink" aria-hidden />}
           </button>
         ))}
-    </div>
+    </SceneCanvas>
   );
 }
 
@@ -239,7 +204,9 @@ function StoneCard({
   onClick,
   badge,
   ariaLabel,
+  shortcut,
 }: {
+  shortcut?: boolean;
   stone: Stone;
   label?: string;
   selected?: boolean;
@@ -253,6 +220,7 @@ function StoneCard({
       onClick={onClick}
       aria-pressed={selected}
       aria-label={ariaLabel}
+      data-shortcut={shortcut ? "" : undefined}
       className={cn(
         "relative flex min-h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-card px-2 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
         selected ? "border-cobalt bg-cobalt/10" : "border-border hover:border-ink/30",
@@ -302,9 +270,9 @@ function FetchPlay({
 
   const solved = outcome?.score === 3;
 
-  const bring = () => {
-    if (!stone) return;
-    const delivery = { stone, count, place };
+  const bring = (picked: Stone | null = stone) => {
+    if (!picked) return;
+    const delivery = { stone: picked, count, place };
     const r = markDelivery(round.want, delivery);
     setOutcome({ delivery, ...r });
     if (r.score === 3) {
@@ -319,11 +287,32 @@ function FetchPlay({
 
   const retry = () => setOutcome(null);
 
+  const pickStone = (s: Stone) => {
+    if (!advanced || stone === s) {
+      setStone(s);
+      bring(s);
+    } else setStone(s);
+  };
+  useShortcuts({
+    "1": outcome ? undefined : () => pickStone("block"),
+    "2": outcome ? undefined : () => pickStone("pillar"),
+    "3": outcome ? undefined : () => pickStone("slab"),
+    "4": outcome ? undefined : () => pickStone("beam"),
+    Enter: solved ? onNext : outcome ? retry : advanced ? () => bring() : undefined,
+  });
+
+  // A right delivery moves on by itself after a beat; "Next" is there for the impatient.
+  useEffect(() => {
+    if (!solved) return;
+    const t = setTimeout(onNext, 1400);
+    return () => clearTimeout(t);
+  }, [solved, onNext]);
+
   const facing = round.points === "left" ? "left" : "right";
   const pointText = round.points ? `He points to the ${round.points} platform.` : "";
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <div>
         <Site
           facing={facing}
@@ -353,7 +342,9 @@ function FetchPlay({
                 stone={s}
                 label={labelled ? s : undefined}
                 selected={stone === s}
-                onClick={() => setStone(s)}
+                shortcut
+                // One tap brings it when there is nothing else to choose; a second tap on the chosen stone brings it too.
+                onClick={() => pickStone(s)}
                 ariaLabel={labelled ? s : SHAPE[s]}
               />
             ))}
@@ -393,13 +384,13 @@ function FetchPlay({
 
         <div className="flex gap-2">
           {!outcome && (
-            <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={() => setHint(true)} disabled={hint} aria-label="Hint">
-              <Lightbulb className="size-5" aria-hidden />
-            </Button>
+            <HintButton used={hint} onUse={() => setHint(true)} />
           )}
-          {!outcome ? (
-            <Button size="lg" className="h-12 flex-1 text-lg" onClick={bring} disabled={!stone}>
-              {stone ? `Bring ${advanced ? NUMBER_WORDS[count - 1] + " " + plural(stone, count) : labelled ? "the " + stone : "it"}` : "Pick a stone"}
+          {!outcome && !advanced ? (
+            <p className="flex h-12 flex-1 items-center text-[16px] text-muted-foreground">Tap the stone he is calling for.</p>
+          ) : !outcome ? (
+            <Button size="lg" className="h-12 flex-1 text-lg" onClick={() => bring()} disabled={!stone}>
+              {stone ? `Bring ${NUMBER_WORDS[count - 1]} ${plural(stone, count)}` : "Pick a stone"}
             </Button>
           ) : solved ? (
             <Button size="lg" className="h-12 flex-1 text-lg" onClick={onNext} autoFocus>
@@ -526,7 +517,7 @@ function CallPlay({
   const bubble = reply?.kind === "asks" ? reply.question : solved ? "Done." : outcome ? "Like this?" : undefined;
 
   return (
-    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
       <div>
         <Site
           facing={pointAt === "left" ? "left" : "right"}
@@ -635,9 +626,7 @@ function CallPlay({
 
         <div className="flex gap-2">
           {!outcome && (
-            <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={() => setHint(true)} disabled={hint} aria-label="Hint">
-              <Lightbulb className="size-5" aria-hidden />
-            </Button>
+            <HintButton used={hint} onUse={() => setHint(true)} />
           )}
           {!outcome ? (
             <Button size="lg" className="h-12 flex-1 text-lg" onClick={call} disabled={tiles.length === 0}>
@@ -654,42 +643,6 @@ function CallPlay({
           )}
         </div>
         {hint && !outcome && <p role="status" className="text-[15px]">{round.hint}</p>}
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-
-function SessionEnd({ sessionIndex, onNext, onReplay }: { sessionIndex: number; onNext: () => void; onReplay: () => void }) {
-  const { save } = useSave();
-  const session = SESSIONS[sessionIndex];
-  const firstTry = session.rounds.filter((r) => save.rounds[r.id]?.firstTry).length;
-  const last = sessionIndex === SESSIONS.length - 1;
-  useEffect(() => {
-    if (last) track("game_finished", { game: GAME });
-  }, [last]);
-  return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-6">
-      <h2 className="font-heading text-3xl font-semibold">{session.title}: done</h2>
-      <p className="text-[17px]">
-        {firstTry} of {session.rounds.length} right first time. English practised: {session.english.toLowerCase()}.
-      </p>
-      <MarginNote id={session.source} />
-      {session.id === "builder-3" && <MarginNote id="pi-6" />}
-      <div className="flex flex-col gap-2 sm:flex-row">
-        {last ? (
-          <Link href="/" className={cn(buttonVariants({ size: "lg" }), "h-12 flex-1 text-lg")}>
-            Choose another game
-          </Link>
-        ) : (
-          <Button size="lg" className="h-12 flex-1 text-lg" onClick={onNext} autoFocus>
-            Next: {SESSIONS[sessionIndex + 1].title}
-          </Button>
-        )}
-        <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
-          Play again
-        </Button>
       </div>
     </div>
   );

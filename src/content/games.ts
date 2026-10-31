@@ -48,7 +48,7 @@ export const GAMES: GameInfo[] = [
     ],
     title: "Picture Theatre",
     promise: "Build the scene a sentence describes, catch false reports.",
-    english: "in, on, behind, next to, left of",
+    english: "in, on, behind, next to, to the left of",
     idea: "A sentence is a picture of how things stand",
     source: "tlp-2.1",
     rounds: ids(SCENE),

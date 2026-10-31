@@ -35,8 +35,11 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[]) 
     speech,
     toggleSpeech: () => update((s) => ({ ...s, settings: { ...s.settings, speech: !s.settings.speech } })),
     next: () => goTo(sessionIndex, roundIndex + 1),
+    finishedIn: (i: number) => sessions[i].rounds.every((r) => !!save.rounds[r.id]),
     nextSession: () => goTo(sessionIndex + 1, 0),
     replay: () => goTo(sessionIndex, 0),
+    goToSession: (s: number) => goTo(s, 0),
+    sessions,
     complete: (marks: number, max: number, firstTry: boolean, phrases: string[]) => {
       update((s) => recordRound(s, round.id, { marks, max, firstTry }, phrases));
       track("round_completed", { game, round: round.id, firstTry, marks });

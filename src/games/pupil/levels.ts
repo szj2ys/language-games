@@ -32,10 +32,10 @@ export const LEVELS: Level[] = [
       { text: "Use “an” before a vowel sound — listen, don't look.", readAs: "sound", needs: { ruledOut: "letter", otherwise: "letter" } },
     ],
     twist: {
-      item: { word: "one-way ticket", forms: {}, correct: "a one-way ticket" },
-      prompt: "The pupil writes “an one-way ticket”. It starts with the letter o…",
+      item: { word: "European", forms: {}, correct: "a European" },
+      prompt: "New word: the pupil writes “an European city”. It says: “E is a vowel sound, isn't it?”",
       answer: "correct",
-      why: "“One” starts with a /w/ sound, so English says “a one-way ticket”. The sound decides, even when the letter is a vowel.",
+      why: "The pupil has the right rule but hears the word wrong: “European” starts with a /j/ sound, like “you”, so English says “a European city”. Knowing a rule is not yet knowing how to apply it in every case — that takes practice (§201).",
     },
   },
   {
