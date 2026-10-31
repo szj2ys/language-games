@@ -8,11 +8,19 @@ import { GameFrame, GameLoading, SceneCanvas, SessionEnd } from "@/components/ga
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import type { SourceId } from "@/content/sources";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
 import { SESSIONS, type CafeRound, type Speaker } from "./rounds";
 
 const GAME = "cafe";
+
+/** The passages shown at the end of each session. */
+const SESSION_SOURCES: SourceId[][] = [
+  ["pi-43", "pi-23"],
+  ["pi-23", "pi-7"],
+  ["pi-21", "pi-23"],
+];
 
 const NAME: Record<Speaker, string> = { rosa: "Rosa", tom: "Tom", lena: "Lena" };
 
@@ -28,7 +36,7 @@ export function CafeGame() {
             english={session.english}
             firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
             total={session.rounds.length}
-            sources={g.sessionIndex === 0 ? [session.source, "pi-23"] : g.sessionIndex === 1 ? [session.source, "pi-7"] : ["pi-21", "pi-23"]}
+            sources={SESSION_SOURCES[g.sessionIndex]}
             nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
             onNext={g.nextSession}
             onReplay={g.replay}

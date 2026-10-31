@@ -494,15 +494,13 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
   // What the partner builds: the rest of the stage, plus the target where your sentence puts it.
   const partnerScene: Scene = { ...removeThing(round.scene, round.target) };
   if (result && result.places.length >= 1) partnerScene[round.target] = result.places[0];
-  const partnerSays = !result
-    ? null
-    : result.places.length === 0
-      ? `I can't put the ${round.target} ${REL_TEXT[rel]} the ${ref} — there's no room for that.`
-      : !result.truth
-        ? `Done — but that's not where it is on your stage.`
-        : result.places.length > 1
-          ? `${result.places.length} places fit that. Which one do you mean?`
-          : "Got it.";
+  function partnerReply(r: NonNullable<typeof result>): string {
+    if (r.places.length === 0) return `I can't put the ${round.target} ${REL_TEXT[rel]} the ${ref} — there's no room for that.`;
+    if (!r.truth) return "Done — but that's not where it is on your stage.";
+    if (r.places.length > 1) return `${r.places.length} places fit that. Which one do you mean?`;
+    return "Got it.";
+  }
+  const partnerSays = result ? partnerReply(result) : null;
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">

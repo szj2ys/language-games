@@ -240,6 +240,13 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   const complete = chain.length === session.cards.length;
   const feature = (id?: string) => session.features.find((f) => f.id === id);
 
+  function threadPrompt(): string {
+    if (chain.length === 0) return "Tap a card to start the thread.";
+    if (pending) return `What do ${last?.name} and ${pending.name} both have?`;
+    if (complete) return "The thread is complete.";
+    return `Tap the next card to join to ${last?.name}.`;
+  }
+
   const pick = (c: Card) => {
     setBad(null);
     if (!last) setChain([{ card: c }]);
@@ -267,7 +274,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
     <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-6">
       <div className="flex flex-col gap-2">
         <p className="text-sm text-muted-foreground">
-          {chain.length === 0 ? "Tap a card to start the thread." : pending ? `What do ${last?.name} and ${pending.name} both have?` : complete ? "The thread is complete." : `Tap the next card to join to ${last?.name}.`}
+          {threadPrompt()}
         </p>
         <div className="grid grid-cols-3 gap-2">
           {session.cards.map((c) => (
@@ -359,7 +366,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
   const [mode, setMode] = useDraft<"both" | "unlike">(round.id, "mode", "both");
   const [other, setOther] = useDraft<string>(round.id, "other", session.cards[0].id);
   const [feat, setFeat] = useDraft<string>(round.id, "feat", session.features[0].id);
-  const [result, setResult] = useDraft<{ ok: boolean; text: string; why: string } | null>(round.id, "result", null);
+  const [result, setResult] = useDraft<{ ok: boolean; why: string } | null>(round.id, "result", null);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
   const [hint, setHint] = useDraft(round.id, "hint", false);
   const f = session.features.find((x) => x.id === feat)!;
@@ -378,7 +385,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
       ok = n.features[f.id] === false && most;
       why = ok ? `True — ${n.name} sits at the edge of the family. Both answers can be right: the edges are blurred (§71).` : !most ? `That doesn't set it apart: fewer than half of these ${session.kind} ${f.plural} anyway.` : `Not true: ${n.name} ${f.singular}.`;
     }
-    setResult({ ok, text: mode === "both" ? sentence : unlikeText, why });
+    setResult({ ok, why });
     if (ok) onDone(2 + (misses === 0 ? 1 : 0), 3, misses === 0 && !hint, [mode === "both" ? sentence : unlikeText]);
     else {
       setMisses((m) => m + 1);
