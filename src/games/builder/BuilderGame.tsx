@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import {
   NUMBER_WORDS,
   callFor,
+  englishNotes,
   interpret,
   markDelivery,
   plural,
@@ -50,8 +51,8 @@ export function BuilderGame() {
   const goTo = (session: number, round: number) =>
     update((s) => ({ ...s, lastGame: GAME, positions: { ...s.positions, [GAME]: { session, round } } }));
 
-  const complete = (firstTry: boolean, phrase: string) => {
-    update((s) => recordRound(s, round.id, { marks: 3, max: 3, firstTry }, [phrase]));
+  const complete = (firstTry: boolean, phrase: string, marks = 3) => {
+    update((s) => recordRound(s, round.id, { marks, max: 3, firstTry }, [phrase]));
     track("round_completed", { game: GAME, round: round.id, firstTry });
   };
 
@@ -98,7 +99,7 @@ export function BuilderGame() {
             key={round.id}
             round={round}
             speak={speak}
-            onDone={(firstTry, said) => complete(firstTry, said)}
+            onDone={(firstTry, said, marks) => complete(firstTry, said, marks)}
             onNext={() => goTo(sessionIndex, pos.round + 1)}
           />
         )}
@@ -438,9 +439,11 @@ function CallPlay({
 }: {
   round: CallRound;
   speak: (t: string) => void;
-  onDone: (firstTry: boolean, said: string) => void;
+  /** Marks: the build is right, the English needed no note, and it worked first time. */
+  onDone: (firstTry: boolean, said: string, marks: number) => void;
   onNext: () => void;
 }) {
+  const [notes, setNotes] = useState<string[]>([]);
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [pointAt, setPointAt] = useState<Place | { stoneIndex: number } | undefined>();
   const [reply, setReply] = useState<AssistantResponse | null>(null);
@@ -452,7 +455,11 @@ function CallPlay({
   const bank: Tile[] = useMemo(() => {
     const b: Tile[] = [];
     if (round.numbers) for (let n = 1; n <= 4; n++) b.push({ kind: "number", value: n });
-    for (const w of round.words) b.push({ kind: "stone", value: w });
+    for (const w of round.words) {
+      b.push({ kind: "stone", value: w });
+      // With numbers in the language, the player must choose the plural form themselves.
+      if (round.numbers) b.push({ kind: "stone", value: w, plural: true });
+    }
     if (round.there) b.push({ kind: "there" });
     if (round.thisWord) b.push({ kind: "this" });
     return b;
@@ -477,12 +484,17 @@ function CallPlay({
     const said = sentence(tiles);
     speak(said);
     const r = interpret({ tiles, pointAt }, round.yard);
+    const englishSlips = englishNotes(tiles);
+    setNotes(englishSlips);
     setReply(r);
     setTries((n) => n + 1);
     if (r.kind === "acts") {
       const m = markDelivery(round.goal, r.delivery);
       setOutcome({ delivery: r.delivery, ...m });
-      if (m.score === 3) onDone(tries === 0 && !hint, said);
+      if (m.score === 3) {
+        const firstTry = tries === 0 && !hint;
+        onDone(firstTry, said, 1 + (englishSlips.length === 0 ? 1 : 0) + (firstTry ? 1 : 0));
+      }
       else track("repair_used", { game: GAME, round: round.id });
     } else {
       setTimeout(() => speak(r.question), 900);
@@ -494,11 +506,8 @@ function CallPlay({
     setReply(null);
   };
 
-  const tileText = (t: Tile, i: number, all: Tile[]) => {
-    if (t.kind !== "stone") return t.kind === "number" ? NUMBER_WORDS[t.value - 1] : t.kind;
-    const n = all.find((x) => x.kind === "number");
-    return n && n.kind === "number" && i > all.indexOf(n) ? plural(t.value, n.value) : t.value;
-  };
+  const tileText = (t: Tile) =>
+    t.kind === "number" ? NUMBER_WORDS[t.value - 1] : t.kind === "stone" ? (t.plural ? `${t.value}s` : t.value) : t.kind;
 
   const pointedStone = typeof pointAt === "object" ? round.yard[pointAt.stoneIndex] : undefined;
   const bubble = reply?.kind === "asks" ? reply.question : solved ? "Done." : outcome ? "Like this?" : undefined;
@@ -562,10 +571,10 @@ function CallPlay({
                 type="button"
                 disabled={!!outcome}
                 onClick={() => setTiles((ts) => ts.filter((_, j) => j !== i))}
-                aria-label={`Remove ${tileText(t, i, tiles)}`}
+                aria-label={`Remove ${tileText(t)}`}
                 className="h-10 rounded-lg bg-ink px-3 text-[17px] font-bold text-paper"
               >
-                {tileText(t, i, tiles)}
+                {tileText(t)}
               </button>
             ))
           )}
@@ -588,13 +597,22 @@ function CallPlay({
                   t.kind === "number" ? "border-ochre/60" : t.kind === "stone" ? "border-cobalt/50" : "border-terracotta/60",
                 )}
               >
-                {t.kind === "number" ? NUMBER_WORDS[t.value - 1] : t.kind === "stone" ? t.value : t.kind}
+                {tileText(t)}
               </button>
             ))}
           </div>
         )}
 
         {outcome && !solved && <Marks outcome={outcome} want={round.goal} />}
+        {notes.length > 0 && (reply?.kind === "acts") && (
+          <ul role="status" className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px]" aria-label="English notes">
+            {notes.map((n) => (
+              <li key={n}>
+                <span className="font-bold">English note:</span> {n}
+              </li>
+            ))}
+          </ul>
+        )}
         {solved && round.teaches && (
           <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px]">
             New word: <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>. You pointed and said “this”;

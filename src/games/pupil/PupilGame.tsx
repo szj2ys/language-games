@@ -1,0 +1,209 @@
+"use client";
+
+import Image from "next/image";
+import { useMemo, useState } from "react";
+import { BookOpen, Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GameHeader, SessionEnd } from "@/components/game/chrome";
+import { useSessions } from "@/components/game/use-sessions";
+import { cn } from "@/lib/utils";
+import { explain, par, showExample, sitExam, startPupil, type Level, type Pupil } from "./engine";
+import { SESSIONS } from "./levels";
+
+const GAME = "pupil";
+
+export function PupilGame() {
+  const g = useSessions(GAME, SESSIONS);
+  if (!g.ready) return <div className="min-h-dvh" aria-busy="true" />;
+  const { session, round, finished } = g;
+  return (
+    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
+      <GameHeader title={finished ? session.title : round.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
+      {!g.storable && (
+        <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
+          Progress cannot be saved in this browser. You can still play.
+        </p>
+      )}
+      <main id="main" className="flex flex-1 flex-col">
+        {finished ? (
+          <SessionEnd
+            title={session.title}
+            english={session.english}
+            firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
+            total={session.rounds.length}
+            sources={["pi-185", "pi-198", "pi-202"]}
+            onNext={g.nextSession}
+            onReplay={g.replay}
+          />
+        ) : (
+          <Lesson key={round.id} level={round} onDone={g.complete} onNext={g.next} />
+        )}
+      </main>
+    </div>
+  );
+}
+
+type Phase = "teach" | "twist" | "done";
+
+function Lesson({
+  level,
+  onDone,
+  onNext,
+}: {
+  level: Level;
+  onDone: (marks: number, max: number, firstTry: boolean, phrases: string[]) => void;
+  onNext: () => void;
+}) {
+  const [pupil, setPupil] = useState<Pupil>(() => startPupil(level));
+  const [cards, setCards] = useState(0);
+  const [explained, setExplained] = useState<number[]>([]);
+  const [phase, setPhase] = useState<Phase>("teach");
+  const [call, setCall] = useState<"correct" | "both" | null>(null);
+  const best = useMemo(() => par(level), [level]);
+  const exam = sitExam(level, pupil);
+  const [changed, setChanged] = useState<string[]>([]);
+
+  const teach = (next: Pupil) => {
+    const before = sitExam(level, pupil).answers;
+    const after = sitExam(level, next).answers;
+    setChanged(after.filter((a, i) => a.said !== before[i].said).map((a) => a.word));
+    setPupil(next);
+    setCards((n) => n + 1);
+  };
+
+  const decide = (c: "correct" | "both") => {
+    setCall(c);
+    const right = c === level.twist.answer;
+    const marks = 1 + (cards <= best ? 1 : 0) + (right ? 1 : 0);
+    onDone(marks, 3, cards <= best && right, level.exam.map((i) => i.correct));
+    setPhase("done");
+  };
+
+  const said = exam.passed ? (phase === "teach" ? "Now I can go on!" : null) : null;
+  const shown = new Set(pupil.shown.map((i) => i.word));
+
+  return (
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.2fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+      <div>
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
+          <Image src="/art/pupil/classroom.webp" alt="" fill priority sizes="(min-width: 1024px) 600px, 100vw" className="object-cover" />
+          <div className="absolute bottom-0 left-[4%] h-[80%] w-[34%]">
+            <Image src="/art/pupil/pupil.webp" alt="" fill sizes="220px" className="object-contain object-bottom" />
+          </div>
+          {/* The pupil's slate: what it writes is all we can see of its rule. */}
+          <div className="absolute top-[8%] right-[4%] w-[56%] rounded-lg bg-ink/90 px-3 py-2 text-paper shadow">
+            <p className="text-[11px] font-bold tracking-wide text-paper/80 uppercase">The pupil&apos;s test</p>
+            <ol className="mt-1 grid grid-cols-1 gap-0.5" aria-label="The pupil's answers">
+              {exam.answers.map((a) => (
+                <li
+                  key={a.word}
+                  className={cn(
+                    "flex items-center gap-1.5 font-heading text-[clamp(14px,3.6vw,20px)] leading-tight transition-colors",
+                    changed.includes(a.word) && "text-ochre",
+                  )}
+                >
+                  {a.ok ? <Check className="size-4 shrink-0 text-[#9fc28e]" aria-label="right:" /> : <X className="size-4 shrink-0 text-[#e79a86]" aria-label="wrong:" />}
+                  {a.said}
+                </li>
+              ))}
+            </ol>
+          </div>
+          {said && (
+            <div className="absolute top-[6%] left-[3%] rounded-2xl border border-ink/15 bg-card px-3 py-1 font-heading text-[clamp(15px,4vw,22px)] font-semibold shadow-sm" role="status">
+              {said}
+            </div>
+          )}
+        </div>
+        <p className="px-3 pt-2 text-[15px] lg:px-0">{level.task}</p>
+      </div>
+
+      <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
+        {phase === "teach" && !exam.passed && (
+          <>
+            <p className="text-sm text-muted-foreground">
+              Show the pupil an example. It will re-sit the test using whatever way of going on fits everything it has seen.
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label="Example cards">
+              {level.deck.map((it) => (
+                <button
+                  key={it.word}
+                  type="button"
+                  disabled={shown.has(it.word)}
+                  onClick={() => teach(showExample(pupil, it))}
+                  className="flex min-h-14 items-center justify-center rounded-xl border-2 border-border bg-card px-2 py-2 font-heading text-[19px] hover:border-ink/30 disabled:border-sage/40 disabled:bg-sage/10 disabled:text-muted-foreground"
+                >
+                  {it.correct}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-col gap-2" role="group" aria-label="Explain the rule in words">
+              {level.explain.map((e, i) => (
+                <Button
+                  key={e.text}
+                  variant="outline"
+                  size="lg"
+                  className="h-auto min-h-12 justify-start py-2 text-left text-[16px] whitespace-normal"
+                  disabled={explained.includes(i)}
+                  onClick={() => {
+                    setExplained((x) => [...x, i]);
+                    teach(explain(level, pupil, e));
+                  }}
+                >
+                  <BookOpen className="size-5 shrink-0" aria-hidden /> Explain: “{e.text}”
+                </Button>
+              ))}
+            </div>
+            {explained.length > 0 && (
+              <p role="status" className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px]">
+                {exam.passed
+                  ? "This time the explanation worked: an example had already shown the pupil what its key word means. Explanations work inside a practice, not instead of one (§§198–202)."
+                  : "The pupil nods — and reads your sentence its own way. An explanation is one more sign to interpret (§198)."}
+              </p>
+            )}
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              Cards used: {cards}. Fewest possible: {best}.
+            </p>
+          </>
+        )}
+
+        {phase === "teach" && exam.passed && (
+          <>
+            <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
+              All five right with {cards} card{cards === 1 ? "" : "s"}{cards <= best ? " — as few as possible." : `. It can be done with ${best}.`}
+            </p>
+            <Button size="lg" className="h-12 text-lg" onClick={() => setPhase("twist")} autoFocus>
+              Now a word it hasn&apos;t seen
+            </Button>
+          </>
+        )}
+
+        {phase !== "teach" && (
+          <div className="flex flex-col gap-3">
+            <p className="font-heading text-[19px] leading-snug">{level.twist.prompt}</p>
+            {phase === "twist" ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button size="lg" variant="outline" className="h-14 text-[16px]" onClick={() => decide("correct")}>
+                  Correct it
+                </Button>
+                <Button size="lg" variant="outline" className="h-14 text-[16px]" onClick={() => decide("both")}>
+                  Both are in use
+                </Button>
+              </div>
+            ) : (
+              <>
+                <p role="status" className={cn("rounded-xl p-3 text-[16px] leading-relaxed", call === level.twist.answer ? "bg-sage/15" : "bg-terracotta/10")}>
+                  <span className="font-bold">{call === level.twist.answer ? "Good call. " : "Not this time. "}</span>
+                  {level.twist.why}
+                </p>
+                <p className="text-sm text-muted-foreground">English practised: {level.english}.</p>
+                <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
+                  Next
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

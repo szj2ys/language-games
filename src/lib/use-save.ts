@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { emptySave, loadSave, writeSave, type Save, SAVE_KEY } from "./progress";
 
 type State = { save: Save; storable: boolean; ready: boolean };
@@ -55,10 +55,11 @@ export function useSave() {
 
 /** Speak a line in English when the browser can; the text is always on screen too. */
 export function useSpeech(enabled: boolean) {
-  const [available, setAvailable] = useState(false);
-  useEffect(() => {
-    setAvailable(typeof window !== "undefined" && "speechSynthesis" in window);
-  }, []);
+  const available = useSyncExternalStore(
+    () => () => {},
+    () => "speechSynthesis" in window,
+    () => false,
+  );
   const speak = useCallback(
     (text: string) => {
       if (!enabled || !available) return;

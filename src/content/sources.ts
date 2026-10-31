@@ -119,6 +119,44 @@ export const SOURCES = {
     limits: "Wittgenstein does not say no word has a definition; he says we should not assume one.",
     url: PI_URL,
   },
+  "pi-185": {
+    id: "pi-185",
+    work: "PI",
+    ref: "§185",
+    quote:
+      "Now we get the pupil to continue a series (say +2) beyond 1000—and he writes 1000, 1004, 1008, 1012.",
+    gloss:
+      "Every example the pupil had seen fitted his way of going on too. Your pupil did the same with 'an' before a vowel letter.",
+    limits: "The game's deviant ways are a short, fixed list; Wittgenstein's point is that no finite list of examples rules out every one.",
+    url: PI_URL,
+  },
+  "pi-198": {
+    id: "pi-198",
+    work: "PI",
+    ref: "§198",
+    quote: "…any interpretation still hangs in the air along with what it interprets, and cannot give it any support. Interpretations by themselves do not determine meaning.",
+    gloss: "A loose explanation was one more sign to interpret, and the pupil read it its own way. The precise one worked — because the pupil already knew how to use words like 'sound' and 'stressed'.",
+    limits: "The pupil's few ways of going on are a toy model. Wittgenstein's point is not that explanations fail, but that none works without a practice of using it (§§198–202).",
+    url: PI_URL,
+  },
+  "pi-202": {
+    id: "pi-202",
+    work: "PI",
+    ref: "§§201–202",
+    quote: "And hence also 'obeying a rule' is a practice.",
+    gloss:
+      "What settles the next step is not a formula in the pupil's head but the shared practice of English speakers — which is why sometimes the right call was 'both are in use'.",
+    limits: "This is not scepticism: Wittgenstein does not say any answer is as good as any other.",
+    url: PI_URL,
+  },
+  "pi-217": {
+    id: "pi-217",
+    work: "PI",
+    ref: "§217",
+    quote: "If I have exhausted the justifications I have reached bedrock, and my spade is turned. Then I am inclined to say: \"This is simply what I do.\"",
+    gloss: "Why 'an hour' and not 'a hour'? At some point the reasons stop, and there is just what English speakers do.",
+    url: PI_URL,
+  },
   "pi-ppf-118": {
     id: "pi-ppf-118",
     work: "PI",

@@ -1,0 +1,1096 @@
+Reading additional input from stdin...
+OpenAI Codex v0.165.0
+--------
+workdir: D:\githubprojects\language-games
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: ultra
+reasoning summaries: none
+session id: 01a19275-801e-70a3-83ce-35464176e209
+--------
+user
+Use your built-in image generation tool (gpt-image-2) to create ONE image, then copy the resulting PNG to art/pupil/classroom.png in the current directory. Do nothing else.
+
+Image prompt: A quiet old schoolroom seen from the front: a large blank dark-green chalkboard on the back wall, a tall window with afternoon light on the left, a globe and a stack of books on a shelf, wooden floor; the lower half of the picture is open floor with no furniture so characters can be placed. Wide landscape 16:9. Hand-cut paper illustration with subtle screen-print grain, charcoal #252A2D ink outlines, muted cobalt #42649A, terracotta #B0553E, sage #64775A, ochre #C9A24A and warm ivory; soft light from upper left; same friendly adult illustration style as a modern picture book. No text, letters, numbers, logos or watermarks; any chalkboard is blank. 
+2026-10-31T14:55:37.271847Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: "Bearer resource_metadata=\"https://mcp.atlassian.com/.well-known/oauth-protected-resource/v2/mcp\"" })
+2026-10-31T14:55:38.264855Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: "Bearer resource_metadata=\"https://mcp.atlassian.com/.well-known/oauth-protected-resource/v2/mcp\"" })
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+I’m using the imagegen skill to create one image and save it to `art/pupil/classroom.png`.
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/.codex/skills/.system/imagegen/SKILL.md'" in D:\githubprojects\language-games
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command '$taskFiles = @('"'C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/AmdUefiFwConfig/_schema/AmdUefiFwConfig.md','C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/PowerCycleTest_PythonBeta/PowerCycleTest_PythonBeta.md','C:/Users/Administrator/Documents/projects/LLMwiki/APEX/PowerCycleTest_PythonBeta-Arguments.md','C:/Users/Administrator/Documents/projects/harness/taste.md'); foreach ("'$taskFile in $taskFiles) { Get-Content -LiteralPath $taskFile -TotalCount 120 }; rg -n '"'paper|illustration|image' 'C:/Users/Administrator/Documents/projects/harness/taste-log.md'" in D:\githubprojects\language-games
+ succeeded in 149ms:
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision tree
+
+Think about two separate questions:
+
+1. **Intent:** is this a new image or an edit of an existing image?
+2. **Execution strategy:** is this one asset or many assets/variants?
+
+Intent:
+- If the user wants to modify an existing image while preserving parts of it, treat the request as **edit**.
+- If the user provides images only as references for style, composition, mood, or subject guidance, treat the request as **generate**.
+- If the user provides no images, treat the request as **generate**.
+
+Built-in edit semantics:
+- Built-in edit mode is for images already visible in the conversation context, such as attached images or images generated earlier in the thread.
+- If the user wants to edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it with `view_image` first so the image is available in conversation context.
+8. If the user asked for a photo, illustration, sprite, product image, banner, or other explicitly raster-style asset, use `image_gen` rather than substituting SVG/HTML/CSS placeholders. If the request is for an icon, logo, or UI graphic that should match existing repo-native SVG/vector/code assets, prefer editing those directly instead.
+9. Augment the prompt based on specificity:
+   - If the user's prompt is already specific and detailed, normalize it into a clear spec without adding creative requirements.
+   - If the user's prompt is generic, add tasteful augmentation only when it materially improves output quality.
+10. Use the built-in `image_gen` tool by default.
+11. For transparent-output requests, ask built-in `image_gen` for a transparent background and preserve the generated alpha channel.
+12. Inspect outputs and validate: subject, style, composition, text accuracy, and invariants/avoid items.
+13. Iterate with a single targeted change, then re-check.
+14. For preview-only work, render the image inline; the underlying file may remain at the default `$CODEX_HOME/generated_images/...` path.
+15. For project-bound work, move or copy the selected artifact into the workspace and update any consuming code or references. Never leave a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+
+## Transparent image requests
+
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+
+## Prompt augmentation
+
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+
+### Specificity policy
+
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+- arbitrary side-specific placement unless the surrounding layout supports it
+
+## Use-case taxonomy (exact slugs)
+
+Classify each request into one of these buckets and keep the slug consistent across prompts and references.
+
+Generate:
+- photorealistic-natural — candid/editorial lifestyle scenes with real texture and natural lighting.
+- product-mockup — product/packaging shots, catalog imagery, merch concepts.
+- ui-mockup — app/web interface mockups and wireframes; specify the desired fidelity.
+- infographic-diagram — diagrams/infographics with structured layout and text.
+- scientific-educational — classroom explainers, scientific diagrams, and learning visuals with required labels and accuracy constraints.
+- ads-marketing — campaign concepts and ad creatives with audience, brand position, scene, and exact tagline/copy.
+- productivity-visual — slide, chart, workflow, and data-heavy business visuals.
+- logo-brand — logo/mark exploration, vector-friendly.
+- illustration-story — comics, children’s book art, narrative scenes.
+- stylized-concept — style-driven concept art, 3D/stylized renders.
+- historical-scene — period-accurate/world-knowledge scenes.
+
+Edit:
+- text-localization — translate/replace in-image text, preserve layout.
+- identity-preserve — try-on, person-in-scene; lock face/body/pose.
+- precise-object-edit — remove/replace a specific element (including interior swaps).
+- lighting-weather — time-of-day/season/atmosphere changes only.
+- background-extraction — transparent background / clean cutout. Ask built-in `image_gen` for actual transparency.
+- style-transfer — apply reference style while changing subject/scene.
+- compositing — multi-image insert/merge with matched lighting/perspective.
+- sketch-to-render — drawing/line art to photoreal render.
+
+## Shared prompt schema
+
+Use the following labeled spec as shared prompt scaffolding for both top-level modes:
+
+```text
+Use case: <taxonomy slug>
+Asset type: <where the asset will be used>
+Primary request: <user's main prompt>
+Input images: <Image 1: role; Image 2: role> (optional)
+Scene/backdrop: <environment>
+Subject: <main subject>
+Style/medium: <photo/illustration/3D/etc>
+Composition/framing: <wide/close/top-down; placement>
+Lighting/mood: <lighting + mood>
+Color palette: <palette notes>
+Materials/textures: <surface details>
+Text (verbatim): "<exact text>"
+Constraints: <must keep/must avoid>
+Avoid: <negative constraints>
+```
+
+Notes:
+- `Asset type` and `Input images` are prompt scaffolding, not dedicated CLI flags.
+- `Scene/backdrop` refers to the visual setting. It is not the same as the fallback CLI `background` parameter, which controls output transparency behavior.
+- Fallback-only execution notes such as `Quality:`, `Input fidelity:`, masks, output format, and output paths belong in the CLI path only. Do not treat them as built-in `image_gen` tool arguments.
+
+Augmentation rules:
+- Keep it short.
+- Add only the details needed to improve the prompt materially.
+- For edits, explicitly list invariants (`change only X; keep Y unchanged`).
+- If any critical detail is missing and blocks success, ask a question; otherwise proceed.
+
+## Examples
+
+### Generation example (hero image)
+```text
+Use case: product-mockup
+Asset type: landing page hero
+Primary request: a minimal hero image of a ceramic coffee mug
+Style/medium: clean product photography
+Composition/framing: wide composition with usable negative space for page copy if needed
+Lighting/mood: soft studio lighting
+Constraints: no logos, no text, no watermark
+```
+
+### Edit example (invariants)
+```text
+Use case: precise-object-edit
+Asset type: product photo background replacement
+Primary request: replace only the background with a warm sunset gradient
+Constraints: change only the background; keep the product and its edges unchanged; no text; no watermark
+```
+
+## Prompting best practices
+- Structure prompt as scene/backdrop -> subject -> details -> constraints.
+- Include intended use (ad, UI mock, infographic) to set the mode and polish level.
+- Use camera/composition language for photorealism.
+- Only use SVG/vector stand-ins when the user explicitly asked for vector output or a non-image placeholder.
+- Quote exact text and specify typography + placement.
+- For tricky words, spell them letter-by-letter and require verbatim rendering.
+- For multi-image inputs, reference images by index and describe how they should be used.
+- For edits, repeat invariants every iteration to reduce drift.
+- Iterate with single-change follow-ups.
+- If the prompt is generic, add only the extra detail that will materially help.
+- If the prompt is already detailed, normalize it instead of expanding it.
+- For CLI fallback only, see `references/cli.md` and `references/image-api.md` for model, `quality`, `input_fidelity`, masks, output format, and output-path guidance.
+- For transparent images, ask built-in `image_gen` for actual transparency and preserve its alpha.
+
+More principles shared by both modes: `references/prompting.md`.
+Copy/paste specs shared by both modes: `references/sample-prompts.md`.
+
+## Guidance by asset type
+Asset-type templates (website assets, game assets, wireframes, logo) are consolidated in `references/sample-prompts.md`.
+
+## gpt-image-2 guidance for CLI fallback
+
+The fallback CLI defaults to `gpt-image-2`.
+
+- Use `gpt-image-2` for new CLI/API workflows unless the user confirms a different model.
+- CLI `gpt-image-2` does not support `background=transparent`; ask before using `gpt-image-1.5` unless the user explicitly requested that model.
+- `gpt-image-2` always uses high fidelity for image inputs; do not set `input_fidelity` with this model.
+- `gpt-image-2` supports `quality` values `low`, `medium`, `high`, and `auto`.
+- Use `quality low` for fast drafts, thumbnails, and quick iterations. Use `medium`, `high`, or `auto` for final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+
+hook: PostToolUse
+hook: PostToolUse
+ succeeded in 176ms:
+# AmdUefiFwConfig - parameter reference
+
+Source: `C:\apex_junczhai@amd.com\testflows\public\amd_uefi_fw_config.html`
+
+`kind` legend: **enum** fixed value domain / **text** free text or number / **server-populated** filled by the APEX server, resolve at build time / **runtime-injected** written by APEX itself, never generate it / **hidden-const** not shown in the dialog.
+
+`origin` legend: blank keeps the APEX flow default / **PMM** a constant this team always overrides / **SLOT** resolved per run, see the checklist below / APEX injected by APEX itself.
+
+## Slots to resolve (1)
+
+These are **not** in the template. A required slot is omitted rather than filled with a placeholder, and the build refuses to emit JSON until it is supplied. If the route below cannot be resolved for the station under test, raise a clarification - do not carry the Example value over.
+
+### `AMD UEFI FW Config (AFC).afcarguments` (required)
+
+- **Route**: An unbounded free-text field, passed through verbatim to `fw_config` on the SUT. THERE IS NO ENUMERABLE DOMAIN and there never will be one: the value can name any BIOS/CBS token the platform exposes, or a path to a settings .txt file, so it cannot be reduced to a dropdown. Do not try to publish a value list - derive the value, and use the examples below only to recognise the shape. The flow's own form ships six examples and a reference page, which are the authoritative mode list: `-p` print every setting to the log; `-p > cmos_settings.txt` store current settings to a file; `-f c:\cmos_settings\cmos_settings.txt` load settings from a file on the APEX Host or the SUT; `-m AMDPBS.AMDPBSOption.SpecialDisplayFeatures=0x4` load a space-separated list of settings from the command line; `-v` print version; `-h` print help. Reference: https://amd.atlassian.net/wiki/spaces/BIOSC/pages/613839006/AMD+UEFI+FW+Config+AFC . Three of the six do real work and the flow treats each differently. (1) `-m <TOKEN>=<value> [<TOKEN>=<value> ...]` - tokens in AMD dotted form, AMDCBS.* and AMDPBS.* both legal; this is the mode to use when the case names specific options. (2) `-f <path>` - the flow resolves the path on the Host or file share first, copies it to the SUT AFC directory and rewrites the argument to the bare file name, and falls back to treating it as an SUT-local path. The path MUST NOT contain a space - the flow parses it with `split("-f")[-1].strip().split(" ")[0]`, which truncates at the first space with no error. (3) `-p > <file>` - the redirect is executed by the SUT shell and the flow then copies that file back into the run's result directory; bare `-p` prints into testflow.log and produces NO artifact, because the copy-back is gated on the regex `(-p)\s*>`. `-v` and `-h` are diagnostics with no place in a queue item. Token names and legal values come from the platform's BIOS/CBS definition, not from this skill - look them up, do not copy a token from another program's item.
+- **Example**: `-m AMDCBS.SMUCommonOptions.SystemConfiguration=0x01` (select cTDP configuration index 1 on Medusa) - captured on 2026-09-13. Illustrative, not authoritative.
+- **Scope of that example**: mode (1) with a single token, and nothing more - it is one observed value, not a recommended default. The same queue also shows mode (1) with two tokens (`...SystemConfiguration=0x0F AMDCBS.SMUDebugOptions.SMUFeatures.P3T=0x01`), mode (2) as `-f \\<fileshare>\share\<user>\Tool\AFC\Settings\<Program>\ACDC_DC.txt`, and mode (3) as `-p > cmos_settings.txt`. The observed `-f` paths are one operator's personal share and are environment-bound (P-009) - resolve the share and the per-program settings file for the station under test, never carry that path across.
+- **If unresolved**: clarify with the case owner. There is no safe default: the flow's own default is `-p > cmos_settings.txt`, which reads settings and changes nothing, so an unresolved slot left at the default produces an item that passes while configuring nothing.
+
+## Open questions
+
+- Is `--onfailure=Continue` right for a flow that configures BIOS? It is the form default and is unanimous across all 23 items, so by P-002 it is inheritance and not a recorded team decision. The concrete risk is reachable: on a failed apply the flow raises AFC_EXECUTION_ERROR (98) and, under Continue, the queue proceeds - every downstream item then runs at the previous BIOS configuration and can still report Pass. Whether PMM wants Stop here is a decision for the queue owner; it has not been made, and this file must not manufacture one.
+- The `False` half of `rebootafterexecution` has not been observed in a run artifact. Every AFC `testflowArguments.json` found on the Host carries `true`. The type is confirmed boolean, so the flow's truthiness test `self.args.get('rebootafterexecution')` behaves correctly on `false` - but that is read from the conversion rule and the source, not from a `false` run. Now that the policy is unconditional True, this can only be settled from one of the three non-conforming items.
+- Should the three AFC-print_settings items in queue 08 be corrected to True? That is a write to a production queue and is out of this skill's read-only scope. Raised, not actioned.
+
+## AMD UEFI FW Config (AFC)
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| AFC Arguments | `afcarguments` | **SLOT** | text |  | _resolve per run_ |
+
+## HDT Soft-Fuse
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| Path of HDT soft fuse file: | `softfusefile` |  | file |  | `""` |
+
+## (top level)
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| Reboot After Execution | `rebootafterexecution` | **PMM** | enum | `True` / `False` | `true` |
+| Reboot Retries | `rebootretries` |  | text |  | `0` |
+| RebootTimeout (sec) | `reboottimeoutsec` |  | text |  | `600` |
+| HDT Usage | `hdtusage` |  | enum | `None` / `RelaysOnly` / `RelaysAndPowerDetect` / `Full` | `"None"` |
+| ADS Usage | `adsusage` |  | enum | `None` / `NoScanNoPDM` / `NoScan` / `ScanOnly` / `Full` | `"None"` |
+| On Failure | `onfailure` |  | enum | `Stop` / `Pause` / `Continue` | `"Continue"` |
+| Pause/Stop Fail Type | `pausestopfailtype` |  | enum | `All` / `59` (ExecutorUnresponsive) | `59` |
+|  | `testqueue` | APEX | runtime-injected |  | `"*"` |
+|  | `testqueueloop` | APEX | runtime-injected |  | `"*"` |
+|  | `testqueueitemid` | APEX | runtime-injected |  | `"*"` |
+|  | `testqueueitemindex` | APEX | runtime-injected |  | `"*"` |
+|  | `numtestqueueitemsenabled` | APEX | runtime-injected |  | `"*"` |
+|  | `testname` | APEX | runtime-injected |  | `"*"` |
+|  | `teststation` | APEX | runtime-injected |  | `"*"` |
+|  | `teststationid` | APEX | runtime-injected |  | `"*"` |
+|  | `platform` | APEX | runtime-injected |  | `"*"` |
+|  | `macaddrs` | APEX | runtime-injected |  | `"*"` |
+|  | `email` | APEX | runtime-injected |  | `"*"` |
+|  | `region` | APEX | runtime-injected |  | `"*"` |
+|  | `hdtip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsswitchtype` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsusername` | APEX | runtime-injected |  | `"*"` |
+|  | `ipspassword` | APEX | runtime-injected |  | `"*"` |
+|  | `hostip` | APEX | runtime-injected |  | `"*"` |
+|  | `sutip` | APEX | runtime-injected |  | `"*"` |
+|  | `logfile` | APEX | runtime-injected |  | `"*"` |
+|  | `localserver` | APEX | runtime-injected |  | `"*"` |
+|  | `pxeserver` | APEX | runtime-injected |  | `"*"` |
+|  | `executionid` | APEX | runtime-injected |  | `"*"` |
+|  | `executionlabel` | APEX | runtime-injected |  | `"*"` |
+|  | `softfusingmethod` | APEX | runtime-injected |  | `"*"` |
+|  | `cpusid` | APEX | runtime-injected |  | `"*"` |
+|  | `udcip` | APEX | runtime-injected |  | `"*"` |
+
+# PowerCycleTest_PythonBeta - parameter reference
+
+Source: `C:\apex_junczhai@amd.com\testflows\public\execute_power_cycle_test_python.html`
+
+`kind` legend: **enum** fixed value domain / **text** free text or number / **server-populated** filled by the APEX server, resolve at build time / **runtime-injected** written by APEX itself, never generate it / **hidden-const** not shown in the dialog.
+
+`origin` legend: blank keeps the APEX flow default / **PMM** a constant this team always overrides / **SLOT** resolved per run, see the checklist below / APEX injected by APEX itself.
+
+## Slots to resolve (2)
+
+These are **not** in the template. A required slot is omitted rather than filled with a placeholder, and the build refuses to emit JSON until it is supplied. If the route below cannot be resolved for the station under test, raise a clarification - do not carry the Example value over.
+
+### `Options.powertest` (required)
+
+- **Route**: From the scenario the ATM case names, via the mode table in the apex-powercycletest skill: S0i3 / Modern Standby -> 'Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake'; Restart -> 'Restart: Entry-OS Restart, Event-, Exit-'; S4 / Hibernate -> 'S4: Entry-OS Hibernate, Event-, Exit-HPET Wake'; S5 / Shutdown -> 'S5: Entry-OS Shutdown, Event-, Exit-Relay Power On'. The full enum has 38 values including Linux: and Chrome: variants and AIM-T, S3, G3 and combined Modern Standby-S4-OS forms; take the exact string from the field domain, never retype it.
+- **Example**: `Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake` (S0i3, woken by HPET rather than a relay) - captured on 2026-09-11. Illustrative, not authoritative.
+- **Scope of that example**: the most common PMM scenario; the other three reference items use the Restart, S4 and S5 rows of the same table
+- **If unresolved**: clarify with the case owner - do not default to the flow's own default (S5), which is not the scenario PMM runs most
+
+### `Options.loops` (required)
+
+- **Route**: The loop count the ATM case asks for. Flow default is 1. Measured across 16 real items in two queues: 1 (10 items), 3 (2 items) and 10 (4 items). It does not appear in this queue's varying set only because all four items of 04-Juncai-PMM_Feature.Quick.Check happen to run 10.
+- **Example**: `10` (ten entry/resume cycles) - captured on 2026-09-11. Illustrative, not authoritative.
+- **Scope of that example**: the 04-Juncai-PMM_Feature.Quick.Check value, not a standard - the case decides; 08-Juncai-PMM_Infrastructure uses 1 and 3
+- **If unresolved**: clarify - a wrong loop count silently produces a shorter or longer test that still reports Pass
+
+## Modules (1 modelled)
+
+### `HelperScripts` (enabled: True)
+
+| key | origin | value / route |
+|---|---|---|
+| `helperscriptsmoduletype` | **PMM** | `"HelperScripts"` |
+| `helperscriptsmoduleenabled` | **PMM** | `"True"` |
+| `helperscriptmodfailure` | **PMM** | `"stop"` |
+| `helperpreexecutiontimeout` | **PMM** | `1800` |
+| `helperpreexecutionscriptargs` | **PMM** | `""` |
+| `helperonstartscriptargs` | **PMM** | `""` |
+| `helperscripts` | **SLOT** (required) | Resolve the HelperScripts entity BY NAME in the target queue and use that GUID. The reference value 7b753ef1-b179-f111-b339-0022482b3a20 is a personal entity belonging to the exporting user and will not resolve for another user, station or queue. |
+| `helperonstopscriptargs` | **SLOT** (required) | '-loops <N>' where N is exactly the value of Options.loops, required whenever this module is attached at all. The helper counts the cycles it expects to find in the sleepstudy report, so a mismatch invalidates the evidence while the item still reports Pass. Nothing in APEX checks it - run scripts/apex_check_powercycle_loops.py over the queue export before pushing. The '-logname <name>' half seen in the reference items is export noise from one person's naming habit - omit it. A scenario that does not need the sleepstudy report (Restart) should omit this whole module instead of omitting the argument. |
+| `helperishostscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperonstartscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperonstopscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperpreexecutionscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperscriptsentityname` | APEX | literal * in the item; APEX substitutes at dispatch |
+
+## Open questions
+
+- A passing run does not leave a sleepstudy HTML behind, even with Sleep Study.sleepstudyhtml = yes, which is the entire reason the HelperScripts module exists. Whether that is an APEX defect or intended behaviour is UNVERIFIED - it is recorded here as observed behaviour of 5.5.0.6, not as a diagnosis.
+- The Restart reference item carries --loops=10 but --helperonstopscriptargs='-logname sleepstudy-report_Reboot', with no -loops at all. This is NOT a loop-count defect: a Restart run does not need the sleepstudy report, so nothing reads the helper's output. The item is over-configured rather than mis-configured - the clean form for Restart is to detach the whole HelperScripts module, not to add the missing -loops.
+- Ten items of 08-Juncai-PMM_Infrastructure have the helper attached, --loops=1, and no -loops. They are plausibly correct via the helper script's own default, but that default is UNVERIFIED - it is not in the queue and has to be read out of the helper script once. Until then those ten are WARN, not clean.
+- --pctworkload=none in all four items, so the entire Workload block below it never executes. operatingsystemtype=Windows, workload=314be6b7-aaf4-eb11-b563-281878b51121, workloadpreset and workloadrunparameters all differ from the form default but are INERT - they are copy-paste inheritance, not PMM policy, and are deliberately not listed as fixed. Do not promote them.
+
+## Workloads
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| PowerCycleTest Workload Options | `pctworkload` |  | enum | `none` (Do not run any workloads) / `after` (Run workload(s) after state change) / `thru` (Run workload(s) through state change) | `"none"` |
+| Workload run mode | `workloadrunmode` |  | enum | `sequence` (Sequence) / `parallel` (Parallel) | `"sequence"` |
+| Workload Total run time (sec) | `totalruntime` |  | text |  | `30` |
+| Workload Cycle up time (sec) | `workloadcycleuptime` |  | text |  | `30` |
+| Workload Cycle down time (sec) | `workloadcycledowntime` |  | text |  | `0` |
+| Sync Workloads with Modules | `syncmodules` |  | enum | `smswewem` (sM -> sW -> eW -> eM) / `swsmewem` (sW -> sM -> eW -> eM) / `smswemew` (sM -> sW -> eM -> eW) / `swsmemew` (sW -> sM -> eM -> eW) | `"swsmemew"` |
+| Initial workload running check before 1st loop | `initcheck` |  | enum | `no` (No) / `yes` (Yes) | `"no"` |
+| Skip Workload Result Host Copy | `workloadresultcopy` |  | enum | `no` (Yes) / `yes` (No) | `"yes"` |
+| Delay state entry after Workload start | `delayworkloadentry` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+| Operating System | `operatingsystemtype` |  | server-populated | _ostypereplaceme_ |  |
+| Workload Branch | `branch` |  | server-populated | _branchreplaceme_ | `"Release"` |
+
+## Workloads / Workload
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| Sync App | `workloadtoggleapp` |  | enum | `True` / `False` | `true` |
+| Compare Score | `workloadbenchmarkscorecompare` |  | enum | `no` (No) / `first` (First Loop) / `previous` (Previous Loop) | `"no"` |
+| Compare Score: Iteration Aggregation | `workloadbenchmarkscorecompareiterationaggregation` |  | enum | `mean` (Average) / `min` (Min) / `max` (Max) / `sum` (Sum) | `"mean"` |
+| Compare Score: Rule | `workloadbenchmarkscorecomparerule` |  | text |  | `"*:&gt;=95%,&lt;=105%"` |
+| Compare Score: Fails Test | `workloadbenchmarkscorecomparefail` |  | enum | `no` (No) / `yes` (Yes) | `"no"` |
+| Workload Download Timeout (sec) | `workloaddownloadtimeoutsec` |  | text |  | `3600` |
+| Workload Setup Timeout (sec) | `workloadsetuptimeoutsec` |  | text |  | `1800` |
+| Workload Timeout Per Loop (sec) | `workloadtimeoutperloopsec` |  | enum | `30` / `60` / `120` / `180` / `240` / `300` / `600` / `900` / `1200` / `1500` / `1800` / `2400` / `3000` / `3600` / `7200` / `10800` / `43200` / `86400` / `172800` / `259200` | `3000` |
+| Workload | `workload` |  | server-populated | _workloadreplaceme_ |  |
+|  | `workloadpreset` |  | hidden-const |  | `"DEFAULT"` |
+| Workload Setup Parameters | `workloadsetupparameters` |  | text |  | `""` |
+| Workload Run Parameters | `workloadrunparameters` |  | text |  | `""` |
+|  | `workloadmanifest` | APEX | runtime-injected |  | `"*"` |
+
+## Options
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| Test Flow | `power-cycle-test-flow` |  | enum | `PowerCycleStandardTestFlow` (Power cycle standard test flow) / `PowerCycleDgpuNvmeWidthSpeed` (Power cycle dGPU/NVMe link width and speed check) | `"PowerCycleStandardTestFlow"` |
+| Power Test | `powertest` | **SLOT** | enum | `Restart: Entry-OS Restart, Event-, Exit-` / `S5: Entry-OS Shutdown, Event-, Exit-Relay Power On` / `S5: Entry-OS Shutdown, Event-, Exit-Wake On LAN` / `S5 (AIM-T): Entry-OS Shutdown, MPM/X86 NRC, Exit-Relay Power On` / `S3: Entry-OS Standby, Event-, Exit-Relay Power On` / `S3: Entry-OS Standby, Event-, Exit-HPET Wake` / `S3: Entry-Relay Power OS Standby, Event-, Exit-Relay Power On` / `S3: Entry-OS Timeout Standby, Event-, Exit-Relay Power On` / `S3: Entry-OS Standby, Event-, Exit-Wake On LAN` / `S4: Entry-OS Hibernate, Event-, Exit-Relay Power On` / `S4 (AIM-T): Entry-OS Hibernate, MPM/X86 NRC, Exit-Relay Power On` / `S4: Entry-OS Hibernate, Event-, Exit-HPET Wake` / `S4: Entry-Relay Power OS Hibernate, Event-, Exit-Relay Power On` / `S4: Entry-OS Timeout Standby, Event-, Exit-Relay Power On` / `S4: Entry-OS Hibernate, Event-, Exit-Wake On LAN` / `G3: Entry-OS Shutdown, Event-AC Power Off, 30 seconds wait IPS off, 30 seconds wait IPS on then On, Exit-Relay Power On` / `Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake` / `Modern Standby: Entry-OS Standby, Event-, Exit-Relay Power On` / `Modern Standby: Entry-OS Timeout Standby, Event-, Exit-Relay Power On` / `Modern Standby: Entry-Relay Power OS Standby, Event-, Exit-Relay Power On` / `Modern Standby: Entry-OS Standby, Event-, Exit-Wake On LAN` / `Modern Standby: Entry-Lid OS Standby, Event-, Exit-Lid` / `Modern Standby-S4-OS: [S0i3: Entry-OS Timeout Standby, Event-, Exit-HPET Wake], [S4: Entry-OS Standby, Event-, Exit-HPET Wake]` / `Modern Standby-S4-OS: [S0i3: Entry-OS Standby, Event-, Exit-Relay Power On], [S4: Entry-OS Standby, Event-, Exit-Relay Power On]` / `Modern Standby-S4-OS: [S0i3: Entry-OS Standby, Event-, Exit-HPET Wake], [S4: Entry-OS Standby, Event-, Exit-HPET Wake]` / `Modern Standby-S4-OS (AIM-T): [S0i3: Entry-OS Standby, Event-, Exit-HPET Wake], [S4: Entry-OS Hibernate, MPM/X86 NRC, Exit-Relay Power On]` / `S3-S4: OS Standby, Relay Power On, OS Hibernate, Relay Power On` / `S3-S4-OS-HPET: Entry-OS Standby, Exit-HPET Wake, Entry-OS Hibernate, Exit-HPET Wake` / `Linux: Restart: Entry-OS Restart, Event-, Exit-` / `Linux: S5: Entry-OS Shutdown, Event-, Exit-Relay Power On` / `Linux: S5: Entry-OS Shutdown, Event-, Exit-HPET Wake` / `Linux: S3: Entry-OS Standby, Event-, Exit-Relay Power On` / `Linux: S3: Entry-OS Standby, Event-, Exit-HPET Wake` / `Linux: S4: Entry-OS Standby, Event-, Exit-Relay Power On` / `Linux: S4: Entry-OS Standby, Event-, Exit-HPET Wake` / `Linux: Modern Standby: Entry-OS Standby, Event-, Exit-Relay Power On` / `Linux: Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake` / `Chrome: Dark S3: Entry-OS Standby, Event-, Exit-HPET Wake` | _resolve per run_ |
+| Loops | `loops` | **SLOT** | text |  | _resolve per run_ |
+| Run dGPU/NVMe testflow every no. of loops | `run-every-no-loops` |  | text |  | `1` |
+| HDT Usage | `hdtusage` | **PMM** | enum | `None` / `RelaysOnly` / `RelaysAndPowerDetect` / `Full` | `"RelaysAndPowerDetect"` |
+| ADS Usage | `adsusage` | **PMM** | enum | `None` / `NoScanNoPDM` / `NoScan` / `ScanOnly` / `Full` | `"None"` |
+| Max number of ADS requests | `maxadsreq` |  | enum | `3` / `10` / `Unlimited` | `"Unlimited"` |
+| Select pwrtest.exe version to run for sleep study. | `pwrtestversion` |  | enum | `10.0.16299.15` / `10.0.22621.382` / `10.0.26100.3323` | `"10.0.26100.3323"` |
+| On Failure | `onfailure` |  | enum | `Stop` / `Pause` / `Continue` / `StopCurrent` (Stop Current Test, Continue Queue) / `Auto` | `"Continue"` |
+| Pause/Stop Fail Type | `pausestopfailtype` |  | enum | `All` / `59` (ExecutorUnresponsive) | `59` |
+| Reboot before start | `reboot` | **PMM** | enum | `yes` (Yes) / `no` (No) | `"yes"` |
+| Prefer Cold Boot | `prefercoldboot` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+| Crash Dump Cleanup Mode | `crashdumpcleanupmode` |  | enum | `delete` (Delete) / `backup_on_sut` (Backup on SUT) | `"delete"` |
+| Skip Cold Reset On Hang | `skipcoldresetonhang` |  | enum | `True` / `False` | `false` |
+| Allow multiple wake devices | `allowwake` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+| G3: Apply Sleep Duration Before IPS Outlet Off and After IPS Outlet On | `ipssleeppadding` |  | enum | `yes` (Yes) / `no` (No) | `"yes"` |
+| G3: System Expected to Be Off After IPS Power Restored | `expectsysoffafteripsback` |  | enum | `yes` (Yes) / `no` (No) | `"yes"` |
+| Use AC Power Relay instead of IPS | `acpowerrelay` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+| Use Spare Relay instead of IPS | `sparerelay` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+| Verify SUT supports s0i3 | `verifys0i3hdt` |  | enum | `yes` (Yes) / `no` (No) | `"yes"` |
+| Retry Entry of S0i3 State | `retryentry` |  | enum | `yes` (Yes) / `no` (No) | `"yes"` |
+| Verify power state duration | `verifystateduration` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+| MPM monitor duration (sec) (default 240s; minimum 180s) | `mpmmonitordurationsec` |  | text |  | `240` |
+| MPM poll interval (sec) | `mpmpollintervalsec` |  | enum | `5` / `10` | `5` |
+| MPM max extra monitor timers | `mpmmaxextratimers` |  | text |  | `2` |
+| MPM max relay wake attempts | `maxrelayretries` |  | text |  | `3` |
+| MPM fail threshold (% of loops with MPM overtime/abnormal recovery) | `mpmfailthresholdpct` |  | text |  | `5.0` |
+| MPM stable low-power confirmation (sec) | `mpmstablelowsec` |  | enum | `15` / `30` / `45` / `60` | `30` |
+| Run Modules after resume | `pctmodulesafter` |  | enum | `yes` (Yes) / `no` (No) | `"no"` |
+---
+title: PowerCycleTest_PythonBeta 参数说明
+created: 2026-07-06T00:00
+updated: 2026-07-19T20:15
+tags: [apex, powercycletest, testflow, parameter-reference]
+category: reference
+status: active
+summary: PowerCycleTest_PythonBeta TestFlow 参数含义、默认值、可选值和行为影响说明。
+---
+
+# PowerCycleTest_PythonBeta 参数说明
+
+生成时间：2026-07-06  
+主要依据：`C:\apex_junczhai@amd.com\testflows\public\execute_power_cycle_test_python.html`、`execute_power_cycle_test.py`、`powertests\power_cycle_test.py`、`powertests.json`、`libs\runnable_service_factory.py`、`libs\acpi.py`、`libs\testflow.py`。
+
+## 总体执行模型
+
+`PowerCycleTest_PythonBeta` 的入口会读取 APEX GUI 生成的 `testflowArguments.json`，并把嵌套 JSON 展平成一份 `args`。`Options.powertest` 决定导入哪个 `powertests/test_*.py` 测试类；`Options.loops` 决定主循环次数；`Options.power-cycle-test-flow` 决定用标准 PowerCycle flow，还是额外做 dGPU/NVMe link width/speed 检查的 flow。
+
+如果 `pctworkload=none`，入口会移除 workload helper，不下载、不 setup workload；如果选择 `after` 或 `thru`，setup 阶段会下载并 setup workload。失败后的继续/停止行为主要由 `onfailure`、`pausestopfailtype`、ADS/Failure service 决定。
+
+## 关键参数速览
+
+| 参数 | 默认 | 作用 |
+|---|---:|---|
+| `powertest` | S5 Relay | 选择具体 power state 测试类，例如 S3/S4/S5/G3/Modern Standby/Restart。 |
+| `loops` | 1 | 主测试 loop 次数。 |
+| `pctworkload` | `none` | 控制 workload 不跑、resume 后跑、还是贯穿 state 跑。 |
+| `workloadrunmode` | `sequence` | 控制 workload 顺序或并行；`thru` 不支持 sequence，会改成 parallel。 |
+| `onfailure` | `Continue` | 控制失败后继续 loop、停止当前 test、停止 queue 或交给 ADS/Failure。 |
+| `hdtusage` | `Full` | 影响 HDT/relay/power detect 能力；没有 HDT 时部分检查退化为 ping/executor。 |
+| `sleepduration` | 60 | power state 保持时间，也影响 G3 IPS padding 和 DRIPS 数据质量。 |
+| `boottoexecutor` | 300 | 退出 power state 后等待 executor 恢复的超时。 |
+
+## Workloads
+
+### 全局 Workload 参数
+
+| UI 名称 | 参数名 | 默认/选项 | 不同取值的影响 |
+|---|---|---|---|
+| PowerCycleTest Workload Options | `pctworkload` | `none` / `after` / `thru`，默认 `none` | `none` 不运行 workload；`after` 在每次 resume 后运行 workload；`thru` 在进入 power state 前启动 workload，resume 后继续补足运行时间。S5/restart 这类 executor 会断开的场景更推荐 `after`。 |
+| Workload run mode | `workloadrunmode` | `sequence` / `parallel`，默认 `sequence` | `sequence` 逐个 workload 跑，主要适合 `after`；`parallel` 所有 workload async 启动，并对 `Sync App=True` 的 workload 做周期 stop/restart；`thru+sequence` 会被强制改成 parallel。 |
+| Workload Total run time (sec) | `totalruntime` | `30` | workload 总运行窗口。越大 workload 压力持续越久，loop 时间越长。 |
+| Workload Cycle up time (sec) | `workloadcycleuptime` | `30` | `parallel/thru` 下 `Sync App=True` 的 workload 每次运行多久后被 stop。 |
+| Workload Cycle down time (sec) | `workloadcycledowntime` | `0` | workload stop 后等待多久再重启；`0` 表示几乎立即重启。 |
+| Sync Workloads with Modules | `syncmodules` | `smswewem` / `swsmewem` / `smswemew` / `swsmemew`，默认 `swsmemew` | 控制 module 和 workload 的 start/end 顺序。`s`=start，`e`=end，`M`=module，`W`=workload；默认表示先 start workload，再 start module，结束时先 end module，再 end workload。 |
+| Initial workload running check before 1st loop | `initcheck` | `no` / `yes`，默认 `no` | 仅 `pctworkload=after` 生效。`yes` 会在正式 loop 1 前以 loop 0 先跑一次 workload，benchmark baseline 也会从 loop 0 开始。 |
+| Skip Workload Result Host Copy | `workloadresultcopy` | UI 显示 `No` 时 value 为 `yes`，默认 `yes` | 这个 UI 文案和 value 是反向的。源码中 `workloadresultcopy=="yes"` 才 copy workload result 到 host；如果 UI 选择 `Yes`，value 为 `no`，会跳过 copy，benchmark compare 可能缺结果。 |
+| Delay state entry after Workload start | `delayworkloadentry` | `no` / `yes`，默认 `no` | 仅 `pctworkload=thru` 生效。`yes` 会在 workload 启动后先等待 `totalruntime` 秒，再进入 power state。 |
+| Operating System | `operatingsystemtype` | APEX 动态填充 | 传给 progress tracker 的 `OS` 字段；实际 SUT OS 仍由 executor 在 setup 阶段检测。 |
+| Workload Branch | `branch` | APEX 动态填充，HTML default `Release` | 影响 Common Workload 下载/manifest 的来源分支。 |
+
+### 每个 Workload 子页参数
+
+`Workload:` 子页是 multi-tab，最多 20 个 workload。每个 workload 都有以下字段。
+
+| UI 名称 | 参数名 | 默认/选项 | 不同取值的影响 |
+|---|---|---|---|
+| Sync App | `workloadtoggleapp` | `True` / `False`，默认 `True` | `True` 时在 `parallel/thru` 模式中按 cycle up/down 周期 stop/restart；`False` 时作为 continuous workload，只检查是否还在跑。 |
+| Compare Score | `workloadbenchmarkscorecompare` | `no` / `first` / `previous`，默认 `no` | `no` 不比较；`first` 与第一个 baseline loop 比；`previous` 与前一个 loop 比。 |
+| Compare Score: Iteration Aggregation | `workloadbenchmarkscorecompareiterationaggregation` | `mean` / `min` / `max` / `sum`，默认 `mean` | 多 iteration 的汇总方式，影响 benchmark compare 的输入值。 |
+| Compare Score: Rule | `workloadbenchmarkscorecomparerule` | `*:>=95%,<=105%` | benchmark 阈值规则。支持按 key 指定，例如 `key1:>=num,<num%;key*:<=num;*:>=num%`。 |
+| Compare Score: Fails Test | `workloadbenchmarkscorecomparefail` | `no` / `yes`，默认 `no` | `yes` 时比较失败会导致 test fail；`no` 时只记录比较结果。 |
+| Workload Download Timeout (sec) | `workloaddownloadtimeoutsec` | `3600` | workload 下载超时。 |
+| Workload Setup Timeout (sec) | `workloadsetuptimeoutsec` | `1800` | workload setup/安装超时。 |
+| Workload Timeout Per Loop (sec) | `workloadtimeoutperloopsec` | 30 到 259200，默认 `3000` | 单个 workload 每 loop 超时。长 workload 需要调大，调太大失败反馈会变慢。 |
+| Workload | `workload` | APEX 动态填充 | 选择实际 Common Workload。 |
+| Workload Setup Parameters | `--workloadsetupparameters` | 空 | 透传给 workload setup 阶段。 |
+| Workload Run Parameters | `--workloadrunparameters` | 空 | 透传给 workload run 阶段。 |
+
+## Options
+
+### Flow、Power Test 和循环
+
+| UI 名称 | 参数名 | 默认/选项 | 不同取值的影响 |
+|---|---|---|---|
+| Test Flow | `power-cycle-test-flow` | `PowerCycleStandardTestFlow` / `PowerCycleDgpuNvmeWidthSpeed`，默认标准 flow | 标准 flow 只执行所选 power test；dGPU/NVMe flow 需要 Windows、PAPI2、AGM，会在指定 loop 下跑 workload stress、读取 dGPU/NVMe PCIe speed/width、与 idle/golden 值比较，然后仍执行 ACPI power test。 |
+| Power Test | `powertest` | 默认 S5 Relay | 决定具体测试类，见下一张表。 |
+| Loops | `loops` | `1` | 主 loop 次数，源码按 `range(1, loops+1)` 执行。 |
+| Run dGPU/NVMe testflow every no. of loops | `run-every-no-loops` | `1` | 仅 dGPU/NVMe flow 使用。例如 `2` 表示 1、3、5... loop 才做 link 检查；每个 loop 仍执行 ACPI power test。 |
+
+### Power Test 可选值
+
+| Power Test | 实现类 | 行为变化 |
+|---|---|---|
+| Restart: Entry-OS Restart, Event-, Exit- | `test_restart_os` | OS warm reboot。 |
+| S5: Entry-OS Shutdown, Event-, Exit-Relay Power On | `test_s5_os_relay` | OS shutdown 进 S5，relay power on 唤醒。 |
+| S5: Entry-OS Shutdown, Event-, Exit-Wake On LAN | `test_s5_os_wake_on_lan` | OS shutdown 进 S5，Wake-on-LAN 唤醒。 |
+| S5 (AIM-T): Entry-OS Shutdown, MPM/X86 NRC, Exit-Relay Power On | `test_s5_os_relay_mpm` | S5 + MPM/X86 NRC 监控，MPM 参数生效，relay 唤醒。 |
+| S3: Entry-OS Standby, Event-, Exit-Relay Power On | `test_s3_os_relay` | OS standby 进 S3，relay 唤醒。 |
+| S3: Entry-OS Standby, Event-, Exit-HPET Wake | `test_s3_os_hpet` | OS standby 进 S3，HPET/pwrtest wake timer 唤醒。 |
+| S3: Entry-Relay Power OS Standby, Event-, Exit-Relay Power On | `test_s3_relay` | 进入路径包含 relay power + OS standby，退出用 relay。 |
+| S3: Entry-OS Timeout Standby, Event-, Exit-Relay Power On | `test_s3_os_timeout` | 设置 standby idle，等 OS timeout 进 S3，再 relay 唤醒。 |
+| S3: Entry-OS Standby, Event-, Exit-Wake On LAN | `test_s3_os_wake_on_lan` | OS standby 进 S3，Wake-on-LAN 唤醒。 |
+| S4: Entry-OS Hibernate, Event-, Exit-Relay Power On | `test_s4_os_relay` | OS hibernate 进 S4，relay 唤醒。 |
+| S4 (AIM-T): Entry-OS Hibernate, MPM/X86 NRC, Exit-Relay Power On | `test_s4_os_relay_mpm` | S4 + MPM/X86 NRC 监控，MPM 参数生效，relay 唤醒。 |
+| S4: Entry-OS Hibernate, Event-, Exit-HPET Wake | `test_s4_os_hpet` | OS hibernate 进 S4，HPET/pwrtest wake timer 唤醒。 |
+| S4: Entry-Relay Power OS Hibernate, Event-, Exit-Relay Power On | `test_s4_relay` | 进入路径包含 relay power + OS hibernate，退出用 relay。 |
+| S4: Entry-OS Timeout Standby, Event-, Exit-Relay Power On | `test_s4_os_timeout` | timeout 类 S4 流程，relay 唤醒。 |
+| S4: Entry-OS Hibernate, Event-, Exit-Wake On LAN | `test_s4_os_wake_on_lan` | OS hibernate 进 S4，Wake-on-LAN 唤醒。 |
+| G3: Entry-OS Shutdown, Event-AC Power Off, 30 seconds wait IPS off, 30 seconds wait IPS on then On, Exit-Relay Power On | `test_g3_os_ips_new` | OS shutdown 后切 AC/IPS 到 G3，再恢复 AC/IPS，最后 relay power on；G3 参数生效。 |
+| Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake | `test_s0i3_os_hpet` | OS standby 进 Modern Standby/S0i3，HPET/pwrtest 唤醒。 |
+| Modern Standby: Entry-OS Standby, Event-, Exit-Relay Power On | `test_s0i3_os_relay` | OS standby 进 S0i3，relay 唤醒。 |
+| Modern Standby: Entry-OS Timeout Standby, Event-, Exit-Relay Power On | `test_s0i3_timeout` | 设置 standby idle，等 OS timeout 进 S0i3，再 relay 唤醒。 |
+| Modern Standby: Entry-Relay Power OS Standby, Event-, Exit-Relay Power On | `test_s0i3_relay` | 进入路径包含 relay power + OS standby，退出用 relay。 |
+| Modern Standby: Entry-OS Standby, Event-, Exit-Wake On LAN | `test_s0i3_os_wake_on_lan` | OS standby 进 S0i3，Wake-on-LAN 唤醒。 |
+| Modern Standby: Entry-Lid OS Standby, Event-, Exit-Lid | `test_s0i3_os_lid` | 通过 lid close/open 控制 S0i3 进出。 |
+| Modern Standby-S4-OS: S0i3 Timeout + S4 HPET | `test_s0i3_timeout_s4_os_hpet` | 一个 loop 内先 S0i3 timeout/HPET，再 S4/HPET。 |
+| Modern Standby-S4-OS: S0i3 Relay + S4 Relay | `test_s0i3_s4_os` | 一个 loop 内跑 S0i3 relay 和 S4 relay 两阶段。 |
+| Modern Standby-S4-OS: S0i3 HPET + S4 HPET | `test_s0i3_s4_os_hpet` | 一个 loop 内跑 S0i3 HPET 和 S4 HPET 两阶段。 |
+| Modern Standby-S4-OS (AIM-T): S0i3 HPET + S4 MPM/X86 NRC Relay | `test_s0i3_s4_os_relay_mpm` | S0i3 + S4 MPM 双阶段；MPM 参数生效。 |
+| S3-S4: OS Standby, Relay Power On, OS Hibernate, Relay Power On | `test_s3_s4_os` | 一个 loop 内先 S3 relay，再 S4 relay。 |
+| S3-S4-OS-HPET: OS Standby/HPET + OS Hibernate/HPET | `test_s3_s4_os_hpet` | 一个 loop 内先 S3 HPET，再 S4 HPET。 |
+| Linux: Restart: Entry-OS Restart, Event-, Exit- | `test_linux_warm_os` | Linux warm reboot。 |
+| Linux: S5: Entry-OS Shutdown, Event-, Exit-Relay Power On | `test_linux_s5_os_relay` | Linux shutdown 进 S5，relay 唤醒。 |
+| Linux: S5: Entry-OS Shutdown, Event-, Exit-HPET Wake | `test_linux_s5_os_hpet` | Linux S5，wake timer 唤醒。 |
+| Linux: S3: Entry-OS Standby, Event-, Exit-Relay Power On | `test_linux_s3_os_relay` | Linux suspend to RAM，relay 唤醒。 |
+| Linux: S3: Entry-OS Standby, Event-, Exit-HPET Wake | `test_linux_s3_os_hpet` | Linux S3，RTC/HPET wake timer 唤醒。 |
+| Linux: S4: Entry-OS Standby, Event-, Exit-Relay Power On | `test_linux_s4_os_relay` | Linux S4/hibernate 类流程，relay 唤醒。 |
+| Linux: S4: Entry-OS Standby, Event-, Exit-HPET Wake | `test_linux_s4_os_hpet` | Linux S4/hibernate 类流程，wake timer 唤醒。 |
+# 品味宪法 / Taste Constitution (product sense + marketing instinct)
+
+Shared across all agents (Claude Code, Codex, OMP, Hermes). 这是 `RULES.md "Judgment principles"`
+的完整正文，只在**产品/营销任务**触发时展开细读。工程任务不读本文件。
+
+本文件是 `lessons.md` 的品味姊妹：`lessons.md` 积累工程教训，`taste-log.md` 积累
+**人对"什么叫做好"的判断**。宪法是积累的**产物**，不是起点——规则由 `taste-log.md`
+里反复出现的真人裁决晋升上来（同一规则出现 ≥3 次，且至少一条为 `observed-buyer` / `measured`，见 §0 来源门）。
+
+维护说明：本文件唯一真相源。Codex/Claude 在运行时通过 harness 规则指针读取本文件；
+改动后按 `runtime-setup.md` 跑 `runtime-install.py verify`（旧的 `~/.codex/rules-snapshot.py` 快照已不再使用）。
+硬上限：**禁令 6 条、评分维度 5 个**。超过即视为退化。
+
+---
+
+## 0. 何时生效 / When this binds + 校准范围
+
+**触发词**（命中任一即展开本文件，并 grep `<harness>/taste-log.md`）：
+该不该做 / 值不值得 / 要不要开发 / 这个功能 / MVP / wedge / 砍需求 / 产品方向 /
+定价 / pricing / margin / landing / 文案 / copy / hook / 标题 / offer / 套餐 /
+竞品 / ICP / 用户画像 / 出海 / SaaS / 上市 / brand / 域名 / 命名 / 转化 / CTA /
+订阅 / 付费 / 留存 / 获客。
+
+**校准范围（calibrated-to）**：本宪法校准到 **英语市场的独立 SaaS 买家**
+（`makeinterview` / `any2svg` 这类工具的目标用户）。当交付物面向的买家**不在**这个
+范围（例如中文市场、企业客户、完全不同品类），必须在输出里显式标注
+`⚠ 超出校准范围`，并把评分降权——不要把给这套买家写的规则硬套到别的市场。
+
+**证据标注规则（provenance，强制）**：本文件每条结论、每个评分、每个 gate 答案
+都必须带来源标签之一：
+
+| 标签 | 含义 | 可否晋升为禁令 |
+|---|---|---|
+| `Observed` | 来自真实产物 / 代码 / 用户原话 / 真实买家行为 / 实测转化 | ✅ 仅 `observed-buyer` / `measured`；用户原话（`user-opinion`）只作限本产品的偏好（见下方来源门） |
+| `Inference` | 由前两者推导出的判断 | ⚠️ 仅当反复出现为 Observed |
+| `Open question` | 没有来源、需要实证的假设 | ❌ 不可以 |
+
+禁止把 `Inference` 或 `Open question` 当作事实陈述。禁止编造用户画像、hook、
+claim、买家动机——那些若无来源，一律标 `Open question`。
+
+**进阶：来源门（防止把用户当下的反应硬化为普适法律）**——`taste-log.md` 里每条
+记录带 `[src:user-opinion|observed-buyer|measured]`。只有 `observed-buyer` /
+`measured` 的条目可以晋升为 §1 禁令；`user-opinion` 条目保持**建议性、限本产品**。
+理由：这个循环唯一的训练信号是用户本人，而用户自己也在学习网感；不设这道门，
+系统只会收敛到"取悦宋志军"，并把他的即时反应当成铁律。
+
+---
+
+## 1. 六条禁令 / The Kill-List（点名模型统计默认，逐条封杀）
+
+LLM 默认输出就是这些。不要写"要非通用"——要点名封杀具体 token。每条有 override
+路径：能用一句话说明为什么此情此景该破例，才可破例，否则禁止。
+
+- **K1 — 宣称没有代码路径的东西 / claim with no code path.**
+  任何 landing 文案、功能描述、卖点，必须能 `grep` 到对应代码路径。找不到 → 不许写。
+  （真实事故：pic2svg 页面宣称 "runs locally"/"记住你"，机制从未写入。）
+  **封杀**：任何未经代码验证的能力宣告。
+- **K2 — 通用营销填充词 / marketese tokens.**
+  **封杀 token**：seamless, effortless, elevate, unlock, unleash, supercharge,
+  game-changer, revolutionize/revolutionise, cutting-edge, next-gen, state-of-the-art,
+  "AI-powered"（作为卖点而非说明）, "in today's fast-paced world",
+  "take your X to the next level", "Introducing <X>", "Whether you're a X or a Y"。
+- **K3 — TAM 先行 / feature-parity 堆砌.**
+  不要用"市场很大 / 竞品都有 / 像 X 但更好"来论证该做。**封杀**：
+  "like <X> but better"、功能对齐清单、"<N> 人搜索这个词"当作需求证据。
+- **K4 — 编造的用户画像 / invented persona.**
+  **封杀**："busy professionals who value simplicity" 这类无来源画像，
+  无出处的买家动机、无出处的 hook。
+- **K5 — 一手证据之外的证据 / borrowed evidence.**
+  竞品的**营销页**不是机制证据；关键词架数量不是市场证据。
+  见 §5 禁用证据清单。
+- **K6 — 无证据的普适量词 / unsourced universals.**
+  **封杀**：every / all / none / always / never / forces / 唯一 / 所有——除非它经得起
+  报告**自己**的证据行，且 falsifier 已枚举**最近的那个**竞品。
+  （真实事故：对一条有桌面版的产品线写"forces upload"。）
+
+---
+
+## 2. 四问 / The Four Forced Questions（生成前必须答；答不出的格子先查证，查不出标 `Open question`，不据此下结论）
+
+仿 taste-skill 的 Design Read：把"再想想"变成一条**必填、可检查**的输出。
+
+- **Q1 — 谁付钱，什么时候，今天用什么替代？**
+  `谁为它付钱（不是谁受益）+ 触发时刻 + 他今天用什么办法凑合`。
+  三格任一没有证据 → 先查证；查不出就标 `Open question`，作为 "Decision rights" 提问的依据，并继续不依赖它的工作——不要基于缺失的格子写结论。
+- **Q2 — 单一 job 是什么，这一版砍掉什么？**
+  一句话 job（JTBD：他想取得的进展）。外加**这一轮明确不做**的东西。
+  没有砍东西 = 没想清楚。
+- **Q3 — wedge 一句话，最近的竞品是谁，它经得起证据行吗？**
+  写出一句定位；**点名最近的 incumbent**；检查这句话是否在报告自己的证据行里
+  自相矛盾（见 K6）。
+- **Q4 — 证据 vs 推断分开，两周内什么能证伪它？**
+  把陈述拆成 `Observed / Inference / Open question`。给一个 ≤2 周、有数字、有
+  日期的证伪动作。没有证伪条件 = 假设，不是结论。
+
+---
+
+## 3. 产品门 G1–G6 / The Product Gate（机械 PASS/FAIL，逐条打分）
+
+不是"感觉好不好"，是六道**数得出来**的检查。任一 FAIL → 不得说"可以做"。
+
+| Gate | 检查 | PASS 条件 |
+|---|---|---|
+| **G1 付钱方** | 点名的买家 + 具体价格 | 有一句话写明谁付、付多少 |
+| **G2 代码路径** | 每个 claim 能 grep 到实现 | 全部 claim 有代码路径 |
+| **G3 wedge 存活** | 定位句经得起本报告的证据行 | 无未枚举的最近竞品、无 K6 量词 |
+| **G4 砍清单** | 存在"这轮不做"的清单 | 清单非空，且真的砍了东西 |
+| **G5 证伪条件** | kill 条件带数字+日期 | ≤2 周内有可观测的 kill 指标 |
+| **G6 毛利底线** | 定价 ≥80% 毛利（honest discount 不破此下限） | 边际成本（含 API/风控/支付渠道费）算清后 ≥80% |
+
+## 4. 文案评分 R1–R5 / The Copy Rubric（0/1/2 分，总分见 §9）
+
+| 维度 | 0 分 | 2 分 |
+|---|---|---|
+| **R1 具体>抽象** | 抽象名词、企业腔 | 有名词、有数字、有机制 |
+| **R2 无 marketese** | 命中 §1 K2 任一 token | 零命中 |
+| **R3 可扫读** | 长段、读者需要读 | 结论前置、主题词在前、短段 |
+| **R4 忠于代码** | 有 K1 类宣称 | 每句可回溯到实现 |
+| **R5 只讲一件事** | 一句话塞多个卖点 | 一句一义 |
+
+122:[domain:branding][verdict:prefer][blame:user-opinion][src:user-opinion] 2026-10-04 — pic2svg/any2svg: user overrode a two-brand split (keep engine internal name `any2svg`) in favour of a full mechanical rename. Reason to record: "internal" identifiers do not stay internal — the engine filename leaks into served evidence JSON, the published verifier scripts, and the Docker build; the OG image and provider-side product names leak the brand regardless of naming strategy. [proposed] Full-consistency brand wins over internal-name stability when any internal string is user-reachable.[id:lsn-28222fb5]
+153:- What the user said: "这两个真不是一个专业的做网站的做出来的，太丑了，给我用image2进行优化"
+154:- Rule extracted: For this pic2svg example, the user wants illustration quality beyond crude placeholder geometry and specifically requested Image 2 refinement. This does not authorize a different page layout or claim approval of the replacement.
+
+hook: PostToolUse
+hook: PostToolUse
+2026-10-31T14:55:45.385573Z ERROR codex_core::tools::router: error=Warning: truncated output (original token count: 2636)
+Total output lines: 166
+
+[Output shortened from 19476 characters. Full output: C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19275-801e-70a3-83ce-35464176e209/exec-7e201f07-7818-4760-8fef-b5c5461990f7.txt (Read it with offset/limit or grep it; do not rerun the command to see it.)]
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision…175 tokens truncated… edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it wit
+... [8960 characters omitted; read the raw file for a targeted range] ...
+ final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+
+Full hook output saved to: C:\Users\ADMINI~1\AppData\Local\Temp\hook_outputs\01a19275-801e-70a3-83ce-35464176e209\d2e9cc5d-5a95-40b4-814e-9038b1d8c8fb.txt
+hook: PostToolUse Completed
+hook: PostToolUse Blocked
+2026-10-31T14:55:45.421217Z ERROR codex_core::tools::router: error=Warning: truncated output (original token count: 3064)
+Total output lines: 132
+
+[Output shortened from 27695 characters. Full output: C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19275-801e-70a3-83ce-35464176e209/exec-5cd23444-b7cc-499e-923b-8a5b97750f49.txt (Read it with offset/limit or grep it; do not rerun the command to see it.)]
+Warning: truncated output (original token count: 10970)
+Total output lines: 439
+
+# AmdUefiFwConfig - parameter reference
+
+Source: `C:\apex_junczhai@amd.com\testflows\public\amd_uefi_fw_config.html`
+
+`kind` legend: **enum** fixed value domain / **text** free text or number / **server-populated** filled by the APEX server, resolve at build time / **runtime-injected** written by APEX itself, never generate it / **hidden-const** not shown in the dialog.
+
+`origin` legend: blank keeps the APEX flow default / **PMM** a constant this team always overrides / **SLOT** resolved per run, see the checklist below / APEX injected by APEX itself.
+
+## Slots to resolve (1)
+
+These are **not** in the template. A required slot is omitted rather than filled with a placeholder, and the build refuses to emit JSON until it is supplied. If the route below cannot be resolved for the station under test, raise a clarification - do not carry the Example value over.
+
+### `AMD UEFI FW Config (AFC).afcarguments` (required)
+
+- **Route**: An unbounded free-text field, passed through verbatim to `fw_config` on the SUT. THERE IS NO ENUMERABLE DOMAIN and there never will be one: the value can name any BIOS/CBS token the platform exposes, or a path to a settings .txt file, so it cannot be reduced to a dropdown. Do not try to publish a value list - derive the value, and use the examples below only to recognise the shape. The flow's own form ships six examples and a reference page, which are the authoritative mode list: `-p` print every setting to the log; `-p > cmos_settings.txt` store current settings to a file; `-f c:\cmos_settings\cmos_settings.txt` load settings from a file on the APEX Host or the SUT; `-m AMDPBS.AMDPBSOption.SpecialDisplayFeatures=0x4` load a space-separated list of settings from the command line; `-v` print version; `-h` print help. Reference: https://amd.atlassian.net/wiki/spaces/BIOSC/pages/613839006/AMD+UEFI+FW+Config+AFC . Three of the six do real work and the flow treats each differently. (1) `-m <TOKEN>=<value> [<TOKEN>=<value> ...]` - tokens in AMD dotted form, AMDCBS.* and AMDPBS.* both legal; this is the mode to use when the case names specific options. (2) `-f <path>` - the flow resolves the path on the Host or file share first, copies it to the SUT AFC directory and rewrites the argument to the bare file name, and falls back to treating it as an SUT-local path. The path MUST NOT contain a space - the flow parses it with `split("-f")[-1].strip().split(" ")[0]`, which truncates at the first space with no error. (3) `-p > <file>` - the redirect is executed by the SUT shell and the flow then copies that file back into the run's result directory; bare `-p` prints into testflow.log and produces NO artifact, because the copy-back is gated on the regex `(-p)\s*>`. `-v` and `-h` are diagnostics with no place in a queue item. Token names and legal values come from the platform's BIOS/CBS definition, not from this skill - look them up, do not copy a token from another program's item.
+- **Example**: `-m AMDCBS.SMUCommonOptions.SystemConfiguration=0x01` (select cTDP configuration index 1 on Medusa) - captured on 2026-09-13. Illustrative, not authoritative.
+- **Scope of that example**: mode (1) with a single token, and nothing more - it is one observed value, not a recommended default. The same queue also shows mode (1) with two tokens (`...SystemConfiguration=0x0F AMDCBS.SMUDebugOptions.SMUFeatures.P3T=0x01`), mode (2) as `-f \\<fileshare>\share\<user>\Tool\AFC\Settings\<Program>\ACDC_DC.txt`, and mode (3) as `-p > cmos_settings.txt`. The observed `-f` paths are one operator's personal share and are environment-bound (P-009) - resolve the share and the per-program settings file for the station under test, never carry that path across.
+- **If unresolved**: clarify with the case owner. There is no safe default: the flow's own default is `-p > cmos_settings.txt`, which reads settings and changes nothing, so an unresolved slot left at the default produces an item that passes while configuring nothing.
+
+## Open questions
+
+- Is `--onfailure=Continue` right for a flow that configures BIOS? It is the form default and is unanimous across all 23 items, so by P-002 it is inheritance and not a recorded team decision. The concrete risk is reachable: on a failed apply the flow raises AFC_EXECUTION_ERROR (98) and, under Continue, the queue proceeds - every downstream item then runs at the previous BIOS configuration and can still report Pass. Whether PMM wants Stop here is a decision for the queue owner; it has not been made, and this file must not manufacture one.
+- The `False` half of `rebootafterex…603 tokens truncated… `hdtip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsswitchtype` | APEX | runtime
+... [17155 characters omitted; read the raw file for a targeted range] ...
+-the-art,
+  "AI-powered"（作为卖点而非说明）, "in today's fast-paced world",
+  "take your X to the next level", "Introducing <X>", "Whether you're a X or a Y"。
+- **K3 — TAM 先行 / feature-parity 堆砌.**
+  不要用"市场很大 / 竞品都有 / 像 X 但更好"来论证该做。**封杀**：
+  "like <X> but better"、功能对齐清单、"<N> 人搜索这个词"当作需求证据。
+- **K4 — 编造的用户画像 / invented persona.**
+  **封杀**："busy professionals who value simplicity" 这类无来源画像，
+  无出处的买家动机、无出处的 hook。
+- **K5 — 一手证据之外的证据 / borrowed evidence.**
+  竞品的**营销页**不是机制证据；关键词架数量不是市场证据。
+  见 §5 禁用证据清单。
+- **K6 — 无证据的普适量词 / unsourced universals.**
+  **封杀**：every / all / none / always / never / forces / 唯一 / 所有——除非它经得起
+  报告**自己**的证据行，且 falsifier 已枚举**最近的那个**竞品。
+  （真实事故：对一条有桌面版的产品线写"forces upload"。）
+
+---
+
+## 2. 四问 / The Four Forced Questions（生成前必须答；答不出的格子先查证，查不出标 `Open question`，不据此下结论）
+
+仿 taste-skill 的 Design Read：把"再想想"变成一条**必填、可检查**的输出。
+
+- **Q1 — 谁付钱，什么时候，今天用什么替代？**
+  `谁为它付钱（不是谁受益）+ 触发时刻 + 他今天用什么办法凑合`。
+  三格任一没有证据 → 先查证；查不出就标 `Open question`，作为 "Decision rights" 提问的依据，并继续不依赖它的工作——不要基于缺失的格子写结论。
+- **Q2 — 单一 job 是什么，这一版砍掉什么？**
+  一句话 job（JTBD：他想取得的进展）。外加**这一轮明确不做**的东西。
+  没有砍东西 = 没想清楚。
+- **Q3 — wedge 一句话，最近的竞品是谁，它经得起证据行吗？**
+  写出一句定位；**点名最近的 incumbent**；检查这句话是否在报告自己的证据行里
+  自相矛盾（见 K6）。
+- **Q4 — 证据 vs 推断分开，两周内什么能证伪它？**
+  把陈述拆成 `Observed / Inference / Open question`。给一个 ≤2 周、有数字、有
+  日期的证伪动作。没有证伪条件 = 假设，不是结论。
+
+---
+
+## 3. 产品门 G1–G6 / The Product Gate（机械 PASS/FAIL，逐条打分）
+
+不是"感觉好不好"，是六道**数得出来**的检查。任一 FAIL → 不得说"可以做"。
+
+| Gate | 检查 | PASS 条件 |
+|---|---|---|
+| **G1 付钱方** | 点名的买家 + 具体价格 | 有一句话写明谁付、付多少 |
+| **G2 代码路径** | 每个 claim 能 grep 到实现 | 全部 claim 有代码路径 |
+| **G3 wedge 存活** | 定位句经得起本报告的证据行 | 无未枚举的最近竞品、无 K6 量词 |
+| **G4 砍清单** | 存在"这轮不做"的清单 | 清单非空，且真的砍了东西 |
+| **G5 证伪条件** | kill 条件带数字+日期 | ≤2 周内有可观测的 kill 指标 |
+| **G6 毛利底线** | 定价 ≥80% 毛利（honest discount 不破此下限） | 边际成本（含 API/风控/支付渠道费）算清后 ≥80% |
+
+## 4. 文案评分 R1–R5 / The Copy Rubric（0/1/2 分，总分见 §9）
+
+| 维度 | 0 分 | 2 分 |
+|---|---|---|
+| **R1 具体>抽象** | 抽象名词、企业腔 | 有名词、有数字、有机制 |
+| **R2 无 marketese** | 命中 §1 K2 任一 token | 零命中 |
+| **R3 可扫读** | 长段、读者需要读 | 结论前置、主题词在前、短段 |
+| **R4 忠于代码** | 有 K1 类宣称 | 每句可回溯到实现 |
+| **R5 只讲一件事** | 一句话塞多个卖点 | 一句一义 |
+
+122:[domain:branding][verdict:prefer][blame:user-opinion][src:user-opinion] 2026-10-04 — pic2svg/any2svg: user overrode a two-brand split (keep engine internal name `any2svg`) in favour of a full mechanical rename. Reason to record: "internal" identifiers do not stay internal — the engine filename leaks into served evidence JSON, the published verifier scripts, and the Docker build; the OG image and provider-side product names leak the brand regardless of naming strategy. [proposed] Full-consistency brand wins over internal-name stability when any internal string is user-reachable.[id:lsn-28222fb5]
+153:- What the user said: "这两个真不是一个专业的做网站的做出来的，太丑了，给我用image2进行优化"
+154:- Rule extracted: For this pic2svg example, the user wants illustration quality beyond crude placeholder geometry and specifically requested Image 2 refinement. This does not authorize a different page layout or claim approval of the replacement.
+
+Full hook output saved to: C:\Users\ADMINI~1\AppData\Local\Temp\hook_outputs\01a19275-801e-70a3-83ce-35464176e209\66b7d708-d1c7-4739-a067-d2770fb84ce7.txt
+hook: PostToolUse Completed
+hook: PostToolUse Blocked
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command '$taskSource = '"'C:/Users/Administrator/.codex/generated_images/01a19275-801e-70a3-83ce-35464176e209/exec-54f64a80-42ba-417d-83c3-b2aa48a0f71c.png'
+"'$taskDestination = '"'D:/githubprojects/language-games/art/pupil/classroom.png'
+New-Item -ItemType Directory -Path (Split-Path -Parent "'$taskDestination) -Force | Out-Null
+Copy-Item -LiteralPath $taskSource -Destination $taskDestination -Force
+$taskCopy = Get-Item -LiteralPath $taskDestination
+$taskMatch = (Get-FileHash -LiteralPath $taskSource).Hash -eq (Get-FileHash -LiteralPath $taskDestination).Hash
+if (-not $taskMatch) { throw '"'Copied file checksum mismatch' }
+Write-Output \"Saved "'$($taskCopy.FullName) ($($taskCopy.Length) bytes); copy checksum verified."' in D:\githubprojects\language-games
+ succeeded in 205ms:
+Saved D:\githubprojects\language-games\art\pupil\classroom.png (2781500 bytes); copy checksum verified.
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+codex
+Created one image and saved it to `art/pupil/classroom.png`.
+hook: Stop
+hook: Stop Completed
+tokens used
+14,282
+Created one image and saved it to `art/pupil/classroom.png`.

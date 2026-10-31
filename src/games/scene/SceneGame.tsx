@@ -193,7 +193,7 @@ function ThingCard({ thing, selected, onClick }: { thing: Thing; selected?: bool
 function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <li className={cn("flex items-start gap-2 rounded-lg px-3 py-2 text-[17px]", ok ? "bg-sage/15" : "bg-terracotta/10")}>
-      {ok ? <Check className="mt-0.5 size-5 shrink-0 text-sage" aria-label="true" /> : <X className="mt-0.5 size-5 shrink-0 text-terracotta" aria-label="false" />}
+      {ok ? <Check className="mt-0.5 size-5 shrink-0 text-sage" aria-label="True:" /> : <X className="mt-0.5 size-5 shrink-0 text-terracotta" aria-label="False:" />}
       <span>{children}</span>
     </li>
   );

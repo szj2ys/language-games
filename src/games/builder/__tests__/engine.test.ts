@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { callFor, interpret, markDelivery, sentence, type Stone } from "../engine";
+import { callFor, englishNotes, interpret, markDelivery, sentence, type Stone } from "../engine";
 
 const yard: Stone[] = ["slab", "slab", "beam", "pillar", "pillar", "block"];
 
@@ -27,7 +27,7 @@ describe("assistant interprets the player's call", () => {
     const tiles = [{ kind: "number", value: 2 }, { kind: "stone", value: "pillar" }, { kind: "there" }] as const;
     expect(interpret({ tiles: [...tiles] }, yard).kind).toBe("asks");
     const r = interpret({ tiles: [...tiles], pointAt: "left" }, yard);
-    expect(r).toMatchObject({ kind: "acts", delivery: { stone: "pillar", count: 2, place: "left" }, said: "Two pillars there!" });
+    expect(r).toMatchObject({ kind: "acts", delivery: { stone: "pillar", count: 2, place: "left" }, said: "Two pillar there!" });
   });
   it("resolves 'this' by what is pointed at", () => {
     const r = interpret({ tiles: [{ kind: "this" }], pointAt: { stoneIndex: 2 } }, yard);
@@ -41,7 +41,15 @@ describe("assistant interprets the player's call", () => {
   it("asks 'Bring what?' for a bare number", () => {
     expect(interpret({ tiles: [{ kind: "number", value: 2 }] }, yard)).toMatchObject({ question: "Bring what?" });
   });
-  it("builds readable sentences", () => {
-    expect(sentence([{ kind: "number", value: 4 }, { kind: "stone", value: "block" }])).toBe("Four blocks!");
+  it("keeps the player's own words, slips included", () => {
+    expect(sentence([{ kind: "number", value: 4 }, { kind: "stone", value: "block", plural: true }])).toBe("Four blocks!");
+    expect(sentence([{ kind: "number", value: 4 }, { kind: "stone", value: "block" }])).toBe("Four block!");
+  });
+  it("coaches the plural without blocking the order", () => {
+    const slip = [{ kind: "number", value: 2 }, { kind: "stone", value: "slab" }] as const;
+    expect(englishNotes([...slip])).toEqual(["After “two”, English needs the plural: two slabs."]);
+    expect(interpret({ tiles: [...slip] }, yard)).toMatchObject({ kind: "acts", delivery: { count: 2 } });
+    expect(englishNotes([{ kind: "number", value: 2 }, { kind: "stone", value: "slab", plural: true }])).toEqual([]);
+    expect(englishNotes([{ kind: "stone", value: "slab", plural: true }])).toEqual(["One stone, no -s: “slab”."]);
   });
 });

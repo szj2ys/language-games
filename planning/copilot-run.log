@@ -290,3 +290,69 @@ Verifying the last few PI §§ I plan to cite (§§6, 9, 18, 198, 307) before wr
   │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu4.txt
   └ 14 lines read
 
+Writing the plan now, in chunks so nothing is lost. First: verdict, the eight game concepts, and the v1 choice with its screens.
+
+● Create plan-copilot.md +76
+  └ planning\plan-copilot.md
+
+Sections 0–2 are saved. Next I'm appending §3: the content model, the verified citation registry, volume, and QA.
+
+● Edit plan-copilot.md +287
+  └ planning\plan-copilot.md
+
+/ Search (grep)
+  │ "[Bb]lurred|counterLine|§3\.4|§4\.2|§4\.8|§5\.11|§5\.\d+" (planning\plan-copilot.md)
+  └ 24 lines found
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L666:690 (25 lines read)
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L170:215 (46 lines read)
+
+● Edit plan-copilot.md +3 -1
+  └ planning\plan-copilot.md
+
+● Edit plan-copilot.md +4 -1
+  └ planning\plan-copilot.md
+
+● Edit plan-copilot.md +11 -6
+  └ planning\plan-copilot.md
+
+● Edit plan-copilot.md +2 -1
+  └ planning\plan-copilot.md
+
+The new table's "earns the mark" column doesn't say which k it uses when cards are blurred. I'm pinning it to kMin.
+
+● Edit plan-copilot.md +1 -1
+  └ planning\plan-copilot.md
+
+/ Search (grep)
+  │ "^### 1\.4|[Tt]ea |weather|^### 1\.5" (planning\plan-copilot.md)
+  └ 4 lines found
+
+/ Search (grep)
+  │ "nur ein Album|Landschaftsskizzen"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources)
+  └ 2 lines found
+
+● Compute WCAG contrast for palette (shell)
+  │ python -c "
+  │ def L(h):
+  │ c=[int(h[i:i+2],16)/255 for i in (0,2,4)]
+  │ c=[x/12.92 if x<=0.04045 else ((x+0.055)/1.055)**2.4 for x in c]
+  │ return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]…
+  └ 26 lines…
+
+● Read plan-copilot.md
+  │ planning\plan-copilot.md
+  └ L219:262 (44 lines read)
+
+Next is §4, art direction, written in two edits to avoid truncation. I'll also cite the verified PI Preface ("landscape sketches… only an album") as the basis for the direction.
+
+● Edit plan-copilot.md +144
+  └ planning\plan-copilot.md
+
+§4.1-4.7 are in. Now §4.8: the 24 core images with prompts and alt text, the 3 gated ones, and a templated batch for the other concept cards with a word-card fallback.
