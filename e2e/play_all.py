@@ -309,6 +309,22 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_role("link", name="Next game: Picture Theatre")).to_be_visible()
     shot(page, "later-builder-end")
 
+    # The Café, sessions 2 and 3: the fitting response in every round.
+    for title, answers in [
+        ("Which one?", ["Bring the lemon cake.", "“Sorry, I'm new — what's your usual?”", "Say “Yes, sorry!” and move your coat.",
+                        "“The other what, sorry?”", "“Are you sure? Just a small piece?”", "Smile and take the plate away."]),
+        ("Excuse me?", ["“Sure — I'll do them now.”", "“Oh, I'd love to — thank you!”", "“Good to hear! What can I get you?”",
+                        "“Are you sure? Sit down a moment — I'll get you some ice.”", "Pull your chair in to let him pass.",
+                        "“Sorry — I said the card machine is broken. Cash only today.”"]),
+    ]:
+        page.goto(f"{BASE}/play/cafe")
+        pick_session(page, title)
+        for answer in answers:
+            page.get_by_role("button", name=answer).click()
+            expect(page.get_by_text("What the words were doing here")).to_be_visible()
+            next_round(page)
+        expect(page.get_by_role("heading", name=re.compile(rf"Done.*{re.escape(title)}"))).to_be_visible()
+
     # The Café, session 4: one wrong answer first, then the fitting ones.
     page.goto(f"{BASE}/play/cafe")
     pick_session(page, "Sorry, thanks, no problem")
