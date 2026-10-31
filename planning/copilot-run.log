@@ -17,3 +17,262 @@ The brief asks for a game-design plan for a Next.js app that teaches English thr
   │ planning\ACCEPTANCE.md
   └ 67 lines read
 
+The website-MVP skill targets cloning a competitor URL, so I'll follow the brief's five sections and only borrow its core-flow discipline. Next: load the image skill for the gpt-image-2 prompts, and check the owner's standing preferences and harness site conventions.
+
+● skill(image)
+
+● List user preferences and harness module index (shell)
+  │ python C:/Users/Administrator/Documents/projects/harness/scripts/memory.py list 2>&1 |
+  │ Select-Object -First 60; "---README---"; Get-Content
+  │ C:/Users/Administrator/Documents/projects/harness/core/README.md -TotalCount 80
+  └ 111 lines…
+
+The image skill confirms: keep text out of generated images (overlay it in UI) and always specify size and style. Next I'll pull its GPT-Image-specific prompting notes.
+
+/ Search (grep)
+  │ "(?i)gpt|transparent|size|1024|1536|consisten|reference"
+  │ (~\.agents\skills\image\references\ai-image-prompting.md)
+  └ 16 lines found
+
+● Read ai-image-prompting.md
+  │ ~\.agents\skills\image\references\ai-image-prompting.md
+  └ L156:230 (74 lines read)
+
+Next I'll check how the owner has run gpt-image-2 through Codex before, so the art plan uses the real pipeline rather than a guess.
+
+/ Search (grep)
+  │ "gpt-image-2" (~\Documents\projects\harness, ~\Documents\projects\LLMwiki)
+  └ 3 files found
+
+/ Search (grep)
+  │ "gpt-image-2" (~\Documents\projects\harness\lessons.md,
+  │ ~\Documents\projects\harness\lessons-history.md)
+  └ 15 lines found
+
+● Find Wittgenstein texts on archive.org (shell)                                               1m 5s
+  │ $q = @(
+  │ 'title:(philosophical investigations) AND creator:(wittgenstein)',
+  │ 'title:(on certainty) AND creator:(wittgenstein)',
+  │ 'title:(blue and brown books) AND creator:(wittgenstein)'
+  │ )…
+  └ 13 lines…
+
+archive.org times out from this network. Switching route: Project Gutenberg for the Tractatus (public-domain Ogden text) and Wikiquote/SEP for PI, On Certainty and Blue Book wording.
+
+● Download source texts for citation checks (shell)                                              19s
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"; New-Item -ItemType Directory -Force -Path $d | Out-Null
+  │ $targets = @{
+  │ 'tlp.txt' = 'https://www.gutenberg.org/cache/epub/5740/pg5740.txt';
+  │ 'wq-witt.html' = 'https://en.wikiquote.org/wiki/Ludwig_Wittgenstein';…
+  └ 12 lines…
+
+/ Search (grep)
+  │ "(?i)(complete primitive language|Bring me a slab|Would you like to|large class of cases|don't
+  │ think, but look|family resemblances|stand roughly|inexact|1000, 1004|I have reached bedrock|obey
+  │ the rule blindly|beetle|agreement in form of life|One cannot guess how a word functions|tools in
+  │ a tool-box|form of life|interpretation|is a practice)"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\wq-witt.html)
+  └ 5 lines found
+
+● Fetching web content https://people.umass.edu/klement/tlp/tlp.html · url: "https://people.umas… 5s
+  └ Contents of https://people.umass.edu/klement/tlp/tlp.html:
+
+Klement's side-by-side Tractatus (German, Ogden, Pears/McGuinness) is reachable. Next I'll download it and turn the Wikiquote HTML into plain text so I can grep both precisely.
+
+● Download Tractatus and extract plain text (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ $code = curl.exe -sL -m 90 -o "$d\tlp-klement.html" -w "%{http_code}"
+  │ https://people.umass.edu/klement/tlp/tlp.html; "tlp -> $code $((Get-Item
+  │ "$d\tlp-klement.html").Length)"…
+  └ 19 lines…
+
+/ Search (grep)
+  │ "^ ?(1\.1|2\.1|2\.12|2\.223|3\.203|3\.323|4\.002|4\.01|4\.022|4\.024|4\.461|5\.6|6\.54|7) "
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt)
+  └ 14 lines found
+
+● Read tlp-klement.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L756:764 (9 lines read)
+
+● Read tlp-klement.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L461:466 (6 lines read)
+
+● Read tlp-klement.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L604:612 (9 lines read)
+
+● Read tlp-klement.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L1011:1016 (6 lines read)
+
+● Read tlp-klement.txt                                                                            5s
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L1703:1712 (10 lines read)
+
+● Read tlp-klement.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L1712:1722 (11 lines read)
+
+● Read tlp-klement.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\tlp-klement.txt
+  └ L3462:3474 (13 lines read)
+
+/ Search (grep)
+  │ "(?i)(complete primitive language|Bring me a slab|Would you like to|large class of cases|but
+  │ look|family resemblances|roughly|inexact|1000, 1004|bedrock|blindly|beetle|agreement in
+  │ form|guess how a word|tool-box|imagine a form of life|is a
+  │ practice|interpretation|ring-a-ring|patience)"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\wq-witt.txt)
+  └ 5 lines found
+
+Wikiquote's HTML embeds wikitext in attributes, making lines huge. Next I'll fetch the raw wikitext instead (one quote per line).
+
+● Fetch raw Wikiquote wikitext and grep quotes (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ $code = curl.exe -sL -m 60 -o "$d\wq-witt.wiki" -w "%{http_code}"
+  │ "https://en.wikiquote.org/w/index.php?title=Ludwig_Wittgenstein&action=raw"; "wiki -> $code
+  │ $((Get-Item "$d\wq-witt.wiki").Length)"…
+  └ 26 lines…
+
+Wikiquote lacks most of the PI passages I need (§§2, 19-21, 185, 201-202, 293). Trying full-text routes through the fetch tool: marxists.org, SEP and archive.org search.
+
+✗ Fetching web content https://www.marxists.org/reference/subject/philosophy/works/at/wittgens.… 12s
+  └ web_fetch could not retrieve this URL: a transport-level failure (DNS, connection, or TLS
+    handshake).
+
+✗ Fetching web content https://archive.org/advancedsearch.php?q=title%3A%28philosophical+invest… 12s
+  └ web_fetch could not retrieve this URL: a transport-level failure (DNS, connection, or TLS
+    handshake).
+
+● Fetching web content https://plato.stanford.edu/entries/wittgenstein/ · max_length: 1500, url: "h…
+  └ Contents of https://plato.stanford.edu/entries/wittgenstein/:
+
+● Fetching web content https://www.wittgensteinproject.org/w/index.php/Main_Page · max_length: 3000…
+  └ Contents of https://www.wittgensteinproject.org/w/index.php/Main_Page:
+
+● Download LWP raw texts for PI, OC, Blue Book (shell)                                            7s
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ foreach ($t in 'Philosophische_Untersuchungen','Philosophical_Investigations','Über_Gewissheit
+  │ ','On_Certainty','The_Blue_Book','Blue_Book') {
+  │ $u = "https://www.wittgensteinproject.org/w/index.php?title=" + [uri]::EscapeDataString($t) …
+  └ 11 lines…
+
+● Search LWP for English PI and On Certainty (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ foreach ($s in 'Investigations','Gewißheit','Certainty') {
+  │ $u = "https://www.wittgensteinproject.org/w/api.php?action=query&list=search&srlimit=12&form
+  │ at=json&srsearch=" + [uri]::EscapeDataString($s)…
+  └ 35 lines…
+
+LWP has PI (German original), Über Gewißheit, and the Blue Book from Ts-309. Fetching On Certainty, then inspecting how § numbers are marked in the PI text.
+
+✗ Download Über Gewißheit; inspect PI markup (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ $u = "https://www.wittgensteinproject.org/w/index.php?title=" + [uri]::EscapeDataString('Über
+  │ Gewißheit') + "&action=raw"
+  │ $code = curl.exe -sL -m 60 -o "$d\lwp-UG.wiki" -w "%{http_code}" $u; "UG -> $code $((Get-Item …
+  └ ParserError:
+    Line |
+    7 |  . ength -gt 260) { $s=$s.Substring(0,260)+'.' }; "$i`t$s" } } | Select- .
+    |                                                                ~
+    | An empty pipe element is not allowed.
+    Failed with exit code 1
+
+● Download Über Gewißheit; inspect PI markup (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ $u = "https://www.wittgensteinproject.org/w/index.php?title=" + [uri]::EscapeDataString('Über
+  │ Gewißheit') + "&action=raw"
+  │ $code = curl.exe -sL -m 60 -o "$d\lwp-UG.wiki" -w "%{http_code}" $u; "UG -> $code $((Get-Item …
+  └ 25 lines…
+
+Paragraphs are marked `{{ParPUde|N}}`. Next I'll extract the specific §§ I plan to cite into a UTF-8 file and read them.
+
+● Extract cited PI paragraphs to a file (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ @'
+  │ import re, sys, pathlib
+  │ d = pathlib.Path(sys.argv[1])…
+  └ 21 lines…
+
+● Read verify-pu.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu.txt
+  └ 1 line read
+
+● Read verify-pu.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu.txt
+  └ L1:40 (39 lines read)
+
+Confirmed §§1, 2, 7, 8, 11, 19-21, 23, 27, 43, 66-69, 71, 88, 143, 151 match my citations. Reading the rule-following and private-language paragraphs next.
+
+● Read verify-pu.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu.txt
+  └ L40:70 (28 lines read)
+
+Rule-following (§§185-219), §§241-244, §258, §293 and §340 all verified. Checking the tails of §§7, 21, 23 and 185, plus whether Part II (duck-rabbit, lion) is in this text.
+
+● Extract §§7,21,23,185 tails and Part II hits (shell)
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ @'
+  │ import re, sys, pathlib
+  │ d = pathlib.Path(sys.argv[1])…
+  └ 19 lines…
+
+● Read verify-pu2.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu2.txt
+  └ 17 lines read
+
+● Verify On Certainty and Blue Book passages (shell)                                             10s
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ @'
+  │ import re, sys, pathlib
+  │ d = pathlib.Path(sys.argv[1])…
+  └ 26 lines…
+
+● Read verify-oc-bb.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-oc-bb.txt
+  └ 45 lines read
+
+● Check BB language-games and PI Part II refs (shell)                                             5s
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ @'
+  │ import re, sys, pathlib
+  │ d = pathlib.Path(sys.argv[1])…
+  └ 16 lines…
+
+● Read verify-bb2.txt                                                                             6s
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-bb2.txt
+  └ 28 lines read
+
+● Read BRIEF.md                                                                                  22s
+  │ planning\BRIEF.md
+  └ 25 lines read
+
+● Read ACCEPTANCE.md                                                                             24s
+  │ planning\ACCEPTANCE.md
+  └ 67 lines read
+
+● Verify remaining PI paragraphs and OC 10 (shell)                                               26s
+  │ $d = "C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files
+  │ \sources"
+  │ @'
+  │ import re, sys, pathlib
+  │ d = pathlib.Path(sys.argv[1])…
+  └ 17 lines…
+
+● Read verify-pu3.txt                                                                             7s
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu3.txt
+  └ 23 lines read
+

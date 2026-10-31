@@ -1,0 +1,3 @@
+Use your built-in image generation tool (gpt-image-2) to create ONE image, then copy the resulting PNG to art/builder/arch.png in the current directory. Do nothing else.
+
+Image prompt: One isolated building stone: a curved wedge-shaped arch stone (a voussoir, like a segment of a stone arch, clearly curved on top and bottom) of pale limestone, three-quarter view. Hand-cut paper illustration with subtle screen-print grain, charcoal ink outlines, warm stone colours, soft light from upper left; crisp distinct silhouette. No text, letters, numbers, logos or watermarks. The single subject is centred and fully visible, isolated on a perfectly flat, uniform, pure magenta #FF00FF background with no shadow on the background, no gradient, no floor, no other objects. Square 1:1.
