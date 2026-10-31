@@ -4,9 +4,22 @@ import { GAMES } from "@/content/games";
 import { SOURCES, WORK_TITLE } from "@/content/sources";
 import { ContinueButton, GameProgress } from "@/components/home-progress";
 
+const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://language-games.example";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Language Games",
+  url: site,
+  description: "Free browser games for intermediate learners of English, built on Wittgenstein's language-games.",
+  inLanguage: "en",
+  hasPart: GAMES.map((g) => ({ "@type": "LearningResource", name: g.title, url: `${site}/play/${g.slug}`, teaches: g.english })),
+};
+
 export default function Home() {
   return (
     <main id="main" className="mx-auto w-full max-w-5xl px-4 pb-12">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <section className="grid items-center gap-5 pt-4 sm:pt-8 lg:grid-cols-[1fr_1.1fr] lg:gap-10">
         <div className="order-2 flex flex-col gap-4 lg:order-1">
           <h1 className="font-heading text-[clamp(34px,8vw,60px)] leading-[1.02] font-semibold tracking-tight">

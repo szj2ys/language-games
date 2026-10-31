@@ -3,6 +3,7 @@
 import { track } from "@/components/analytics";
 import { recordRound } from "@/lib/progress";
 import { useSave, useSpeech } from "@/lib/use-save";
+import { clearDrafts } from "@/lib/use-draft";
 
 type SessionLike = { rounds: { id: string }[] };
 
@@ -17,8 +18,10 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[]) 
   const round = session.rounds[roundIndex] as S["rounds"][number];
   const speech = useSpeech(save.settings.speech);
 
-  const goTo = (s: number, r: number) =>
-    update((sv) => ({ ...sv, lastGame: game, positions: { ...sv.positions, [game]: { session: s, round: r } } }));
+  const goTo = (s: number, r: number) => {
+    for (const x of session.rounds) clearDrafts(x.id);
+    return update((sv) => ({ ...sv, lastGame: game, positions: { ...sv.positions, [game]: { session: s, round: r } } }));
+  };
 
   return {
     save,

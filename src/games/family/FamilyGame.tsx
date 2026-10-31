@@ -4,10 +4,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { Check, CircleHelp, Lightbulb, RotateCcw, Undo2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import { useDraft } from "@/lib/use-draft";
 import {
   QUANTIFIERS,
   checkChain,
@@ -26,12 +27,12 @@ type Done = (marks: number, max: number, firstTry: boolean, phrases: string[]) =
 
 export function FamilyGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <div className="min-h-dvh" aria-busy="true" />;
+  if (!g.ready) return <GameLoading game="Family Threads" poster="/art/covers/family.webp" />;
   const { session, round, finished } = g;
   const props = { session, onDone: g.complete, onNext: g.next };
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader title={session.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
+      <GameHeader game="Family Threads" title={session.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
       {!g.storable && (
         <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
           Progress cannot be saved in this browser. You can still play.
@@ -121,14 +122,14 @@ function HintRow({ hint, shown, onShow }: { hint: string; shown: boolean; onShow
 
 function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; session: Session; onDone: Done; onNext: () => void }) {
   const feature = session.features.find((f) => f.id === round.feature)!;
-  const [q, setQ] = useState<Quantifier | null>(null);
-  const [looked, setLooked] = useState<Quantifier | null>(null);
-  const [misses, setMisses] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [q, setQ] = useDraft<Quantifier | null>(round.id, "q", null);
+  const [looked, setLooked] = useDraft<Quantifier | null>(round.id, "looked", null);
+  const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const truth = looked ? claimHolds(session.cards, feature.id, looked) : null;
   const best = strongest(session.cards, feature.id);
   const objector = looked && !truth ? counterexample(session.cards, feature.id, looked) : undefined;
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useDraft(round.id, "done", false);
 
   const look = () => {
     if (!q) return;
@@ -222,12 +223,12 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
 // Thread: one chain through every card, each link a shared feature. ----------------
 
 function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; session: Session; onDone: Done; onNext: () => void }) {
-  const [chain, setChain] = useState<{ card: Card; link?: string }[]>([]);
+  const [chain, setChain] = useDraft<{ card: Card; link?: string }[]>(round.id, "chain", []);
   const [pending, setPending] = useState<Card | null>(null);
   const [bad, setBad] = useState<string | null>(null);
-  const [misses, setMisses] = useState(0);
-  const [hint, setHint] = useState(false);
-  const [done, setDone] = useState(false);
+  const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
+  const [done, setDone] = useDraft(round.id, "done", false);
   const used = new Set(chain.map((s) => s.card.id));
   const last = chain[chain.length - 1]?.card;
   const result = checkChain(chain);
@@ -350,12 +351,12 @@ function cap(s: string) {
 
 function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound; session: Session; onDone: Done; onNext: () => void }) {
   const n = round.newcomer;
-  const [mode, setMode] = useState<"both" | "unlike">("both");
-  const [other, setOther] = useState<string>(session.cards[0].id);
-  const [feat, setFeat] = useState<string>(session.features[0].id);
-  const [result, setResult] = useState<{ ok: boolean; text: string; why: string } | null>(null);
-  const [misses, setMisses] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [mode, setMode] = useDraft<"both" | "unlike">(round.id, "mode", "both");
+  const [other, setOther] = useDraft<string>(round.id, "other", session.cards[0].id);
+  const [feat, setFeat] = useDraft<string>(round.id, "feat", session.features[0].id);
+  const [result, setResult] = useDraft<{ ok: boolean; text: string; why: string } | null>(round.id, "result", null);
+  const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const f = session.features.find((x) => x.id === feat)!;
   const o = session.cards.find((c) => c.id === other)!;
   const sentence = `${cap(n.name)} and ${o.name} both ${f.plural}.`;

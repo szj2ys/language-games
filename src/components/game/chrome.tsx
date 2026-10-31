@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Volume2, VolumeX } from "lucide-react";
 import { SOURCES, WORK_TITLE, type Source, type SourceId } from "@/content/sources";
@@ -7,12 +8,16 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 
 export function GameHeader({
+  game,
   title,
   round,
   total,
   speech,
   onToggleSpeech,
 }: {
+  /** The game's name: the page's one H1. */
+  game: string;
+  /** The current session or level. */
   title: string;
   round: number;
   total: number;
@@ -28,7 +33,10 @@ export function GameHeader({
       >
         <ArrowLeft className="size-5" aria-hidden />
       </Link>
-      <h1 className="min-w-0 flex-1 truncate font-heading text-lg font-semibold">{title}</h1>
+      <div className="min-w-0 flex-1 leading-tight">
+        <h1 className="truncate font-heading text-lg font-semibold">{game}</h1>
+        <p className="truncate text-sm text-muted-foreground">{title}</p>
+      </div>
       <ol className="flex items-center gap-1.5" aria-label={`Round ${round + 1} of ${total}`}>
         {Array.from({ length: total }, (_, i) => (
           <li
@@ -112,6 +120,24 @@ export function SessionEnd({
         <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
           Play again
         </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * What the page shows before the saved progress is read — and what the server
+ * sends: the game's name and its scene, so the first paint is the picture,
+ * not a blank page.
+ */
+export function GameLoading({ game, poster }: { game: string; poster: string }) {
+  return (
+    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col" aria-busy="true">
+      <GameHeader game={game} title="Loading…" round={0} total={0} />
+      <div className="lg:grid lg:grid-cols-[1.4fr_1fr] lg:px-3">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl">
+          <Image src={poster} alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,1545 @@
+{
+  "tool": "web-check",
+  "version": 2,
+  "url": "http://localhost:3417/",
+  "profile": "site",
+  "checked_at": "2026-10-31T15:18:51+00:00",
+  "pages": [
+    {
+      "url": "http://localhost:3417/",
+      "final_url": "http://localhost:3417/",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-1.png",
+        "desktop": "desktop-1.png"
+      },
+      "metrics": {
+        "lcp": 2172,
+        "ttfb": 8,
+        "lcp_render": 2164,
+        "cls": 0,
+        "tbt": 224,
+        "total_kb": 639,
+        "js_kb": 184,
+        "requests": 22
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    },
+    {
+      "url": "http://localhost:3417/play/builder",
+      "final_url": "http://localhost:3417/play/builder",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-2.png",
+        "desktop": "desktop-2.png"
+      },
+      "metrics": {
+        "lcp": 2292,
+        "ttfb": 4,
+        "lcp_render": 2288,
+        "cls": 0,
+        "tbt": 153,
+        "total_kb": 536,
+        "js_kb": 184,
+        "requests": 24
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    },
+    {
+      "url": "http://localhost:3417/play/scene",
+      "final_url": "http://localhost:3417/play/scene",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-3.png",
+        "desktop": "desktop-3.png"
+      },
+      "metrics": {
+        "lcp": 1784,
+        "ttfb": 4,
+        "lcp_render": 1780,
+        "cls": 0,
+        "tbt": 205,
+        "total_kb": 427,
+        "js_kb": 184,
+        "requests": 20
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    },
+    {
+      "url": "http://localhost:3417/play/cafe",
+      "final_url": "http://localhost:3417/play/cafe",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-4.png",
+        "desktop": "desktop-4.png"
+      },
+      "metrics": {
+        "lcp": 2640,
+        "ttfb": 4,
+        "lcp_render": 2636,
+        "cls": 0,
+        "tbt": 179,
+        "total_kb": 521,
+        "js_kb": 183,
+        "requests": 20
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    },
+    {
+      "url": "http://localhost:3417/play/pupil",
+      "final_url": "http://localhost:3417/play/pupil",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-5.png",
+        "desktop": "desktop-5.png"
+      },
+      "metrics": {
+        "lcp": 1864,
+        "ttfb": 4,
+        "lcp_render": 1860,
+        "cls": 0,
+        "tbt": 149,
+        "total_kb": 458,
+        "js_kb": 183,
+        "requests": 19
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    },
+    {
+      "url": "http://localhost:3417/play/family",
+      "final_url": "http://localhost:3417/play/family",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-6.png",
+        "desktop": "desktop-6.png"
+      },
+      "metrics": {
+        "lcp": 1992,
+        "ttfb": 4,
+        "lcp_render": 1988,
+        "cls": 0,
+        "tbt": 151,
+        "total_kb": 505,
+        "js_kb": 184,
+        "requests": 24
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    },
+    {
+      "url": "http://localhost:3417/sources",
+      "final_url": "http://localhost:3417/sources",
+      "http_status": 200,
+      "screenshots": {
+        "mobile": "mobile-7.png",
+        "desktop": "desktop-7.png"
+      },
+      "metrics": {
+        "lcp": 1056,
+        "ttfb": 6,
+        "lcp_render": 1050,
+        "cls": 0.0,
+        "tbt": 227,
+        "total_kb": 343,
+        "js_kb": 175,
+        "requests": 17
+      },
+      "mobile": {
+        "viewport": "375x812 touch DPR3",
+        "inner_width": 375,
+        "network": "150ms RTT, 1.6Mbps",
+        "cpu_slowdown": 4
+      }
+    }
+  ],
+  "checks": [
+    {
+      "page": "http://localhost:3417/",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "9 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "mobile-touch",
+      "id": "target-comfort",
+      "status": "WARN",
+      "detail": "3 targets are under the 44 px design goal: a.text-[16px].font-bold \"Choose a game\"; a.hover:text-ink \"Sources\"; a.hover:text-ink \"Your notebook\""
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "WARN",
+      "detail": "Largest Contentful Paint after the first byte 2164ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 8ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "WARN",
+      "detail": "Total Blocking Time (long tasks) 224ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 639KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 184KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "speed",
+      "id": "image-dimensions",
+      "status": "WARN",
+      "detail": "6 images lack width/height or aspect-ratio (layout shift)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "42 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "PASS",
+      "detail": "6 images, videos or illustrations of 120x80 px or more"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: a.group/button.inline-flex \"Play Slab!\""
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (54 chars): Language Games — learn English by playing Wittgenstein"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (146 chars)"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "PASS",
+      "detail": "1 JSON-LD blocks"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "robots-txt",
+      "status": "PASS",
+      "detail": "robots.txt allows crawling"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "geo",
+      "id": "ai-crawlers",
+      "status": "PASS",
+      "detail": "search and AI answer crawlers may crawl"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "security",
+      "id": "exposed-files",
+      "status": "PASS",
+      "detail": "no .env or .git served"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "geo",
+      "id": "llms-txt",
+      "status": "PASS",
+      "detail": "llms.txt found"
+    },
+    {
+      "page": "http://localhost:3417/",
+      "area": "seo",
+      "id": "sitemap",
+      "status": "PASS",
+      "detail": "sitemap found"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "9 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "WARN",
+      "detail": "Largest Contentful Paint after the first byte 2288ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 4ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "PASS",
+      "detail": "Total Blocking Time (long tasks) 153ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 536KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 184KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "speed",
+      "id": "image-dimensions",
+      "status": "WARN",
+      "detail": "7 images lack width/height or aspect-ratio (layout shift)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "17 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "PASS",
+      "detail": "1 images, videos or illustrations of 120x80 px or more"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: button.-my-2.grid \"Hear it again\""
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (43 chars): Slab! — the builder's game · Language Games"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (143 chars)"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/play/builder"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "PASS",
+      "detail": "1 JSON-LD blocks"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/play/builder",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "4 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "PASS",
+      "detail": "Largest Contentful Paint after the first byte 1780ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 4ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "WARN",
+      "detail": "Total Blocking Time (long tasks) 205ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 427KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 184KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "speed",
+      "id": "image-dimensions",
+      "status": "WARN",
+      "detail": "3 images lack width/height or aspect-ratio (layout shift)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "17 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "PASS",
+      "detail": "1 images, videos or illustrations of 120x80 px or more"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: button.flex.min-h-20 \"key\""
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (59 chars): Picture Theatre — prepositions as pictures · Language Games"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (138 chars)"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/play/scene"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "PASS",
+      "detail": "1 JSON-LD blocks"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/play/scene",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "7 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "WARN",
+      "detail": "Largest Contentful Paint after the first byte 2636ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 4ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "PASS",
+      "detail": "Total Blocking Time (long tasks) 179ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 521KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 183KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "speed",
+      "id": "image-dimensions",
+      "status": "WARN",
+      "detail": "3 images lack width/height or aspect-ratio (layout shift)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "20 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "PASS",
+      "detail": "1 images, videos or illustrations of 120x80 px or more"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: button.-my-2.grid \"Hear it again\""
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (54 chars): The Café — same words, different jobs · Language Games"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (128 chars)"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/play/cafe"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "PASS",
+      "detail": "1 JSON-LD blocks"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/play/cafe",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "9 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "PASS",
+      "detail": "Largest Contentful Paint after the first byte 1860ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 4ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "PASS",
+      "detail": "Total Blocking Time (long tasks) 149ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 458KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 183KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "speed",
+      "id": "image-dimensions",
+      "status": "WARN",
+      "detail": "2 images lack width/height or aspect-ratio (layout shift)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "24 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "PASS",
+      "detail": "2 images, videos or illustrations of 120x80 px or more"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: button.flex.min-h-14 \"a cat\""
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (62 chars): Go On! — teach a pupil English spelling rules · Language Games"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (137 chars)"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/play/pupil"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "PASS",
+      "detail": "1 JSON-LD blocks"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/play/pupil",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "7 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "PASS",
+      "detail": "Largest Contentful Paint after the first byte 1988ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 4ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "PASS",
+      "detail": "Total Blocking Time (long tasks) 151ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 505KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 184KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "speed",
+      "id": "image-dimensions",
+      "status": "WARN",
+      "detail": "6 images lack width/height or aspect-ratio (layout shift)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "26 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "WARN",
+      "detail": "no image, video or illustration on this landing page; show the product working or its result (noise when the product UI itself is rendered live in the page's HTML)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: button.h-12.rounded-lg \"All\""
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (58 chars): Family Threads — what do all games share? · Language Games"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (134 chars)"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/play/family"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "PASS",
+      "detail": "1 JSON-LD blocks"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/play/family",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "availability",
+      "id": "http-status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "mobile-layout",
+      "id": "viewport-meta",
+      "status": "PASS",
+      "detail": "width=device-width, initial-scale=1"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "mobile-layout",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "scrollWidth 375 fits 375"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "mobile-touch",
+      "id": "target-size",
+      "status": "PASS",
+      "detail": "25 targets meet the 24 px minimum"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "speed",
+      "id": "lcp_render_ms",
+      "status": "PASS",
+      "detail": "Largest Contentful Paint after the first byte 1050ms (good <= 2000ms, fail > 3500ms)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "speed",
+      "id": "cls",
+      "status": "PASS",
+      "detail": "Cumulative Layout Shift 0.0 (good <= 0.1, fail > 0.25)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "speed",
+      "id": "ttfb_ms",
+      "status": "PASS",
+      "detail": "time to first byte (server, or this host's distance to it) 6ms (good <= 800ms)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "speed",
+      "id": "tbt_ms",
+      "status": "WARN",
+      "detail": "Total Blocking Time (long tasks) 227ms (good <= 200ms)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "speed",
+      "id": "transfer_kb",
+      "status": "PASS",
+      "detail": "page weight 343KB (good <= 1600KB)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "speed",
+      "id": "js_kb",
+      "status": "PASS",
+      "detail": "JavaScript transferred 175KB (good <= 350KB)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "taste",
+      "id": "low-contrast",
+      "status": "PASS",
+      "detail": "116 text elements meet WCAG AA contrast (not measured: text over images or over gradients beside it, and ratios under 1.5:1 whose real backdrop the probe cannot see)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "taste",
+      "id": "product-visual",
+      "status": "WARN",
+      "detail": "no image, video or illustration on this landing page; show the product working or its result (noise when the product UI itself is rendered live in the page's HTML)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "core-flow",
+      "id": "above-the-fold",
+      "status": "PASS",
+      "detail": "first screen starts the core task: a.mt-4.inline-flex \"Play the games\""
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "analytics",
+      "id": "one-tracker",
+      "status": "WARN",
+      "detail": "no analytics found; the default is PostHog"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "security",
+      "id": "client-secrets",
+      "status": "PASS",
+      "detail": "no secret keys in 12 script sources"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "title",
+      "status": "PASS",
+      "detail": "title (60 chars): Sources — the Wittgenstein behind the games · Language Games"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "description",
+      "status": "PASS",
+      "detail": "meta description (124 chars)"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "h1",
+      "status": "PASS",
+      "detail": "1 <h1> with text"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "lang",
+      "status": "PASS",
+      "detail": "<html lang=en>"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "canonical",
+      "status": "PASS",
+      "detail": "https://language-games.example/sources"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "indexable",
+      "status": "PASS",
+      "detail": "indexable"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "open-graph",
+      "status": "PASS",
+      "detail": "og:title, og:description, og:image present"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "seo",
+      "id": "structured-data",
+      "status": "WARN",
+      "detail": "no JSON-LD structured data"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "geo",
+      "id": "server-rendered",
+      "status": "PASS",
+      "detail": "the H1 is in the served HTML"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "desktop",
+      "id": "horizontal-overflow",
+      "status": "PASS",
+      "detail": "1440 px: scrollWidth 1440 vs 1440"
+    },
+    {
+      "page": "http://localhost:3417/sources",
+      "area": "accessibility",
+      "id": "control-names",
+      "status": "PASS",
+      "detail": "every visible control has an accessible name"
+    }
+  ],
+  "overall": "PASS"
+}

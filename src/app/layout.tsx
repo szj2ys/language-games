@@ -24,7 +24,8 @@ export const metadata: Metadata = {
     template: "%s · Language Games",
   },
   description:
-    "Short games for intermediate English learners, built on Wittgenstein's idea that meaning lives in use. Direct a builder, describe a scene, repair a misunderstanding — no account needed.",
+    "Five short games for intermediate English learners, built on Wittgenstein's language-games. Give orders, describe scenes, read a room. No account.",
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Language Games",

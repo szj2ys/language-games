@@ -4,10 +4,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { Check, ChevronDown, Lightbulb, MessageCircleQuestion, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import { useDraft } from "@/lib/use-draft";
 import {
   CONTAINERS,
   HOLDERS,
@@ -113,6 +114,7 @@ function Stage({
   selected,
   onSelectPlaced,
   onDrop,
+  fixed,
   children,
 }: {
   scene: Scene;
@@ -120,6 +122,8 @@ function Stage({
   selected?: Thing | null;
   onSelectPlaced?: (t: Thing) => void;
   onDrop?: (loc: Loc) => void;
+  /** Things that were already standing and cannot be moved. */
+  fixed?: Set<Thing>;
   children?: React.ReactNode;
 }) {
   const placed = layout(scene);
@@ -128,7 +132,12 @@ function Stage({
     <figure className="relative aspect-[16/9] w-full overflow-hidden bg-paper-deep sm:rounded-2xl" aria-label={label}>
       <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
       {placed.map((p) => (
-        <Sprite key={p.thing} p={p} selected={selected === p.thing} onClick={onSelectPlaced ? () => onSelectPlaced(p.thing) : undefined} />
+        <Sprite
+          key={p.thing}
+          p={p}
+          selected={selected === p.thing}
+          onClick={onSelectPlaced && (!fixed || !fixed.has(p.thing)) ? () => onSelectPlaced(p.thing) : undefined}
+        />
       ))}
       {onDrop && selected &&
         (["back", "front"] as const).flatMap((row) =>
@@ -203,11 +212,11 @@ function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 
 export function SceneGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <div className="min-h-dvh" aria-busy="true" />;
+  if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" />;
   const { session, round, finished } = g;
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader title={session.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
+      <GameHeader game="Picture Theatre" title={session.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
       {!g.storable && (
         <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
           Progress cannot be saved in this browser. You can still play.
@@ -266,7 +275,7 @@ function Controls({
     <>
       <div className="flex gap-2">
         {!checked && (
-          <Button variant="outline" size="lg" className="h-12" onClick={onHint} disabled={showHint} aria-label="Hint">
+          <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={onHint} disabled={showHint} aria-label="Hint">
             <Lightbulb className="size-5" aria-hidden />
           </Button>
         )}
@@ -292,11 +301,11 @@ function Controls({
 // Build: make the message true. -------------------------------------------------
 
 function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done; onNext: () => void }) {
-  const [scene, setScene] = useState<Scene>(round.start ?? {});
+  const [scene, setScene] = useDraft<Scene>(round.id, "scene", round.start ?? {});
   const [selected, setSelected] = useState<Thing | null>(null);
-  const [checked, setChecked] = useState<boolean[] | null>(null);
-  const [tries, setTries] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [checked, setChecked] = useDraft<boolean[] | null>(round.id, "checked", null);
+  const [tries, setTries] = useDraft(round.id, "tries", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const fixed = new Set(Object.keys(round.start ?? {}) as Thing[]);
   const tray = round.things.filter((t) => !scene[t]);
   const solved = !!checked && checked.every(Boolean);
@@ -321,7 +330,8 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
         scene={scene}
         label="The stage"
         selected={checked ? null : selected}
-        onSelectPlaced={checked ? undefined : (t) => !fixed.has(t) && setSelected((cur) => (cur === t ? null : t))}
+        fixed={fixed}
+        onSelectPlaced={checked ? undefined : (t) => setSelected((cur) => (cur === t ? null : t))}
         onDrop={checked ? undefined : drop}
       />
       <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
@@ -404,10 +414,10 @@ function RelationPicker({ value, options, onChange, disabled }: { value: Relatio
 }
 
 function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done; onNext: () => void }) {
-  const [report, setReport] = useState<Clause[]>(round.report);
-  const [checked, setChecked] = useState<boolean[] | null>(null);
-  const [tries, setTries] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [report, setReport] = useDraft<Clause[]>(round.id, "report", round.report);
+  const [checked, setChecked] = useDraft<boolean[] | null>(round.id, "checked", null);
+  const [tries, setTries] = useDraft(round.id, "tries", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const solved = !!checked && checked.every(Boolean);
 
   const check = () => {
@@ -468,11 +478,11 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
 
 function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; onNext: () => void }) {
   const others = (Object.keys(round.scene) as Thing[]).filter((t) => t !== round.target);
-  const [rel, setRel] = useState<Relation>(round.options[0]);
-  const [ref, setRef] = useState<Thing>(others[0]);
-  const [result, setResult] = useState<{ clause: Clause; truth: boolean; places: Loc[] } | null>(null);
-  const [tries, setTries] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [rel, setRel] = useDraft<Relation>(round.id, "rel", round.options[0]);
+  const [ref, setRef] = useDraft<Thing>(round.id, "ref", others[0]);
+  const [result, setResult] = useDraft<{ clause: Clause; truth: boolean; places: Loc[] } | null>(round.id, "result", null);
+  const [tries, setTries] = useDraft(round.id, "tries", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const solved = !!result && result.truth && result.places.length === 1;
 
   const tell = () => {

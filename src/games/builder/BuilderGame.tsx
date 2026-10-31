@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Check, Hand, Lightbulb, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { GameHeader, MarginNote } from "@/components/game/chrome";
+import { GameLoading, GameHeader, MarginNote } from "@/components/game/chrome";
 import { track } from "@/components/analytics";
 import { recordRound } from "@/lib/progress";
 import { useSave, useSpeech } from "@/lib/use-save";
 import { cn } from "@/lib/utils";
+import { clearDrafts, useDraft } from "@/lib/use-draft";
 import {
   NUMBER_WORDS,
   callFor,
@@ -48,8 +49,10 @@ export function BuilderGame() {
   const round = session.rounds[Math.min(pos.round, session.rounds.length - 1)];
   const { speak, available: canSpeak } = useSpeech(save.settings.speech);
 
-  const goTo = (session: number, round: number) =>
+  const goTo = (session: number, round: number) => {
+    for (const r of SESSIONS[sessionIndex].rounds) clearDrafts(r.id);
     update((s) => ({ ...s, lastGame: GAME, positions: { ...s.positions, [GAME]: { session, round } } }));
+  };
 
   const complete = (firstTry: boolean, phrase: string, marks = 3) => {
     update((s) => recordRound(s, round.id, { marks, max: 3, firstTry }, [phrase]));
@@ -59,11 +62,12 @@ export function BuilderGame() {
   const toggleSpeech = () =>
     update((s) => ({ ...s, settings: { ...s.settings, speech: !s.settings.speech } }));
 
-  if (!ready) return <div className="min-h-dvh" aria-busy="true" />;
+  if (!ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" />;
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <GameHeader
+        game="Slab!"
         title={`${session.title}`}
         round={finished ? session.rounds.length : pos.round}
         total={session.rounds.length}
@@ -174,7 +178,7 @@ function Site({
           <p className="flex items-center gap-1.5 font-heading text-[clamp(17px,4.6vw,28px)] leading-tight font-semibold" aria-live="polite">
             {bubble}
             {onSpeak && (
-              <button type="button" onClick={onSpeak} aria-label="Hear it again" className="-my-2 grid size-10 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
+              <button type="button" onClick={onSpeak} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
                 <Volume2 className="size-5" aria-hidden />
               </button>
             )}
@@ -274,12 +278,12 @@ function FetchPlay({
 }) {
   const call = callFor(round.want);
   const advanced = sessionIndex > 0;
-  const [stone, setStone] = useState<Stone | null>(null);
-  const [count, setCount] = useState(1);
-  const [place, setPlace] = useState<Place>("builder");
-  const [outcome, setOutcome] = useState<Outcome | null>(null);
-  const [misses, setMisses] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [stone, setStone] = useDraft<Stone | null>(round.id, "stone", null);
+  const [count, setCount] = useDraft(round.id, "count", 1);
+  const [place, setPlace] = useDraft<Place>(round.id, "place", "builder");
+  const [outcome, setOutcome] = useDraft<Outcome | null>(round.id, "outcome", null);
+  const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const labelled = advanced || roundIndex < 2 || hint || outcome !== null;
 
   useEffect(() => {
@@ -380,7 +384,7 @@ function FetchPlay({
 
         <div className="flex gap-2">
           {!outcome && (
-            <Button variant="outline" size="lg" className="h-12" onClick={() => setHint(true)} disabled={hint} aria-label="Hint">
+            <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={() => setHint(true)} disabled={hint} aria-label="Hint">
               <Lightbulb className="size-5" aria-hidden />
             </Button>
           )}
@@ -443,13 +447,13 @@ function CallPlay({
   onDone: (firstTry: boolean, said: string, marks: number) => void;
   onNext: () => void;
 }) {
-  const [notes, setNotes] = useState<string[]>([]);
-  const [tiles, setTiles] = useState<Tile[]>([]);
-  const [pointAt, setPointAt] = useState<Place | { stoneIndex: number } | undefined>();
+  const [notes, setNotes] = useDraft<string[]>(round.id, "notes", []);
+  const [tiles, setTiles] = useDraft<Tile[]>(round.id, "tiles", []);
+  const [pointAt, setPointAt] = useDraft<Place | { stoneIndex: number } | undefined>(round.id, "pointAt", undefined);
   const [reply, setReply] = useState<AssistantResponse | null>(null);
-  const [outcome, setOutcome] = useState<Outcome | null>(null);
-  const [tries, setTries] = useState(0);
-  const [hint, setHint] = useState(false);
+  const [outcome, setOutcome] = useDraft<Outcome | null>(round.id, "outcome", null);
+  const [tries, setTries] = useDraft(round.id, "tries", 0);
+  const [hint, setHint] = useDraft(round.id, "hint", false);
   const solved = outcome?.score === 3;
 
   const bank: Tile[] = useMemo(() => {
@@ -622,7 +626,7 @@ function CallPlay({
 
         <div className="flex gap-2">
           {!outcome && (
-            <Button variant="outline" size="lg" className="h-12" onClick={() => setHint(true)} disabled={hint} aria-label="Hint">
+            <Button variant="outline" size="lg" className="h-12 min-w-12" onClick={() => setHint(true)} disabled={hint} aria-label="Hint">
               <Lightbulb className="size-5" aria-hidden />
             </Button>
           )}

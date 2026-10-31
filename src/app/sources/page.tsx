@@ -3,9 +3,9 @@ import Link from "next/link";
 import { SOURCES, WORK_TITLE, type Source, type Work } from "@/content/sources";
 
 export const metadata: Metadata = {
-  title: "Sources — the Wittgenstein passages behind the games",
+  title: "Sources — the Wittgenstein behind the games",
   description:
-    "Every passage from the Philosophical Investigations, the Tractatus and On Certainty that the Language Games use, with a plain-English reading and the limits of each game's analogy.",
+    "The Wittgenstein passages behind the Language Games, each with a plain-English reading and the limits of the game's analogy.",
   alternates: { canonical: "/sources" },
 };
 
@@ -29,6 +29,9 @@ export default function SourcesPage() {
         briefly, read in plain English, and paired with a note on where the game&apos;s analogy stops. Section
         numbers (§) refer to the numbered remarks; Tractatus numbers are proposition numbers.
       </p>
+      <Link href="/" className="mt-4 inline-flex h-12 items-center rounded-lg bg-cobalt px-5 text-[17px] font-bold text-paper">
+        Play the games
+      </Link>
       {works.map((w) => {
         const list = all.filter((s) => s.work === w);
         if (!list.length) return null;
@@ -45,7 +48,7 @@ export default function SourcesPage() {
                   <blockquote className="mt-1 font-heading text-[17px] leading-snug italic">“{s.quote}”</blockquote>
                   <p className="mt-2 text-[15px] leading-relaxed">{s.gloss}</p>
                   {s.limits && <p className="mt-1 text-sm text-muted-foreground">Where the game stops: {s.limits}</p>}
-                  <a href={s.url} className="mt-2 inline-block text-sm font-bold text-cobalt underline-offset-4 hover:underline" rel="noopener">
+                  <a href={s.url} className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-cobalt underline-offset-4 hover:underline" rel="noopener">
                     Read the original text
                   </a>
                 </li>

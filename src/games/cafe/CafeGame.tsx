@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Eye, Hand, MessageCircleQuestion, RotateCcw, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import { useDraft } from "@/lib/use-draft";
 import { SESSIONS, type CafeRound, type Speaker } from "./rounds";
 
 const GAME = "cafe";
@@ -16,11 +17,12 @@ const NAME: Record<Speaker, string> = { rosa: "Rosa", tom: "Tom", lena: "Lena" }
 
 export function CafeGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <div className="min-h-dvh" aria-busy="true" />;
+  if (!g.ready) return <GameLoading game="The Café" poster="/art/cafe/cafe.webp" />;
   const { session, round, finished } = g;
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <GameHeader
+        game="The Café"
         title={session.title}
         round={finished ? session.rounds.length : g.roundIndex}
         total={session.rounds.length}
@@ -63,9 +65,9 @@ function Round({
   onDone: (marks: number, max: number, firstTry: boolean, phrases: string[]) => void;
   onNext: () => void;
 }) {
-  const [chosen, setChosen] = useState<number | null>(null);
-  const [asked, setAsked] = useState(false);
-  const [misses, setMisses] = useState(0);
+  const [chosen, setChosen] = useDraft<number | null>(round.id, "chosen", null);
+  const [asked, setAsked] = useDraft(round.id, "asked", false);
+  const [misses, setMisses] = useDraft(round.id, "misses", 0);
   const pick = chosen === null ? null : round.options[chosen];
   const solved = !!pick?.fits;
 
@@ -108,7 +110,7 @@ function Round({
             <p className="text-xs font-bold text-muted-foreground">{NAME[round.speaker]}</p>
             <p className="flex items-center gap-1 font-heading text-[clamp(16px,4.4vw,24px)] leading-tight font-semibold" aria-live="polite">
               {bubble}
-              <button type="button" onClick={() => speak(bubble)} aria-label="Hear it again" className="-my-2 grid size-10 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
+              <button type="button" onClick={() => speak(bubble)} aria-label="Hear it again" className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep">
                 <Volume2 className="size-5" aria-hidden />
               </button>
             </p>

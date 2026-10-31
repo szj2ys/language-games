@@ -4,9 +4,10 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { BookOpen, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameHeader, SessionEnd } from "@/components/game/chrome";
+import { GameLoading, GameHeader, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { cn } from "@/lib/utils";
+import { useDraft } from "@/lib/use-draft";
 import { explain, par, showExample, sitExam, startPupil, type Level, type Pupil } from "./engine";
 import { SESSIONS } from "./levels";
 
@@ -14,11 +15,11 @@ const GAME = "pupil";
 
 export function PupilGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <div className="min-h-dvh" aria-busy="true" />;
+  if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" />;
   const { session, round, finished } = g;
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <GameHeader title={finished ? session.title : round.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
+      <GameHeader game="Go On!" title={finished ? session.title : round.title} round={finished ? session.rounds.length : g.roundIndex} total={session.rounds.length} />
       {!g.storable && (
         <p role="status" className="mx-3 rounded-md bg-paper-deep px-3 py-1.5 text-sm">
           Progress cannot be saved in this browser. You can still play.
@@ -54,11 +55,11 @@ function Lesson({
   onDone: (marks: number, max: number, firstTry: boolean, phrases: string[]) => void;
   onNext: () => void;
 }) {
-  const [pupil, setPupil] = useState<Pupil>(() => startPupil(level));
-  const [cards, setCards] = useState(0);
-  const [explained, setExplained] = useState<number[]>([]);
-  const [phase, setPhase] = useState<Phase>("teach");
-  const [call, setCall] = useState<"correct" | "both" | null>(null);
+  const [pupil, setPupil] = useDraft<Pupil>(level.id, "pupil", () => startPupil(level));
+  const [cards, setCards] = useDraft(level.id, "cards", 0);
+  const [explained, setExplained] = useDraft<number[]>(level.id, "explained", []);
+  const [phase, setPhase] = useDraft<Phase>(level.id, "phase", "teach");
+  const [call, setCall] = useDraft<"correct" | "both" | null>(level.id, "call", null);
   const best = useMemo(() => par(level), [level]);
   const exam = sitExam(level, pupil);
   const [changed, setChanged] = useState<string[]>([]);
@@ -92,7 +93,7 @@ function Lesson({
           </div>
           {/* The pupil's slate: what it writes is all we can see of its rule. */}
           <div className="absolute top-[8%] right-[4%] w-[56%] rounded-lg bg-ink/90 px-3 py-2 text-paper shadow">
-            <p className="text-[11px] font-bold tracking-wide text-paper/80 uppercase">The pupil&apos;s test</p>
+            <p className="text-xs font-bold tracking-wide text-paper/80 uppercase">The pupil&apos;s test</p>
             <ol className="mt-1 grid grid-cols-1 gap-0.5" aria-label="The pupil's answers">
               {exam.answers.map((a) => (
                 <li
