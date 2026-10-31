@@ -115,6 +115,15 @@ export const SOURCES = {
       "Giving orders, asking, thanking, joking, describing: these are different games, even when they use the same words.",
     url: PI_URL,
   },
+  "pi-27": {
+    id: "pi-27",
+    work: "PI",
+    ref: "§27",
+    quote:
+      "Think of exclamations alone, with their completely different functions. Water! Away! Ow! Help! Fine! No! Are you inclined still to call these words \"names of objects\"?",
+    gloss: "“Slab!” shouted as a warning is not naming a stone. One-word calls do many different jobs.",
+    url: PI_URL,
+  },
   "pi-43": {
     id: "pi-43",
     work: "PI",

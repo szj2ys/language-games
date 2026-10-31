@@ -12,7 +12,10 @@ export const NOTEBOOK: Record<GameInfo["slug"], NotebookSession[]> = {
   builder: BUILDER.map((s, index) => ({
     title: s.title,
     index,
-    rounds: s.rounds.map((r) => ({ id: r.id, did: r.role === "fetch" ? "an order you carried out" : "an order you gave" })),
+    rounds: s.rounds.map((r) => ({
+      id: r.id,
+      did: r.role === "fetch" ? "an order you carried out" : r.role === "call" ? "an order you gave" : r.use,
+    })),
   })),
   scene: SCENE.map((s, index) => ({
     title: s.title,

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Check, Hand, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
+import { Check, Eye, Hand, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
@@ -24,7 +24,8 @@ import {
   type Stone,
   type Tile,
 } from "./engine";
-import { SESSIONS, type CallRound, type FetchRound } from "./rounds";
+import { SESSIONS, type CallRound, type FetchRound, type UseRound } from "./rounds";
+import type { SourceId } from "@/content/sources";
 
 const GAME = "builder";
 
@@ -44,6 +45,14 @@ const SHAPE: Record<Stone, string> = {
   arch: "A curved stone",
 };
 
+/** The passages shown at the end of each session. */
+const SESSION_SOURCES: SourceId[][] = [
+  ["pi-2", "pi-7"],
+  ["pi-8", "pi-7"],
+  ["pi-19", "pi-6"],
+  ["pi-21", "pi-27"],
+];
+
 const PLACE_LABEL: Record<Place, string> = { builder: "Here", left: "Left", right: "Right" };
 
 type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "count" | "place", boolean> };
@@ -61,7 +70,7 @@ export function BuilderGame() {
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
-          sources={sessionIndex === 2 ? [session.source, "pi-6"] : [session.source, "pi-7"]}
+          sources={SESSION_SOURCES[sessionIndex]}
           nextTitle={SESSIONS[sessionIndex + 1]?.title}
           onNext={g.nextSession}
           onReplay={g.replay}
@@ -76,6 +85,8 @@ export function BuilderGame() {
           onDone={(firstTry) => g.complete(3, 3, firstTry, [callFor(round.want)])}
           onNext={g.next}
         />
+      ) : round.role === "use" ? (
+        <UsePlay key={round.id} round={round} speak={speak} onDone={(firstTry) => g.complete(firstTry ? 3 : 2, 3, firstTry, [round.says])} onNext={g.next} />
       ) : (
         <CallPlay key={round.id} round={round} speak={speak} onDone={(firstTry, said, marks) => g.complete(marks, 3, firstTry, [said])} onNext={g.next} />
       )}
@@ -98,6 +109,7 @@ function Site({
   pointedPlace,
   onPointPlace,
   walking,
+  keeper,
 }: {
   facing: "left" | "right";
   /** Arm out towards a place, or both hands cupped to call. */
@@ -111,6 +123,8 @@ function Site({
   pointedPlace?: Place;
   onPointPlace?: (p: Place) => void;
   walking?: Place | null;
+  /** Show the stock-keeper with her clipboard instead of the assistant. */
+  keeper?: boolean;
 }) {
   return (
     <SceneCanvas
@@ -148,6 +162,11 @@ function Site({
           className="object-contain object-bottom"
         />
       </div>
+      {keeper && (
+        <div className="absolute bottom-[2%] left-[66%] h-[60%] w-[18%]">
+          <Image src="/art/builder/keeper.webp" alt="" fill sizes="140px" className="object-contain object-bottom" />
+        </div>
+      )}
       {/* The assistant, B, walks to wherever the stones go. */}
       <div
         className="absolute bottom-[2%] h-[58%] w-[18%] transition-[left] duration-700 ease-out"
@@ -643,6 +662,111 @@ function CallPlay({
           )}
         </div>
         {hint && !outcome && <p role="status" className="text-[15px]">{round.hint}</p>}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Same words, different jobs: order, report, question, warning (PI §§21, 27).
+
+function UsePlay({
+  round,
+  speak,
+  onDone,
+  onNext,
+}: {
+  round: UseRound;
+  speak: (t: string) => void;
+  onDone: (firstTry: boolean) => void;
+  onNext: () => void;
+}) {
+  const [chosen, setChosen] = useDraft<number | null>(round.id, "chosen", null);
+  const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const pick = chosen === null ? null : round.options[chosen];
+  const solved = !!pick?.fits;
+
+  useEffect(() => {
+    const t = setTimeout(() => speak(round.says), 400);
+    return () => clearTimeout(t);
+  }, [round.says, speak]);
+
+  const choose = (i: number) => {
+    const o = round.options[i];
+    setChosen(i);
+    speak(o.reaction);
+    if (o.fits) onDone(misses === 0);
+    else {
+      setMisses((m) => m + 1);
+      track("repair_used", { game: GAME, round: round.id });
+    }
+  };
+  useShortcuts({
+    "1": solved ? undefined : () => choose(0),
+    "2": solved ? undefined : () => choose(1),
+    "3": solved ? undefined : () => choose(2),
+    Enter: solved ? onNext : undefined,
+  });
+
+  const keeper = round.speaker === "keeper";
+  return (
+    <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6 lg:px-3">
+      <div>
+        <Site
+          facing="right"
+          pointing={!keeper && round.says.startsWith("Slab!")}
+          delivered={[]}
+          bubble={pick ? pick.reaction : round.says}
+          bubbleFrom={keeper ? "assistant" : "builder"}
+          onSpeak={() => speak(pick ? pick.reaction : round.says)}
+          keeper={keeper}
+        />
+        <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
+          {round.clues.map((c) => (
+            <li key={c} className="flex items-start gap-2 text-[15px]">
+              <Eye className="mt-0.5 size-4 shrink-0 text-cobalt" aria-hidden />
+              {c}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex flex-col gap-2 px-3 pb-4 lg:px-0">
+        {!solved ? (
+          <>
+            <p className="text-sm text-muted-foreground">
+              {keeper ? "The stock-keeper" : "The builder"} says “{round.says}” What do you do?
+            </p>
+            {round.options.map((o, i) => {
+              const tried = chosen === i && !o.fits;
+              return (
+                <button
+                  key={o.text}
+                  type="button"
+                  onClick={() => choose(i)}
+                  disabled={tried}
+                  data-shortcut=""
+                  className={cn(
+                    "flex min-h-14 items-center rounded-xl border-2 bg-card px-3 py-2 text-left text-[17px] hover:border-ink/30",
+                    tried ? "border-terracotta/40 opacity-60" : "border-border",
+                  )}
+                >
+                  {o.text}
+                </button>
+              );
+            })}
+          </>
+        ) : (
+          <>
+            <div role="status" className="flex flex-col gap-2 rounded-xl bg-sage/15 p-4">
+              <p className="text-sm font-bold text-sage">What the words were doing here</p>
+              <p className="font-heading text-[20px] leading-snug">{round.use.charAt(0).toUpperCase() + round.use.slice(1)}.</p>
+              <p className="text-[15px] leading-relaxed">{round.note}</p>
+            </div>
+            <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
+              Next
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

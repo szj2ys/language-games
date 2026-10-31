@@ -53,3 +53,28 @@ describe("assistant interprets the player's call", () => {
     expect(englishNotes([{ kind: "stone", value: "slab", plural: true }])).toEqual(["One stone, no -s: “slab”."]);
   });
 });
+
+import { SESSIONS } from "../rounds";
+
+describe("authored builder rounds", () => {
+  const rounds = SESSIONS.flatMap((s) => s.rounds);
+  it("have unique ids", () => {
+    expect(new Set(rounds.map((r) => r.id)).size).toBe(rounds.length);
+  });
+  it("every 'use' round has exactly one fitting response", () => {
+    for (const r of rounds) if (r.role === "use") expect(r.options.filter((o) => o.fits), r.id).toHaveLength(1);
+  });
+  it("the same words appear as an order and as a report (§21)", () => {
+    const uses = rounds.filter((r) => r.role === "use").map((r) => (r.role === "use" ? r.use : ""));
+    expect(uses).toContain("an order");
+    expect(uses).toContain("a report");
+  });
+  it("every call round's goal can be reached from its yard and words", () => {
+    for (const r of rounds) {
+      if (r.role !== "call") continue;
+      const named = r.words.includes(r.goal.stone) || r.thisWord;
+      expect(named, r.id).toBe(true);
+      expect(r.yard.filter((s) => s === r.goal.stone).length, r.id).toBeGreaterThanOrEqual(r.goal.count);
+    }
+  });
+});

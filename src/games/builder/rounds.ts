@@ -28,7 +28,19 @@ export type CallRound = {
   hint: string;
 };
 
-export type BuilderRound = FetchRound | CallRound;
+/** Same words, different job: is the call an order, a report, a question or a warning? (PI §§21, 27) */
+export type UseRound = {
+  id: string;
+  role: "use";
+  speaker: "builder" | "keeper";
+  says: string;
+  clues: string[];
+  options: { text: string; fits: boolean; reaction: string }[];
+  use: string;
+  note: string;
+};
+
+export type BuilderRound = FetchRound | CallRound | UseRound;
 
 export type Session = {
   id: string;
@@ -109,6 +121,81 @@ export const SESSIONS: Session[] = [
         id: "b3-6", role: "call", goal: { stone: "arch", count: 1, place: "right" }, yard: [...YARD, "arch"],
         words: ["block", "pillar", "slab", "beam", "arch"], numbers: true, there: true, thisWord: true,
         plan: "Put the curved stone on the right platform. You have a word for it now.", hint: "Arch — there, pointing right.",
+      },
+    ],
+  },
+  {
+    id: "builder-4",
+    title: "Order or report?",
+    blurb: "The same few words can order, report, ask or warn. Who says them, and when, decides.",
+    english: "Telling orders, reports, questions and warnings apart; asking 'Which one?'",
+    source: "pi-21",
+    rounds: [
+      {
+        id: "b4-1", role: "use", speaker: "builder", says: "Three slabs!",
+        clues: ["The builder stands on the scaffold, empty-handed.", "The wall needs three more slabs."],
+        options: [
+          { text: "Bring him three slabs.", fits: true, reaction: "Good." },
+          { text: "Write “3 slabs” on the stock list.", fits: false, reaction: "I don't need a list — I need slabs!" },
+          { text: "Say “Yes, three slabs.”", fits: false, reaction: "Then bring them!" },
+        ],
+        use: "an order",
+        note: "On the scaffold, with an empty wall, “Three slabs!” is an order: it asks for action.",
+      },
+      {
+        id: "b4-2", role: "use", speaker: "keeper", says: "Three slabs.",
+        clues: ["You just asked the stock-keeper: “How many slabs are left?”", "She is counting the pile with her clipboard."],
+        options: [
+          { text: "Carry three slabs to her.", fits: false, reaction: "Why are you bringing them to me? I was telling you how many there are." },
+          { text: "Write “3 slabs” on the stock list.", fits: true, reaction: "That's right — three left." },
+          { text: "Say “Slab!”", fits: false, reaction: "…Yes, slabs. Three of them." },
+        ],
+        use: "a report",
+        note: "The same two words, but after your question they answer it. Wittgenstein: “Five slabs” can be a report or an order — what makes the difference is the part it plays in the language-game (PI §21).",
+      },
+      {
+        id: "b4-3", role: "use", speaker: "builder", says: "Slab?",
+        clues: ["You are carrying a stone he has not seen before.", "He looks at it, unsure, with his eyebrows raised."],
+        options: [
+          { text: "Answer: “No — it's a beam.”", fits: true, reaction: "Ah. A beam. Put it over there." },
+          { text: "Go and fetch him a slab.", fits: false, reaction: "I didn't ask for one — I asked what that is." },
+          { text: "Write “slab” on the stock list.", fits: false, reaction: "…That wasn't a report." },
+        ],
+        use: "a question",
+        note: "The same word with a rising voice and a puzzled look is a question. In writing, the question mark does that job.",
+      },
+      {
+        id: "b4-4", role: "use", speaker: "builder", says: "Slab!",
+        clues: ["A slab is sliding off the cart behind you.", "He is pointing past you, eyes wide."],
+        options: [
+          { text: "Jump out of the way.", fits: true, reaction: "Phew. That was close." },
+          { text: "Bring him a slab.", fits: false, reaction: "No! Look behind you!" },
+          { text: "Ask: “Which slab?”", fits: false, reaction: "THAT one — move!" },
+        ],
+        use: "a warning",
+        note: "“Slab!” here names nothing he wants. Wittgenstein lists exclamations — “Water! Away! Ow! Help!” — and asks if we would still call these words names of objects (PI §27).",
+      },
+      {
+        id: "b4-5", role: "use", speaker: "builder", says: "That slab!",
+        clues: ["There are two slabs on the ground: a big one and a small one.", "He waves vaguely towards both of them."],
+        options: [
+          { text: "Bring the big one.", fits: false, reaction: "Not that one!" },
+          { text: "Ask: “Which one — the big one or the small one?”", fits: true, reaction: "The small one. Thanks for asking." },
+          { text: "Bring both.", fits: false, reaction: "I said that slab — one!" },
+        ],
+        use: "an order that needs a question",
+        note: "“That” only works when the pointing picks one thing out. When it doesn't, the right move in the game is to ask: “Which one?”",
+      },
+      {
+        id: "b4-6", role: "use", speaker: "keeper", says: "Two beams.",
+        clues: ["A delivery cart has just arrived.", "The stock-keeper is reading the delivery note aloud."],
+        options: [
+          { text: "Write “2 beams” on the stock list.", fits: true, reaction: "Good. Two beams in." },
+          { text: "Bring her two beams.", fits: false, reaction: "They're right here on the cart — I'm telling you what arrived." },
+          { text: "Shout “Two beams!” to the builder.", fits: false, reaction: "He didn't ask for any. Just write it down." },
+        ],
+        use: "a report",
+        note: "Reading a delivery note aloud is reporting. The words are the same as an order; the activity is different (PI §21, §23).",
       },
     ],
   },
