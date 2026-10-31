@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { currentWay, explain, par, pastItem, showExample, sitExam, startPupil } from "../engine";
-import { LEVELS } from "../levels";
+import { LEVELS, LEVELS_2 } from "../levels";
 
 const aAn = LEVELS[0];
 
@@ -48,7 +48,7 @@ describe("the pupil", () => {
 });
 
 describe("every level", () => {
-  for (const level of LEVELS) {
+  for (const level of [...LEVELS, ...LEVELS_2]) {
     it(`${level.id} can be taught, and needs teaching`, () => {
       expect(sitExam(level, startPupil(level)).passed).toBe(false);
       let p = startPupil(level);

@@ -79,7 +79,7 @@ export const GAMES: GameInfo[] = [
     ],
     title: "Go On!",
     promise: "Teach a stubborn pupil a spelling rule with as few examples as you can.",
-    english: "a/an, plurals, -ed, comparatives",
+    english: "a/an, plurals, -ed, comparatives, -ing or to, uncountables",
     idea: "Following a rule is a practice",
     source: "pi-185",
     rounds: ids(PUPIL),

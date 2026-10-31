@@ -1,5 +1,5 @@
 import type { SourceId } from "@/content/sources";
-import { articleItem, comparativeItem, pastItem, pluralItem, type Level } from "./engine";
+import { articleItem, comparativeItem, countItem, pastItem, patternItem, pluralItem, type Level } from "./engine";
 
 export const LEVELS: Level[] = [
   {
@@ -149,6 +149,89 @@ export const LEVELS: Level[] = [
   },
 ];
 
+export const LEVELS_2: Level[] = [
+  {
+    id: "p-5",
+    title: "Enjoy swimming, want to swim",
+    task: "Teach the pupil what comes after a verb: “to swim” or “swimming”.",
+    english: "verb + -ing (enjoy, finish, mind, avoid) and verb + to (want, hope, decide, plan)",
+    ways: [
+      { id: "always-to", label: "Always “to” + verb" },
+      { id: "always-ing", label: "Always -ing" },
+      { id: "looks-ahead", label: "“to” after verbs that look ahead (want, plan); -ing after the others" },
+    ],
+    exam: [
+      patternItem({ word: "enjoy", looksAhead: false }),
+      patternItem({ word: "hope", looksAhead: true }),
+      patternItem({ word: "finish", looksAhead: false }),
+      patternItem({ word: "decide", looksAhead: true }),
+      patternItem({ word: "avoid", looksAhead: false }),
+    ],
+    deck: [
+      patternItem({ word: "want", looksAhead: true }),
+      patternItem({ word: "plan", looksAhead: true }),
+      patternItem({ word: "mind", looksAhead: false }),
+      patternItem({ word: "practise", looksAhead: false }),
+      patternItem({ word: "promise", looksAhead: true }),
+      patternItem({ word: "keep", looksAhead: false }),
+    ],
+    explain: [
+      { text: "After a verb, use “to”.", readAs: "always-to" },
+      {
+        text: "Verbs about the future (want, plan, hope) take “to”; most others take -ing.",
+        readAs: "looks-ahead",
+        needs: { ruledOut: "always-to", otherwise: "always-to" },
+      },
+    ],
+    twist: {
+      item: { word: "stop", forms: {}, correct: "stop smoking" },
+      prompt: "New word: the pupil writes “He stopped to smoke.” Your example sentence said “He stopped smoking.”",
+      answer: "both",
+      why: "Both are good English — with different meanings. “He stopped smoking” means he gave it up; “He stopped to smoke” means he paused in order to smoke. The form follows what you want to say.",
+    },
+  },
+  {
+    id: "p-6",
+    title: "Two pieces of advice",
+    task: "Teach the pupil which nouns can simply take -s.",
+    english: "countable and uncountable nouns: two chairs, but two pieces of furniture",
+    ways: [
+      { id: "always-s", label: "Every noun can take -s" },
+      { id: "abstract", label: "Ideas (advice, news) can't be counted; things can" },
+      { id: "listed", label: "Some nouns can't be counted — they have to be learned one by one" },
+    ],
+    exam: [
+      countItem({ word: "advice", abstract: true, uncountable: true }),
+      countItem({ word: "furniture", abstract: false, uncountable: true }),
+      countItem({ word: "chair", abstract: false, uncountable: false }),
+      countItem({ word: "luggage", abstract: false, uncountable: true }),
+      countItem({ word: "idea", abstract: true, uncountable: false }),
+    ],
+    deck: [
+      countItem({ word: "information", abstract: true, uncountable: true }),
+      countItem({ word: "bag", abstract: false, uncountable: false }),
+      countItem({ word: "equipment", abstract: false, uncountable: true }),
+      countItem({ word: "suggestion", abstract: true, uncountable: false }),
+      countItem({ word: "news", abstract: true, uncountable: true }),
+      countItem({ word: "table", abstract: false, uncountable: false }),
+    ],
+    explain: [
+      { text: "You can't count abstract nouns.", readAs: "abstract" },
+      {
+        text: "Learn these as uncountable: advice, information, news, furniture, luggage, equipment.",
+        readAs: "listed",
+        needs: { ruledOut: "abstract", otherwise: "abstract" },
+      },
+    ],
+    twist: {
+      item: { word: "data", forms: {}, correct: "the data is" },
+      prompt: "New word: the pupil writes “The data is clear.” A science textbook says “The data are clear.”",
+      answer: "both",
+      why: "Both are in use. In everyday English “data” is usually uncountable (“the data is”); many scientists still treat it as plural (“the data are”). Different communities, different practices (§§198–202).",
+    },
+  },
+];
+
 export type Session = { id: string; title: string; blurb: string; english: string; source: SourceId; rounds: Level[] };
 
 export const SESSIONS: Session[] = [
@@ -159,5 +242,13 @@ export const SESSIONS: Session[] = [
     english: "a/an, plural spelling, past-tense spelling and comparatives",
     source: "pi-185",
     rounds: LEVELS,
+  },
+  {
+    id: "pupil-2",
+    title: "Rules with no rule",
+    blurb: "Some patterns are nearly rules; some must simply be learned. Teach both.",
+    english: "verb + -ing or to; countable and uncountable nouns",
+    source: "pi-217",
+    rounds: LEVELS_2,
   },
 ];

@@ -170,3 +170,35 @@ export function comparativeItem(a: Adjective): Item {
   const correct = a.syllables === 1 || (a.syllables === 2 && /y$/.test(w)) ? short : `more ${w}`;
   return { word: w, forms: { "always-er": always, syllables: bySyllable, "y-too": correct }, correct };
 }
+
+export type VerbPattern = { word: string; looksAhead: boolean };
+
+/** "I enjoy swimming" / "I want to swim": the pupil's ways of going on after a verb. */
+export function patternItem(v: VerbPattern, next = "swim", ing = "swimming"): Item {
+  return {
+    word: v.word,
+    forms: {
+      "always-to": `${v.word} to ${next}`,
+      "always-ing": `${v.word} ${ing}`,
+      "looks-ahead": v.looksAhead ? `${v.word} to ${next}` : `${v.word} ${ing}`,
+    },
+    correct: v.looksAhead ? `${v.word} to ${next}` : `${v.word} ${ing}`,
+  };
+}
+
+export type Noun = { word: string; abstract: boolean; uncountable: boolean; plural?: string };
+
+/** "two chairs" but "two pieces of furniture". */
+export function countItem(n: Noun): Item {
+  const counted = `two ${n.plural ?? `${n.word}s`}`;
+  const pieces = `two pieces of ${n.word}`;
+  return {
+    word: n.word,
+    forms: {
+      "always-s": counted,
+      abstract: n.abstract ? pieces : counted,
+      listed: n.uncountable ? pieces : counted,
+    },
+    correct: n.uncountable ? pieces : counted,
+  };
+}
