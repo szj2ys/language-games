@@ -268,7 +268,7 @@ function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 
 export function SceneGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" />;
+  if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" tall="/art/tall/stage.webp" />;
   const { session, round, finished } = g;
   return (
     <GameFrame game="Picture Theatre" g={g}>

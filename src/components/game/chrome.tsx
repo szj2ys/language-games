@@ -160,12 +160,12 @@ export function SessionEnd({
  * sends: the game's name and its scene, so the first paint is the picture,
  * not a blank page.
  */
-export function GameLoading({ game, poster }: { game: string; poster: string }) {
+export function GameLoading({ game, poster, tall }: { game: string; poster: string; tall?: string }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[1400px] flex-col" aria-busy="true">
       <GameHeader game={game} title="Loading…" round={0} total={0} />
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8 lg:px-4">
-        <SceneCanvas>
+        <SceneCanvas tall={tall}>
           <Image src={poster} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
         </SceneCanvas>
       </div>

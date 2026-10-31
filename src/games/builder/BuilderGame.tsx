@@ -61,7 +61,7 @@ type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "cou
 
 export function BuilderGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" />;
+  if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" tall="/art/tall/site.webp" />;
   const { round, session, sessionIndex, finished } = g;
   const speak = g.speech.speak;
   return (

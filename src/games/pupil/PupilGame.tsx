@@ -16,7 +16,7 @@ const GAME = "pupil";
 
 export function PupilGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" />;
+  if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" tall="/art/tall/classroom.webp" />;
   const { session, round, finished } = g;
   return (
     <GameFrame game="Go On!" g={g}>
