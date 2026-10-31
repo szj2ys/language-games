@@ -15,8 +15,10 @@ export type Delivery = { stone: Stone; count: number; place: Place };
 
 export const NUMBER_WORDS = ["one", "two", "three", "four"] as const;
 
+const PLURAL: Record<Stone, string> = { block: "blocks", pillar: "pillars", slab: "slabs", beam: "beams", arch: "arches" };
+
 export function plural(stone: Stone, count: number): string {
-  return count === 1 ? stone : `${stone}s`;
+  return count === 1 ? stone : PLURAL[stone];
 }
 
 /** The words a builder says for a delivery, as in §8: "Two slabs — there!" */
@@ -105,7 +107,7 @@ export function sentence(tiles: Tile[]): string {
       case "number":
         return NUMBER_WORDS[t.value - 1];
       case "stone":
-        return t.plural ? `${t.value}s` : t.value;
+        return t.plural ? PLURAL[t.value] : t.value;
       case "there":
         return "there";
       case "this":
@@ -129,12 +131,12 @@ export function englishNotes(tiles: Tile[]): string[] {
   if (stone?.kind === "stone") {
     const count = num?.kind === "number" ? num.value : 1;
     if (count > 1 && !stone.plural) {
-      notes.push(`After “${NUMBER_WORDS[count - 1]}”, English needs the plural: ${NUMBER_WORDS[count - 1]} ${stone.value}s.`);
+      notes.push(`After “${NUMBER_WORDS[count - 1]}”, English needs the plural: ${NUMBER_WORDS[count - 1]} ${PLURAL[stone.value]}.`);
     }
     if (count === 1 && stone.plural) {
       notes.push(`One stone, no -s: “${num ? "one " : ""}${stone.value}”.`);
     }
-    if (n > s && num) notes.push(`The number comes before the noun: ${NUMBER_WORDS[(num as { value: number }).value - 1]} ${stone.value}${stone.plural ? "s" : ""}.`);
+    if (n > s && num) notes.push(`The number comes before the noun: ${NUMBER_WORDS[(num as { value: number }).value - 1]} ${stone.plural ? PLURAL[stone.value] : stone.value}.`);
   }
   const there = tiles.findIndex((t) => t.kind === "there");
   if (there >= 0 && s > there) notes.push("Say what first, then where: “… slabs there!”");

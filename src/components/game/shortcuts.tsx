@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 const LEARNED = "language-games:shortcuts-learned";
+export const SHORTCUTS_OFF = "language-games:shortcuts-off";
 const SHOWN = "language-games:shortcut-tip-shown";
 
 function typing(target: EventTarget | null) {
@@ -15,6 +16,12 @@ export function useShortcuts(keys: Record<string, (() => void) | undefined>) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
+      // Single-key shortcuts act only inside the game (WCAG 2.1.4), and can be switched off in the notebook.
+      const active = document.activeElement;
+      if (active && active !== document.body && !active.closest("main")) return;
+      try {
+        if (localStorage.getItem(SHORTCUTS_OFF)) return;
+      } catch {}
       // Enter on a focused button already activates it.
       if (e.key === "Enter" && (e.target as HTMLElement)?.tagName === "BUTTON") return;
       const fn = keys[e.key];

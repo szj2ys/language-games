@@ -372,18 +372,23 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
   const f = session.features.find((x) => x.id === feat)!;
   const o = session.cards.find((c) => c.id === other)!;
   const sentence = `${cap(n.name)} and ${o.name} both ${f.plural}.`;
-  const unlikeText = `Unlike most of these ${session.kind}, ${n.name} ${negate(f)}.`;
+  const unlikeText = `Unlike most of these ${session.kind}, ${n.name} ${negate(f, n.plural)}.`;
 
   const say = () => {
     let ok: boolean;
     let why: string;
     if (mode === "both") {
       ok = n.features[f.id] === true && o.features[f.id] === true;
-      why = ok ? `True — ${n.name} joins the family through ${o.name}.` : `Not true: ${n.features[f.id] === true ? o.name : n.name} ${negate(f)}.`;
+      const lacking = n.features[f.id] === true ? o : n;
+      why = ok
+        ? `True — ${n.name} ${agree(n, "joins", "join")} the family through ${o.name}.`
+        : `Not true: ${lacking.name} ${negate(f, lacking.plural)}.`;
     } else {
       const most = claimHolds(session.cards, f.id, "Most");
       ok = n.features[f.id] === false && most;
-      why = ok ? `True — ${n.name} sits at the edge of the family. Both answers can be right: the edges are blurred (§71).` : !most ? `That doesn't set it apart: fewer than half of these ${session.kind} ${f.plural} anyway.` : `Not true: ${n.name} ${f.singular}.`;
+      if (ok) why = `True — ${n.name} ${agree(n, "sits", "sit")} at the edge of the family. Both answers can be right: the edges are blurred (§71).`;
+      else if (!most) why = `That doesn't set it apart: no more than half of these ${session.kind} ${f.plural} anyway.`;
+      else why = `Not true: ${n.name} ${n.plural ? f.plural : f.singular}.`;
     }
     setResult({ ok, why });
     if (ok) onDone(2 + (misses === 0 ? 1 : 0), 3, misses === 0 && !hint, [mode === "both" ? sentence : unlikeText]);
@@ -406,7 +411,9 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
         </div>
       </div>
       <div className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground">Does {n.name} belong with these {session.kind}? Say one true sentence.</p>
+        <p className="text-sm text-muted-foreground">
+          {agree(n, "Does", "Do")} {n.name} belong with these {session.kind}? Say one true sentence.
+        </p>
         <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Kind of sentence">
           {(["both", "unlike"] as const).map((m) => (
             <button
@@ -436,7 +443,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
           ) : (
             <>
               Unlike most of these {session.kind}, {n.name}
-              <Select value={feat} onChange={setFeat} disabled={!!result?.ok} label="What it lacks" options={session.features.map((x) => [x.id, negate(x)])} />.
+              <Select value={feat} onChange={setFeat} disabled={!!result?.ok} label="What it lacks" options={session.features.map((x) => [x.id, negate(x, n.plural)])} />.
             </>
           )}
         </div>
@@ -462,12 +469,18 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
   );
 }
 
-function negate(f: Feature): string {
+/** "doesn't need skill" — or, for a plural subject such as "nails", "don't need skill". */
+function negate(f: Feature, plural = false): string {
   const s = f.singular;
-  if (s.startsWith("is ")) return `is not ${s.slice(3)}`;
+  if (s.startsWith("is ")) return `${plural ? "are" : "is"} not ${s.slice(3)}`;
   if (s.startsWith("can ")) return `cannot ${s.slice(4)}`;
-  if (s.startsWith("has ")) return `doesn't have ${s.slice(4)}`;
-  return `doesn't ${f.plural}`;
+  if (s.startsWith("has ")) return `${plural ? "don't" : "doesn't"} have ${s.slice(4)}`;
+  return `${plural ? "don't" : "doesn't"} ${f.plural}`;
+}
+
+/** Pick the verb form that agrees with the card's name. */
+function agree(c: Card, singular: string, plural: string): string {
+  return c.plural ? plural : singular;
 }
 
 function Select({ value, onChange, options, label, disabled }: { value: string; onChange: (v: string) => void; options: [string, string][]; label: string; disabled?: boolean }) {

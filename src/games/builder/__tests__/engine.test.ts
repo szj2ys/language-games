@@ -78,3 +78,10 @@ describe("authored builder rounds", () => {
     }
   });
 });
+
+describe("irregular spelling", () => {
+  it("writes arches, not archs", () => {
+    expect(sentence([{ kind: "number", value: 2 }, { kind: "stone", value: "arch", plural: true }])).toBe("Two arches!");
+    expect(englishNotes([{ kind: "number", value: 2 }, { kind: "stone", value: "arch" }])).toEqual(["After “two”, English needs the plural: two arches."]);
+  });
+});

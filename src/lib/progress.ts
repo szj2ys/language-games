@@ -79,7 +79,7 @@ function parsePositions(raw: unknown): Record<string, Position> {
   const out: Record<string, Position> = {};
   if (!raw || typeof raw !== "object") return out;
   for (const [game, p] of Object.entries(raw as Record<string, Partial<Position>>)) {
-    if (p && Number.isInteger(p.session) && Number.isInteger(p.round)) {
+    if (p && Number.isInteger(p.session) && Number.isInteger(p.round) && (p.session as number) >= 0 && (p.round as number) >= 0) {
       out[game] = { session: p.session as number, round: p.round as number };
     }
   }

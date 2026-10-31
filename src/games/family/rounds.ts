@@ -112,7 +112,7 @@ export const SESSIONS: Session[] = [
       { id: "f2-4", mode: "thread", hint: "Each next tool must share something with the one before it." },
       {
         id: "f2-5", mode: "newcomer",
-        newcomer: tool("nails", "nails", ["join", "metal"]),
+        newcomer: { ...tool("nails", "nails", ["join", "metal"]), plural: true },
         hint: "Nails are on Wittgenstein's list of tools. What do they share with the hammer?",
       },
     ],

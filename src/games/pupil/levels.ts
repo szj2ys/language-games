@@ -69,7 +69,7 @@ export const LEVELS: Level[] = [
     english: "Past -ed spelling: drop silent e, double a final consonant after a short stressed vowel",
     ways: [
       { id: "ed", label: "Always add -ed" },
-      { id: "drop-e", label: "Drop a final e, then -d" },
+      { id: "drop-e", label: "After a final e, just add -d" },
       { id: "double-any", label: "…and double the last consonant after a short vowel" },
       { id: "double-stressed", label: "…but only when that syllable is stressed" },
     ],

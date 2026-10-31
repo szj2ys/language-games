@@ -516,7 +516,8 @@ function CallPlay({
       setOutcome({ delivery: r.delivery, ...m });
       if (m.score === 3) {
         const firstTry = tries === 0 && !hint;
-        onDone(firstTry, said, 1 + (englishSlips.length === 0 ? 1 : 0) + (firstTry ? 1 : 0));
+        // The outcome is scored; the English note is coaching and costs nothing (DECISIONS D5).
+        onDone(firstTry, said, firstTry ? 3 : 2);
       }
       else track("repair_used", { game: GAME, round: round.id });
     } else {
@@ -530,7 +531,7 @@ function CallPlay({
   };
 
   const tileText = (t: Tile) =>
-    t.kind === "number" ? NUMBER_WORDS[t.value - 1] : t.kind === "stone" ? (t.plural ? `${t.value}s` : t.value) : t.kind;
+    t.kind === "number" ? NUMBER_WORDS[t.value - 1] : t.kind === "stone" ? (t.plural ? plural(t.value, 2) : t.value) : t.kind;
 
   const pointedStone = typeof pointAt === "object" ? round.yard[pointAt.stoneIndex] : undefined;
   const bubble = reply?.kind === "asks" ? reply.question : solved ? "Done." : outcome ? "Like this?" : undefined;
@@ -627,7 +628,7 @@ function CallPlay({
         )}
 
         {outcome && !solved && <Marks outcome={outcome} want={round.goal} />}
-        {notes.length > 0 && (reply?.kind === "acts") && (
+        {notes.length > 0 && outcome && (
           <ul role="status" className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px]" aria-label="English notes">
             {notes.map((n) => (
               <li key={n}>

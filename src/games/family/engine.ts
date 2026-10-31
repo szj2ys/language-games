@@ -5,7 +5,13 @@
 
 export type Truth = true | false | "blurred";
 
-export type Card = { id: string; name: string; features: Record<string, Truth> };
+export type Card = {
+  id: string;
+  name: string;
+  features: Record<string, Truth>;
+  /** Plural nouns ("nails") take plural verbs. */
+  plural?: boolean;
+};
 
 export type Feature = {
   id: string;

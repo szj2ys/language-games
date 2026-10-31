@@ -11,10 +11,11 @@ type SessionLike = { rounds: { id: string }[] };
 export function useSessions<S extends SessionLike>(game: string, sessions: S[]) {
   const { save, ready, update, storable } = useSave();
   const pos = save.positions[game] ?? { session: 0, round: 0 };
-  const sessionIndex = Math.min(pos.session, sessions.length - 1);
+  // Clamp a saved position to the content as it is now: sessions can be added or removed between visits.
+  const sessionIndex = Math.max(0, Math.min(pos.session, sessions.length - 1));
   const session = sessions[sessionIndex];
   const finished = pos.round >= session.rounds.length;
-  const roundIndex = Math.min(pos.round, session.rounds.length - 1);
+  const roundIndex = Math.max(0, Math.min(pos.round, session.rounds.length - 1));
   const round = session.rounds[roundIndex] as S["rounds"][number];
   const speech = useSpeech(save.settings.speech);
 

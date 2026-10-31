@@ -7,6 +7,11 @@ import { GAMES } from "@/content/games";
 import { NOTEBOOK } from "@/content/notebook";
 import { clearSave, emptySave } from "@/lib/progress";
 import { useSave } from "@/lib/use-save";
+import { clearDrafts } from "@/lib/use-draft";
+import { SHORTCUTS_OFF } from "@/components/game/shortcuts";
+import type { GameInfo } from "@/content/games";
+
+type GameSlug = GameInfo["slug"];
 
 export function Notebook() {
   const { save, ready, update } = useSave();
@@ -14,8 +19,10 @@ export function Notebook() {
   if (!ready) return null;
   const played = GAMES.filter((g) => g.rounds.some((id) => save.rounds[id]));
 
-  const replay = (slug: string, session: number) =>
+  const replay = (slug: GameSlug, session: number) => {
+    for (const r of NOTEBOOK[slug][session].rounds) clearDrafts(r.id);
     update((s) => ({ ...s, lastGame: slug, positions: { ...s.positions, [slug]: { session, round: 0 } } }));
+  };
 
   if (played.length === 0)
     return (
@@ -72,6 +79,7 @@ export function Notebook() {
             ))}
         </section>
       ))}
+      <ShortcutSetting />
       <section>
         {confirm ? (
           <div className="flex flex-wrap items-center gap-2">
@@ -81,6 +89,7 @@ export function Notebook() {
               className="h-11"
               onClick={() => {
                 clearSave();
+                clearDrafts();
                 update(() => emptySave());
                 setConfirm(false);
               }}
@@ -98,5 +107,32 @@ export function Notebook() {
         )}
       </section>
     </div>
+  );
+}
+
+/** Single-key shortcuts can be switched off (WCAG 2.1.4). */
+function ShortcutSetting() {
+  const [off, setOff] = useState(() => {
+    try {
+      return !!localStorage.getItem(SHORTCUTS_OFF);
+    } catch {
+      return false;
+    }
+  });
+  const toggle = () => {
+    const next = !off;
+    setOff(next);
+    try {
+      if (next) localStorage.setItem(SHORTCUTS_OFF, "1");
+      else localStorage.removeItem(SHORTCUTS_OFF);
+    } catch {}
+  };
+  return (
+    <section>
+      <label className="flex min-h-11 cursor-pointer items-center gap-3 text-[16px]">
+        <input type="checkbox" checked={!off} onChange={toggle} className="size-5 accent-cobalt" />
+        Keyboard shortcuts in the games (1–4 to choose, Enter to confirm)
+      </label>
+    </section>
   );
 }
