@@ -34,7 +34,8 @@ export function CafeGame() {
       {finished ? (
         <SessionEnd
           nextGame={nextGame("cafe")}
-          said={g.saidInSession()}
+          items={g.sessionItems()}
+          art="/art/covers/cafe.webp"
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
@@ -136,18 +137,20 @@ function Round({
             className="object-cover animate-in duration-500 fade-in"
           />
         </SceneCanvas>
-        <ul className={cn("flex flex-col gap-1 px-3 pt-2 lg:px-0", solved && "sr-only")} aria-label="What you can see">
-          {round.clues.map((c) => (
-            <li key={c} className="flex items-start gap-2 text-[15px] lg:text-[17px]">
-              <Eye className="mt-0.5 size-4 shrink-0 text-cobalt" aria-hidden />
-              {c}
-            </li>
-          ))}
-        </ul>
+        {!solved && (
+          <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
+            {round.clues.map((c) => (
+              <li key={c} className="flex items-start gap-2 text-[15px] lg:text-[18px]">
+                <Eye className="mt-0.5 size-4 shrink-0 text-cobalt" aria-hidden />
+                {c}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
-        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+        <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           {NAME[round.speaker]} says “{round.says}” {solved ? "You chose:" : "What do you do?"}
         </p>
         {round.options.map((o, i) => {
@@ -187,7 +190,7 @@ function Round({
               </Button>
             )}
             {pick && !pick.fits && (
-              <p role="status" className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[17px]">
+              <p role="status" className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[18px]">
                 <RotateCcw className="size-4 shrink-0" aria-hidden /> Not quite what {NAME[round.speaker]} meant. Look at the clues and try
                 another response.
               </p>
@@ -198,7 +201,7 @@ function Round({
           <div role="status" className="flex flex-col gap-2 rounded-xl bg-sage/15 p-4">
             <p className="text-sm font-bold text-sage">What the words were doing here</p>
             <p className="font-heading text-[20px] leading-snug">{round.use.charAt(0).toUpperCase() + round.use.slice(1)}.</p>
-            <p className="text-[15px] lg:text-[17px] leading-relaxed">{round.note}</p>
+            <p className="text-[15px] lg:text-[18px] leading-relaxed">{round.note}</p>
           </div>
         )}
         {solved && (

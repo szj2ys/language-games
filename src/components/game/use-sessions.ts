@@ -4,12 +4,9 @@ import { track } from "@/components/analytics";
 import { recordRound } from "@/lib/progress";
 import { useSave, useSpeech } from "@/lib/use-save";
 import { clearDrafts } from "@/lib/use-draft";
+import { NOTEBOOK } from "@/content/notebook";
 
 type SessionLike = { rounds: { id: string }[] };
-
-function firstLines(said?: string[]): string[] {
-  return said ? said.slice(0, 2) : [];
-}
 
 /** Where the player is in a game's sessions, saved locally so a reload resumes the same round. */
 export function useSessions<S extends SessionLike>(game: string, sessions: S[]) {
@@ -40,8 +37,11 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[]) 
     speech,
     toggleSpeech: () => update((s) => ({ ...s, settings: { ...s.settings, speech: !s.settings.speech } })),
     next: () => goTo(sessionIndex, roundIndex + 1),
-    /** What the player said in the current session, for the end card. */
-    saidInSession: () => session.rounds.flatMap((r) => firstLines(save.rounds[r.id]?.said)),
+    /** What the player said in each round of this session, and the job those words did. */
+    sessionItems: () =>
+      (NOTEBOOK[game as keyof typeof NOTEBOOK]?.[sessionIndex]?.rounds ?? [])
+        .map((r) => ({ text: save.rounds[r.id]?.said?.[0], did: r.did }))
+        .filter((x): x is { text: string; did: string } => !!x.text),
     finishedIn: (i: number) => sessions[i].rounds.every((r) => !!save.rounds[r.id]),
     nextSession: () => goTo(sessionIndex + 1, 0),
     replay: () => goTo(sessionIndex, 0),

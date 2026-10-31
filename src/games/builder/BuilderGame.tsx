@@ -57,7 +57,7 @@ const SQUARE: Geometry = {
   bg: "/art/square/site.webp",
   spot: { left: { x: 19, y: 52 }, right: { x: 81, y: 52 }, builder: { x: 62, y: 88 } },
   builder: { left: 30, w: 28, h: 52 },
-  person: { w: 24, h: 48, rest: 90 },
+  person: { w: 22, h: 46, rest: 76 },
   target: { top: 42, h: 18, w: 38 },
 };
 
@@ -96,7 +96,8 @@ export function BuilderGame() {
       {finished ? (
         <SessionEnd
           nextGame={nextGame("builder")}
-          said={g.saidInSession()}
+          items={g.sessionItems()}
+          art="/art/covers/builder.webp"
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
@@ -548,7 +549,7 @@ function FetchPlay({
           )}
         </div>
         {hint && !outcome && (
-          <p role="status" className="text-[15px] lg:text-[17px]">
+          <p role="status" className="text-[15px] lg:text-[18px]">
             {round.hint}
           </p>
         )}
@@ -688,7 +689,7 @@ function CallPlay({
           onPointPlace={(p) => setPointAt((cur) => (cur === p ? undefined : p))}
           walking={outcome ? outcome.delivery.place : null}
         />
-        <p className="px-3 pt-2 text-[15px] lg:text-[17px] lg:px-0">
+        <p className="px-3 pt-2 text-[15px] lg:text-[18px] lg:px-0">
           <span className="font-bold">Plan:</span> {round.plan}
         </p>
       </div>
@@ -696,7 +697,7 @@ function CallPlay({
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {round.thisWord && !outcome && (
           <div>
-            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[17px]">The yard — choose a stone to point at it</p>
+            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[18px]">The yard — choose a stone to point at it</p>
             <div className="flex gap-2 overflow-x-auto pb-1">
               {yardKinds.map((k) => {
                 const known = round.words.includes(k.stone);
@@ -766,7 +767,11 @@ function CallPlay({
 
         {outcome && !solved && <Marks outcome={outcome} want={round.goal} />}
         {notes.length > 0 && outcome && (
-          <ul role="status" className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px] lg:text-[17px]" aria-label="English notes">
+          <ul
+            role="status"
+            className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px] lg:text-[18px]"
+            aria-label="English notes"
+          >
             {notes.map((n) => (
               <li key={n}>
                 <span className="font-bold">English note:</span> {n}
@@ -781,7 +786,7 @@ function CallPlay({
           </p>
         )}
         {solved && round.teaches && (
-          <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px] lg:text-[17px]">
+          <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px] lg:text-[18px]">
             New word: <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>. You pointed and said “this”; now the
             builder names it. Next time you can simply call it.
           </p>
@@ -804,7 +809,7 @@ function CallPlay({
           )}
         </div>
         {hint && !outcome && (
-          <p role="status" className="text-[15px] lg:text-[17px]">
+          <p role="status" className="text-[15px] lg:text-[18px]">
             {round.hint}
           </p>
         )}
@@ -860,19 +865,31 @@ function UsePlay({
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-1 flex-col lg:block">
-        <Site
-          facing="right"
-          pointing={!keeper && round.says.startsWith("Slab!")}
-          delivered={pick?.shows ? [pick.shows] : []}
-          walking={pick?.shows?.place ?? null}
-          bubble={pick ? pick.reaction : round.says}
-          bubbleFrom={keeper ? "assistant" : "builder"}
-          onSpeak={() => speak(pick ? pick.reaction : round.says)}
-          keeper={keeper}
-        />
+        {/* Each situation is drawn (gpt-image-2): the beam in her arms, the sliding slab, the pile being counted. */}
+        <SceneCanvas
+          label={round.clues.join(" ")}
+          overlay={
+            <div className="absolute top-[4%] left-[3%] max-w-[62%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
+              <p className="text-xs font-bold text-muted-foreground">{keeper ? "The stock-keeper" : "The builder"}</p>
+              <p className="flex items-center gap-1 font-heading text-[clamp(17px,4.6vw,26px)] leading-tight font-semibold" aria-live="polite">
+                {pick ? pick.reaction : round.says}
+                <button
+                  type="button"
+                  onClick={() => speak(pick ? pick.reaction : round.says)}
+                  aria-label="Hear it again"
+                  className="-my-2 grid size-11 shrink-0 place-items-center rounded-full hover:bg-paper-deep"
+                >
+                  <Volume2 className="size-5" aria-hidden />
+                </button>
+              </p>
+            </div>
+          }
+        >
+          <Image src={`/art/builder/use/${round.id}.webp`} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+        </SceneCanvas>
         <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
           {round.clues.map((c) => (
-            <li key={c} className="flex items-start gap-2 text-[15px] lg:text-[17px]">
+            <li key={c} className="flex items-start gap-2 text-[15px] lg:text-[18px]">
               <Eye className="mt-0.5 size-4 shrink-0 text-cobalt" aria-hidden />
               {c}
             </li>
@@ -882,7 +899,7 @@ function UsePlay({
       <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
         {!solved ? (
           <>
-            <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+            <p className="text-[15px] text-muted-foreground lg:text-[18px]">
               {keeper ? "The stock-keeper" : "The builder"} says “{round.says}” What do you do?
             </p>
             {round.options.map((o, i) => {
@@ -915,7 +932,7 @@ function UsePlay({
             <div role="status" className="flex flex-col gap-2 rounded-xl bg-sage/15 p-4">
               <p className="text-sm font-bold text-sage">What the words were doing here</p>
               <p className="font-heading text-[20px] leading-snug">{round.use.charAt(0).toUpperCase() + round.use.slice(1)}.</p>
-              <p className="text-[15px] lg:text-[17px] leading-relaxed">{round.note}</p>
+              <p className="text-[15px] lg:text-[18px] leading-relaxed">{round.note}</p>
             </div>
             <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
               Next

@@ -27,7 +27,7 @@ export const GAMES: GameInfo[] = [
   {
     slug: "builder",
     howTo: [
-      "The builder calls out a stone: “Slab!”. Tap the stone he means and bring it.",
+      "The builder calls out a stone: “Slab!”. Choose the stone he means and bring it.",
       "Later he adds numbers and points: “Two beams — there!”. Get the stone, the number and the place right.",
       "Then swap roles: build the call yourself from word tiles. Your assistant does exactly what you say — and asks when your call is unclear.",
       "Finally, the same words do different jobs: an order, a report, a question, a warning. Work out which.",

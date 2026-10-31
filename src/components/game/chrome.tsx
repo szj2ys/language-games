@@ -79,7 +79,8 @@ export function SessionEnd({
   english,
   firstTry,
   total,
-  said = [],
+  items = [],
+  art,
   sources,
   nextTitle,
   nextGame,
@@ -90,8 +91,10 @@ export function SessionEnd({
   english: string;
   firstTry: number;
   total: number;
-  /** The English the player used in this session, newest last. */
-  said?: string[];
+  /** Each round's English and the job it did: the lesson of the session. */
+  items?: { text: string; did: string }[];
+  /** The game's picture, so the finished screen still shows the world it happened in. */
+  art?: string;
   sources: SourceId[];
   /** Absent on a game's last session. */
   nextTitle?: string;
@@ -102,55 +105,60 @@ export function SessionEnd({
 }) {
   const [lead, ...more] = sources;
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 py-6">
-      <h2 className="font-heading text-3xl font-semibold">
-        <span className="text-sage">Done</span> · {title}
-      </h2>
-      <p className="text-[18px]">
-        <span className="font-bold">
-          {firstTry} of {total}
-        </span>{" "}
-        right first time · {english.charAt(0).toLowerCase() + english.slice(1)}
-      </p>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        {nextTitle ? (
-          <Button size="lg" className="h-12 text-lg sm:flex-1" onClick={onNext} autoFocus>
-            Next: {nextTitle}
-          </Button>
-        ) : (
-          <Link href={nextGame?.href ?? "/"} className={cn(buttonVariants({ size: "lg" }), "h-12 text-lg sm:flex-1")}>
-            {nextGame ? `Next game: ${nextGame.title}` : "Choose another game"}
-          </Link>
-        )}
-        <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
-          Play again
-        </Button>
-      </div>
-      {said.length > 0 && (
-        <section aria-label="Your English in this session">
-          <p className="text-sm font-bold text-muted-foreground">Your English</p>
-          <ul className="mt-1 flex flex-wrap gap-1.5">
-            {said.slice(-8).map((line) => (
-              <li key={line} className="rounded-lg bg-card px-2.5 py-1 font-heading text-[16px]">
-                {line}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-      <details className="group rounded-xl border border-border bg-card">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 font-bold">
-          What Wittgenstein said — {SOURCES[lead].ref}
-          <span aria-hidden className="text-muted-foreground group-open:rotate-180">
-            ⌄
-          </span>
-        </summary>
-        <div className="flex flex-col gap-3 px-1 pb-1">
-          {[lead, ...more].map((id) => (
-            <MarginNote key={id} id={id} className="border-0" />
-          ))}
+    <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start lg:gap-8">
+      {art && (
+        <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-paper-deep">
+          <Image src={art} alt="" fill sizes="(min-width: 1024px) 700px, 100vw" className="object-cover" />
+          <p className="absolute top-3 left-3 rounded-full bg-card px-3 py-1 font-heading text-lg font-semibold shadow-sm">
+            {firstTry} of {total} right first time
+          </p>
         </div>
-      </details>
+      )}
+      <div className="flex flex-col gap-4">
+        <h2 className="font-heading text-3xl font-semibold">
+          <span className="text-sage">Done</span> · {title}
+        </h2>
+        <p className="text-[17px] lg:text-[18px]">You practised {english.charAt(0).toLowerCase() + english.slice(1)}.</p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          {nextTitle ? (
+            <Button size="lg" className="h-12 text-lg sm:flex-1" onClick={onNext} autoFocus>
+              Next: {nextTitle}
+            </Button>
+          ) : (
+            <Link href={nextGame?.href ?? "/"} className={cn(buttonVariants({ size: "lg" }), "h-12 text-lg sm:flex-1")}>
+              {nextGame ? `Next game: ${nextGame.title}` : "Choose another game"}
+            </Link>
+          )}
+          <Button size="lg" variant="outline" className="h-12" onClick={onReplay}>
+            Play again
+          </Button>
+        </div>
+        {items.length > 0 && (
+          <section aria-label="Your English in this session">
+            <ul className="flex flex-col divide-y divide-border rounded-xl border border-border bg-card">
+              {items.map((x) => (
+                <li key={x.text + x.did} className="flex flex-wrap items-baseline justify-between gap-x-3 px-3 py-2">
+                  <span className="font-heading text-[17px] lg:text-[18px]">{x.text}</span>
+                  <span className="text-[14px] text-muted-foreground lg:text-[15px]">{x.did}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        <details className="group rounded-xl border border-border bg-card">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 font-bold">
+            What Wittgenstein said — {SOURCES[lead].ref}
+            <span aria-hidden className="text-muted-foreground group-open:rotate-180">
+              ⌄
+            </span>
+          </summary>
+          <div className="flex flex-col gap-3 px-1 pb-1">
+            {[lead, ...more].map((id) => (
+              <MarginNote key={id} id={id} className="border-0" />
+            ))}
+          </div>
+        </details>
+      </div>
     </div>
   );
 }
@@ -272,7 +280,8 @@ export function HintButton({ used, onUse }: { used: boolean; onUse: () => void }
  * A 16:9 scene on desktop. On a phone it is framed around the action instead:
  * `frame="square"` shows a square crop of the middle of the 16:9 canvas (the
  * game moves its objects inward to stay inside it); `frame="own"` means the game
- * draws its own square picture for phones. Without `frame`, the phone sees a 4:3
+ * draws its own square picture for phones; `frame="floor"` shows the lower middle of
+ * the canvas close up, for stages where everything happens on the floor. Without `frame`, the phone sees a 4:3
  * crop. Positions in % of the canvas land on the same spot in the art.
  * `overlay` sits on the visible frame (speech bubbles), not on the canvas.
  */
@@ -287,7 +296,7 @@ export function SceneCanvas({
   overlay?: React.ReactNode;
   label?: string;
   className?: string;
-  frame?: "square" | "own";
+  frame?: "square" | "own" | "floor";
 }) {
   return (
     <figure
@@ -302,6 +311,8 @@ export function SceneCanvas({
         className={cn(
           "@container absolute inset-y-0 sm:left-0 sm:w-full",
           frame === "square" && "left-[-38.889%] w-[177.778%]",
+          // The floor of a 16:9 stage, close up: the canvas is drawn at 320% and anchored at the bottom.
+          frame === "floor" && "top-auto left-[-110%] aspect-[16/9] w-[320%] sm:top-0 sm:aspect-auto",
           frame === "own" && "left-0 w-full",
           !frame && "left-[-16.667%] w-[133.333%]",
         )}

@@ -62,7 +62,7 @@ export function Notebook() {
                       const rec = save.rounds[r.id];
                       return (
                         <li key={r.id} className="rounded-lg bg-card px-3 py-2">
-                          {(rec.said ?? []).slice(0, 3).map((line) => (
+                          {(rec.said ?? []).map((line) => (
                             <p key={line} className="font-heading text-[17px] leading-snug">
                               {line}
                             </p>

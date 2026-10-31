@@ -23,7 +23,8 @@ export function PupilGame() {
       {finished ? (
         <SessionEnd
           nextGame={nextGame("pupil")}
-          said={g.saidInSession()}
+          items={g.sessionItems()}
+          art="/art/covers/pupil.webp"
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
@@ -73,12 +74,10 @@ function Lesson({
     setCall(c);
     const right = c === level.twist.answer;
     const marks = 1 + (cards <= best ? 1 : 0) + (right ? 1 : 0);
-    onDone(
-      marks,
-      3,
-      cards <= best && right,
-      level.exam.map((i) => i.correct),
-    );
+    onDone(marks, 3, cards <= best && right, [
+      ...pupil.shown.map((i) => `Showed: ${i.correct}`),
+      `Your call on “${level.twist.item.word}”: ${c === "correct" ? "correct it" : "both are in use"}`,
+    ]);
     setPhase("done");
   };
 
@@ -129,13 +128,13 @@ function Lesson({
             <Image src="/art/pupil/pupil.webp" alt="" fill sizes="220px" className="object-contain object-bottom" />
           </div>
         </SceneCanvas>
-        <p className="px-3 pt-2 text-[15px] lg:text-[17px] lg:px-0">{level.task}</p>
+        <p className="px-3 pt-2 text-[15px] lg:text-[18px] lg:px-0">{level.task}</p>
       </div>
 
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         {phase === "teach" && !exam.passed && (
           <>
-            <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+            <p className="text-[15px] text-muted-foreground lg:text-[18px]">
               Show the pupil an example. It will re-sit the test using whatever way of going on fits everything it has seen.
             </p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="group" aria-label="Example cards">
@@ -169,13 +168,13 @@ function Lesson({
               ))}
             </div>
             {explained.length > 0 && (
-              <p role="status" className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px] lg:text-[17px]">
+              <p role="status" className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px] lg:text-[18px]">
                 {exam.passed
                   ? "This time the explanation worked: an example had already shown the pupil what its key word means. Explanations work inside a practice, not instead of one (§§198–202)."
                   : "The pupil nods — and reads your sentence its own way. An explanation is one more sign to interpret (§198)."}
               </p>
             )}
-            <p className="text-[15px] text-muted-foreground lg:text-[17px]" aria-live="polite">
+            <p className="text-[15px] text-muted-foreground lg:text-[18px]" aria-live="polite">
               Cards used: {cards}.
             </p>
           </>
@@ -219,7 +218,7 @@ function Lesson({
                   <span className="font-bold">{call === level.twist.answer ? "Good call. " : "Not this time. "}</span>
                   {level.twist.why}
                 </p>
-                <p className="text-[15px] text-muted-foreground lg:text-[17px]">English practised: {level.english}.</p>
+                <p className="text-[15px] text-muted-foreground lg:text-[18px]">English practised: {level.english}.</p>
                 <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
                   Next
                 </Button>

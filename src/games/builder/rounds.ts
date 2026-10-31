@@ -35,8 +35,7 @@ export type UseRound = {
   speaker: "builder" | "keeper";
   says: string;
   clues: string[];
-  /** `shows`: what the assistant carries where, so the outcome is seen, not told. */
-  options: { text: string; fits: boolean; reaction: string; shows?: Delivery }[];
+  options: { text: string; fits: boolean; reaction: string }[];
   use: string;
   note: string;
 };
@@ -205,7 +204,7 @@ export const SESSIONS: Session[] = [
         says: "Three slabs!",
         clues: ["The builder stands by the unfinished wall, empty-handed.", "The wall needs three more slabs."],
         options: [
-          { text: "Bring him three slabs.", fits: true, reaction: "Good.", shows: { stone: "slab", count: 3, place: "builder" } },
+          { text: "Bring him three slabs.", fits: true, reaction: "Good." },
           { text: "Write “3 slabs” on the stock list.", fits: false, reaction: "I don't need a list — I need slabs!" },
           { text: "Say “Yes, three slabs.”", fits: false, reaction: "Then bring them!" },
         ],
@@ -227,7 +226,6 @@ export const SESSIONS: Session[] = [
             text: "Carry three slabs to her.",
             fits: false,
             reaction: "Why are you bringing them to me? I was telling you how many there are.",
-            shows: { stone: "slab", count: 3, place: "right" },
           },
           { text: "Write “3 slabs” on the stock list.", fits: true, reaction: "That's right — three left." },
           { text: "Say “Slab!”", fits: false, reaction: "…Yes, slabs. Three of them." },
@@ -270,9 +268,9 @@ export const SESSIONS: Session[] = [
         says: "That slab!",
         clues: ["There are two slabs on the ground: a big one and a small one.", "He waves vaguely towards both of them."],
         options: [
-          { text: "Bring the big one.", fits: false, reaction: "Not that one!", shows: { stone: "slab", count: 1, place: "builder" } },
+          { text: "Bring the big one.", fits: false, reaction: "Not that one!" },
           { text: "Ask: “Which one — the big one or the small one?”", fits: true, reaction: "The small one. Thanks for asking." },
-          { text: "Bring both.", fits: false, reaction: "I said that slab — one!", shows: { stone: "slab", count: 2, place: "builder" } },
+          { text: "Bring both.", fits: false, reaction: "I said that slab — one!" },
         ],
         use: "an order that needs a question",
         note: "“That” only works when the pointing picks one thing out. When it doesn't, the right move in the game is to ask: “Which one?”",
@@ -293,7 +291,6 @@ export const SESSIONS: Session[] = [
             text: "Bring her two beams.",
             fits: false,
             reaction: "They're right here on the cart — I'm telling you what arrived.",
-            shows: { stone: "beam", count: 2, place: "right" },
           },
           { text: "Shout “Two beams!” to the builder.", fits: false, reaction: "He didn't ask for any. Just write it down." },
         ],

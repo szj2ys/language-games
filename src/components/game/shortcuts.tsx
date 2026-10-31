@@ -22,8 +22,6 @@ export function useShortcuts(keys: Record<string, (() => void) | undefined>) {
       try {
         if (localStorage.getItem(SHORTCUTS_OFF)) return;
       } catch {}
-      // Enter on a focused button already activates it.
-      if (e.key === "Enter" && (e.target as HTMLElement)?.tagName === "BUTTON") return;
       const fn = keys[e.key];
       if (!fn) return;
       e.preventDefault();

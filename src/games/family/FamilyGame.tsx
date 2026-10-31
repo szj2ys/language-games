@@ -37,7 +37,8 @@ export function FamilyGame() {
       {finished ? (
         <SessionEnd
           nextGame={nextGame("family")}
-          said={g.saidInSession()}
+          items={g.sessionItems()}
+          art="/art/covers/family.webp"
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
@@ -121,7 +122,7 @@ function HintRow({ hint, shown, onShow }: { hint: string; shown: boolean; onShow
     <div className="flex items-center gap-3">
       <HintButton used={shown} onUse={onShow} />
       {shown && (
-        <p role="status" className="text-[15px] lg:text-[17px]">
+        <p role="status" className="text-[15px] lg:text-[18px]">
           {hint}
         </p>
       )}
@@ -202,7 +203,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
         ))}
       </div>
       <div className="mt-auto flex flex-col gap-3 lg:mt-0">
-        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+        <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           Make the strongest claim that is true of these {session.kind}. Then look.
         </p>
         <p className="font-heading text-[21px] leading-snug">
@@ -249,7 +250,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
               </Button>
             </div>
             {hint && (
-              <p role="status" className="text-[15px] lg:text-[17px]">
+              <p role="status" className="text-[15px] lg:text-[18px]">
                 {round.hint}
               </p>
             )}
@@ -261,7 +262,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
               Note “of these”: the claim is about the {session.kind} on the table, not every {session.kind.slice(0, -1)} there is.
             </p>
             {blurred.length > 0 && (
-              <p className="text-[15px] lg:text-[17px]">
+              <p className="text-[15px] lg:text-[18px]">
                 <span className="font-bold">{blurred.map((c) => c.name).join(", ")}</span> was set aside as unclear
                 {round.blurredNote ? `: ${round.blurredNote}` : "."}
               </p>
@@ -330,7 +331,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   return (
     <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-col gap-2">
-        <p className="text-[15px] text-muted-foreground lg:text-[17px]">{threadPrompt()}</p>
+        <p className="text-[15px] text-muted-foreground lg:text-[18px]">{threadPrompt()}</p>
         <div className="relative grid grid-cols-3 gap-2">
           {session.cards.map((c) => (
             <CardTile
@@ -353,7 +354,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
                 key={f.id}
                 type="button"
                 onClick={() => linkWith(f)}
-                className="min-h-11 rounded-lg border-2 bg-card px-2.5 py-1.5 text-left text-[15px] lg:text-[17px] font-bold hover:bg-paper-deep"
+                className="min-h-11 rounded-lg border-2 bg-card px-2.5 py-1.5 text-left text-[15px] lg:text-[18px] font-bold hover:bg-paper-deep"
                 style={{ borderColor: f.colour }}
               >
                 {f.plural}
@@ -362,7 +363,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
           </div>
         )}
         {bad && (
-          <p role="status" className="rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[17px]">
+          <p role="status" className="rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[18px]">
             {bad} Try another link.
           </p>
         )}
@@ -372,7 +373,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
               <li key={s.card.id} className="flex flex-col">
                 {s.link && (
                   <span
-                    className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px] lg:text-[17px]"
+                    className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px] lg:text-[18px]"
                     style={{ borderColor: feature(s.link)?.colour }}
                   >
                     Both {chain[i - 1].card.name} and {s.card.name} {feature(s.link)?.plural}.
@@ -404,7 +405,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
               The thread holds with {result.fibres} different fibres — and no single fibre runs through all {session.cards.length}{" "}
               {session.kind}. That is what Wittgenstein calls a family resemblance (§67).
             </p>
-            <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
+            <Button size="lg" className="h-12 text-lg" onClick={onNext}>
               Next
             </Button>
           </>
@@ -474,7 +475,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
         </div>
       </div>
       <div className="mt-auto flex flex-col gap-3 lg:mt-0">
-        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+        <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           {agree(n, "Does", "Do")} {n.name} belong with these {session.kind}? Say one true sentence.
         </p>
         <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Kind of sentence">
@@ -607,7 +608,7 @@ function ThreadLines({ chain, cards, features }: { chain: { card: Card; link?: s
   const rows = Math.ceil(cards.length / cols);
   const centre = (c: Card) => {
     const i = cards.findIndex((x) => x.id === c.id);
-    return { x: ((i % cols) + 0.5) * (100 / cols), y: (Math.floor(i / cols) + 0.42) * (100 / rows) };
+    return { x: ((i % cols) + 0.5) * (100 / cols), y: (Math.floor(i / cols) + 0.36) * (100 / rows) };
   };
   if (chain.length < 2) return null;
   return (

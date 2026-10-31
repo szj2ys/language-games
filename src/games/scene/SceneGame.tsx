@@ -37,9 +37,10 @@ const GAME = "scene";
 // Stage geometry, in % of the stage picture (16:9). Back row first so the front row draws over it.
 const SPOT_X = [23, 41, 59, 77];
 /** On a phone the stage is framed square around its middle, so the four places sit closer together. */
-const SPOT_X_PHONE = [31, 43.7, 56.3, 69];
-const ROW_Y = { back: 71, front: 87 };
-const ROW_SCALE = { back: 0.82, front: 1 };
+const SPOT_X_PHONE = [37, 45.7, 54.3, 63];
+const ROW_Y = { back: 70, front: 87 };
+/** The back row is drawn smaller and higher, with a shadow, so 'behind' never reads as 'on'. */
+const ROW_SCALE = { back: 0.74, front: 1 };
 /** Sprite width in % of the stage width, and height as a multiple of width. */
 const SIZE: Record<Thing, { w: number; h: number }> = {
   box: { w: 15, h: 0.9 },
@@ -168,11 +169,21 @@ function Stage({
   const phone = useIsPhone();
   const spotX = phone ? SPOT_X_PHONE : SPOT_X;
   // Framed square on a phone, the canvas is wider than the screen: draw things a little smaller so neighbours do not overlap.
-  const placed = layout(scene, spotX, phone ? 0.72 : 1);
+  const placed = layout(scene, spotX, phone ? 0.42 : 1);
   const holders = placed.filter((p) => HOLDERS.includes(p.thing) && scene[p.thing] && "spot" in scene[p.thing]!);
   return (
-    <SceneCanvas label={label} frame="square">
+    <SceneCanvas label={label} frame="floor">
       <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+      {placed
+        .filter((p) => scene[p.thing] && "spot" in scene[p.thing]!)
+        .map((p) => (
+          <div
+            key={`shadow-${p.thing}`}
+            aria-hidden
+            className="absolute -translate-x-1/2 translate-y-1/2 rounded-[50%] bg-ink/25 blur-[2px]"
+            style={{ left: `${p.x}%`, bottom: `${p.bottom}%`, width: `${p.w * 0.95}%`, aspectRatio: "5 / 1", zIndex: p.z - 1 }}
+          />
+        ))}
       {placed.map((p) => (
         <Sprite
           key={p.thing}
@@ -197,8 +208,8 @@ function Stage({
                 style={{
                   left: `${spotX[spot]}%`,
                   bottom: row === "back" ? "27.5%" : "9%",
-                  width: phone ? "11.5%" : "15.5%",
-                  height: "16.5%",
+                  width: phone ? "7.6%" : "15.5%",
+                  height: phone ? "15%" : "16.5%",
                 }}
               />
             );
@@ -279,7 +290,8 @@ export function SceneGame() {
       {finished ? (
         <SessionEnd
           nextGame={nextGame("scene")}
-          said={g.saidInSession()}
+          items={g.sessionItems()}
+          art="/art/covers/scene.webp"
           title={session.title}
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
@@ -344,7 +356,7 @@ function Controls({
         )}
       </div>
       {showHint && !checked && (
-        <p role="status" className="text-[15px] lg:text-[17px]">
+        <p role="status" className="text-[15px] lg:text-[18px]">
           {hint}
         </p>
       )}
@@ -385,13 +397,13 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
 
   const message = (
     <>
-      <p className="text-[15px] text-muted-foreground lg:text-[17px]">The message — make every sentence true:</p>
+      <p className="text-[15px] text-muted-foreground lg:text-[18px]">The message — make every sentence true:</p>
       <ul className="mt-1 flex flex-col gap-1.5">
         {round.message.map((c, i) =>
           checked ? (
             <Verdict key={i} ok={checked[i]}>
               {say(c)}
-              {!checked[i] && <span className="block text-[15px] lg:text-[17px] text-muted-foreground">{whyFalse(scene, c)}</span>}
+              {!checked[i] && <span className="block text-[15px] lg:text-[18px] text-muted-foreground">{whyFalse(scene, c)}</span>}
             </Verdict>
           ) : (
             <li key={i} className="rounded-lg bg-card px-3 py-2 font-heading text-[19px]">
@@ -414,17 +426,13 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
           onSelectPlaced={checked ? undefined : (t) => setSelected((cur) => (cur === t ? null : t))}
           onDrop={checked ? undefined : drop}
         />
-        <div className="px-3 lg:hidden">
-          {message}
-        </div>
+        <div className="px-3 lg:hidden">{message}</div>
       </div>
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
-        <div className="hidden lg:block">
-          {message}
-        </div>
+        <div className="hidden lg:block">{message}</div>
         {!checked && (
           <div>
-            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[17px]">
+            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[18px]">
               {selected
                 ? `Now choose a place on the stage for the ${selected}.`
                 : tray.length
@@ -527,7 +535,7 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <Stage scene={round.scene} label="What is really on the stage" />
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
-        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+        <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           The report. Change one word in each false sentence so that it fits the stage.
         </p>
         <ul className="flex flex-col gap-1.5">
@@ -548,7 +556,7 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
             return checked ? (
               <Verdict key={i} ok={checked[i]}>
                 {line}
-                {!checked[i] && <span className="block text-[15px] lg:text-[17px] text-muted-foreground">{whyFalse(round.scene, c)}</span>}
+                {!checked[i] && <span className="block text-[15px] lg:text-[18px] text-muted-foreground">{whyFalse(round.scene, c)}</span>}
               </Verdict>
             ) : (
               <li key={i} className="rounded-lg bg-card px-3 py-2">
@@ -617,13 +625,13 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
         <Stage scene={round.scene} label="Your stage, which your partner cannot see" />
         {result && (
           <div className="px-3 lg:px-0">
-            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[17px]">Your partner&apos;s stage</p>
+            <p className="mb-1 text-[15px] text-muted-foreground lg:text-[18px]">Your partner&apos;s stage</p>
             <Stage scene={partnerScene} label="Your partner's stage" />
           </div>
         )}
       </div>
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
-        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+        <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           Your partner has everything except the <b>{round.target}</b>. Tell them where it goes — one sentence.
         </p>
         <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg bg-card px-3 py-2 font-heading text-[19px]">

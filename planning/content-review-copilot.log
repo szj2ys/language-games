@@ -489,3 +489,373 @@ Mostly Prettier reformatting so far; sources.ts wording is unchanged. Reading on
   │ "twist|forms\[|\.forms|answer ===|"both"|"correct"|"accept"|label:" in *.tsx (src\games\pupil)
   └ 12 lines found
 
+● Read PupilGame.tsx
+  │ src\games\pupil\PupilGame.tsx
+  └ L60:215 (156 lines read)
+
+● Read FamilyGame.tsx
+  │ src\games\family\FamilyGame.tsx
+  └ L255:275 (21 lines read)
+
+/ Search (grep)
+  │ "join the family|through \$\{|newcomerText|joinText|true —|True —"
+  │ (src\games\family\FamilyGame.tsx)
+  └ 3 lines found
+
+● Read FamilyGame.tsx                                                                             5s
+  │ src\games\family\FamilyGame.tsx
+  └ L425:512 (88 lines read)
+
+● Read rounds.ts                                                                                  5s
+  │ src\games\family\rounds.ts
+  └ L38:135 (93 lines read)
+
+/ Search (grep)                                                                                   6s
+  │ "pi-217|export function claimText" (src)
+  └ 5 lines found
+
+● Check latest commits and working tree status (shell)
+  │ git --no-pager log --format='%h %ad %s' --date=format:'%H:%M:%S' -6; "---status"; git --no-pager
+  │ status --short --untracked-files=all; "---now"; Get-Date -Format 'HH:mm:ss'
+  └ 9 lines…
+
+● Show d31ace7 stat and relevant status (shell)                                                   5s
+  │ git --no-pager show --stat --format='%h %an %ad%n%B' --date=iso d31ace7 | Select-Object -First
+  │ 40; "---status (src, planning only)"; git --no-pager status --short -- src planning
+  └ 23 lines…
+
+● Save d31ace7 source diff to temp file (shell)                                                   6s
+  │ git --no-pager show d31ace7 --format= -- src > "$env:TEMP\d31.diff"; (Get-Content
+  │ "$env:TEMP\d31.diff").Count
+  └ 1 line…
+
+d31ace7 also committed my review file itself, so later edits will show as modifications to a tracked file. Reading the 536-line source diff.
+
+● Read d31.diff
+  │ C:\Users\ADMINI~1\AppData\Local\Temp\d31.diff
+  └ L1:270 (270 lines read)
+
+● Read d31.diff
+  │ C:\Users\ADMINI~1\AppData\Local\Temp\d31.diff
+  └ L270:536 (267 lines read)
+
+● Read rounds.ts
+  │ src\games\family\rounds.ts
+  └ L1:37 (37 lines read)
+
+● Read FamilyGame.tsx
+  │ src\games\family\FamilyGame.tsx
+  └ L545:570 (26 lines read)
+
+/ Search (grep)
+  │ "ask:" (src\games\cafe\rounds.ts)
+  └ 4 lines found
+
+/ Search (grep)
+  │ "other what|Which one|the one with" (src\games\cafe\rounds.ts)
+  └ 3 lines found
+
+● Check whether HEAD moved again (shell)
+  │ git --no-pager log --format='%h %ad %s' --date=format:'%H:%M:%S' -3; Get-Date -Format
+  │ 'HH:mm:ss'; git --no-pager status --short -- src
+  └ 4 lines…
+
+✗ Probe family sentences and pupil items on HEAD (shell)
+  │ $p = 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files
+  │ \probe2.mjs'
+  │ @'
+  │ const root = "file:///D:/githubprojects/language-games/src/games/";
+  │ const fam = await import(root + "family/rounds.ts");…
+  └ node:internal/modules/esm/resolve:272
+    throw new ERR_MODULE_NOT_FOUND(
+    ^
+
+    Error [ERR_MODULE_NOT_FOUND]: Cannot find module
+    'D:\githubprojects\language-games\src\games\pupil\engine' imported from
+    D:\githubprojects\language-games\src\games\pupil\levels.ts
+    at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+    at moduleResolve (node:internal/modules/esm/resolve:879:10)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+    at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///D:/githubprojects/language-games/src/games/pupil/engine'
+    }
+
+    Node.js v24.22.1
+    Failed with exit code 1
+
+`levels.ts` imports `./engine` without a file extension, so Node's resolver needs a small resolve hook. Checking the pupil engine's own imports first.
+
+/ Search (grep)
+  │ "^import" (src\games\pupil\engine.ts, src\games\family\engine.ts)
+  └ No matches found
+
+● Run probe with extensionless TS resolve hook (shell)                                            6s
+  │ $d =
+  │ 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files'
+  │ @'
+  │ export async function resolve(spec, ctx, next) {
+  │ try { return await next(spec, ctx); }…
+  └ 23 lines…
+
+/ Search (grep)
+  │ ""pi-202": \{" (src\content\sources.ts)
+  └ 9 lines found
+
+pi-202 fits both sessions. One more check: the f1-1 note's §66 claim against the saved German text.
+
+/ Search (grep)
+  │ "Patience|Gewinnen und Verlieren"
+  │ (~\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files)
+  └ 1 line found
+
+● Probe f1-6 lottery 'played alone' verdict (shell)
+  │ $d =
+  │ 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files'
+  │ @'
+  │ const fam = await
+  │ import("file:///D:/githubprojects/language-games/src/games/family/rounds.ts");…
+  └ 15 lines…
+
+● Read engine.ts
+  │ src\games\builder\engine.ts
+  └ L25:85 (61 lines read)
+
+● Spot-check two applied fixes on HEAD (shell)
+  │ $d =
+  │ 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files'
+  │ @'
+  │ const b = await
+  │ import("file:///D:/githubprojects/language-games/src/games/builder/engine.ts");…
+  └ 12 lines…
+
+Both fixes hold on HEAD: "That one is an arch, not a slab." and "Some of these tools are used to cut things." Getting exact HEAD line numbers before rewriting the review.
+
+/ Search (grep)
+  │ "const sentence =|next\.slice\(1\)\.map|function negate|sources=\{g\.sessionIndex|Verbs about
+  │ the future|looks-ahead", label|word: "mind"|He stopped to smoke|Every rule you
+  │ taught|card\("wall"|id: "alone"|card\("lottery"|choose 'a' or 'an'|Warm-up \(A2\): in, on"
+  │ (src\games\family\FamilyGame.tsx, src\games\pupil\PupilGame.tsx, src\games\pupil\levels.ts,
+  │ src\games\family\rounds.ts, src\content\sources.ts, src\games\scene\rounds.ts)
+  └ 16 lines found
+
+● Check review file EOL and HEAD (shell)
+  │ git --no-pager ls-files --eol planning/content-review-copilot.md; git --no-pager log -1
+  │ --format='%h %ad' --date=format:'%H:%M:%S'; Get-Date -Format 'HH:mm:ss'
+  └ 3 lines…
+
+● Rewrite review against HEAD and verify (shell)
+  │ $path = 'D:\githubprojects\language-games\planning\content-review-copilot.md'
+  │ $t = @'
+  │ # Content review: English, pedagogy and citations (Copilot)
+  │
+  │ Reviewed: the five `rounds.ts` files, `pupil/levels.ts`, `content/sources.ts`, and the …
+  └ 90 lines…
+
+The review is rewritten (28 lines, 6 items, no BOM). Next I'll check whether HEAD has moved since `d31ace7` and whether each item still applies at the line numbers I cited.
+
+/ Search (grep)
+  │ "most others take|looks-ahead|word: "mind"|stopped to smoke|just add -s|to the left
+  │ of|wall|plural: "can be played alone"|"lottery"|a' or 'an'" (src\games\pupil\levels.ts,
+  │ src\games\family\rounds.ts, src\games\scene\rounds.ts, src\content\sources.ts)
+  └ 14 lines found
+
+● Check HEAD and working tree status (shell)
+  │ cd D:\githubprojects\language-games; git --no-pager log -6 --date=iso --format="%h %ad %s";
+  │ "---status"; git --no-pager status --short; "---"; Get-Date -Format o
+  └ 33 lines…
+
+● Read levels.ts
+  │ src\games\pupil\levels.ts
+  └ L150:200 (51 lines read)
+
+/ Search (grep)
+  │ "§" in *.ts (src\games, src\content\sources.ts)
+  └ 83 lines found
+
+● Verify first-pass text and scene usage (shell)
+  │ cd D:\githubprojects\language-games; git --no-pager show
+  │ d31ace7:planning/content-review-copilot.md | Select-String -Pattern '217|Warm-up' |
+  │ ForEach-Object { $_.LineNumber.ToString() + ': ' + $_.Line }; "---scene right-of"; Select-String
+  │ -Path src\games\scene\rounds.ts -Pattern 'right of|id: "s1-' | ForEach-Object {
+  │ $_.LineNumber.ToString() + ': ' + $_.Line.Trim() }
+  └ 21 lines…
+
+● Read levels.ts
+  │ src\games\pupil\levels.ts
+  └ L196:260 (59 lines read)
+
+● Map § notes to round ids; check German (shell)
+  │ cd D:\githubprojects\language-games
+  │ foreach ($f in 'src\games\cafe\rounds.ts','src\games\builder\rounds.ts') { "== $f"; $lines =
+  │ Get-Content $f; $id=''; for ($i=0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match 'id:
+  │ "([a-z0-9-]+)"') { $id = $matches[1] }; if ($lines[$i] -match '§') { "{0} [{1}]: {2}" -f
+  │ ($i+1), $id, $lines[$i].Trim().Substring(0, [Math]::Min(90, $lines[$i].Trim().Length)) } } }…
+  └ 17 lines…
+
+● Search German extracts for §21 wording (shell)
+  │ $d =
+  │ 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files'
+  │ Get-ChildItem $d -Filter 'de-sections*.txt' | ForEach-Object { $_.Name + ' ' + $_.Length }
+  │ foreach ($f in Get-ChildItem $d -Filter 'de-sections*.txt') { $t =
+  │ [IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8); foreach ($p in 'chtest …
+  └ 5 lines…
+
+● Read de-sections2.txt
+  │ ~\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files\de-sections2.txt
+  └ 25 lines read
+
+● Read de-sections.txt
+  │ ~\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files\de-sections.txt
+  └ 51 lines read
+
+● Fetch German PI raw text (shell)
+  │ $ProgressPreference='SilentlyContinue'
+  │ $out = Join-Path $env:TEMP 'pu-de.txt'
+  │ foreach ($u in 'https://www.wittgensteinproject.org/w/index.php?title=Philosophische_Untersuch
+  │ ungen&action=raw','https://www.wittgensteinproject.org/w/index.php?title=Philosophische_Unters
+  │ uchungen_(Teil_I)&action=raw') {…
+  └ 7 lines…
+
+● Extract German §21, §199, §30 passages (shell)
+  │ $t = [IO.File]::ReadAllText((Join-Path $env:TEMP 'pu-de.txt'), [Text.Encoding]::UTF8)
+  │ foreach ($p in 'chtest du das tun','Gepflogenheiten (Gebr','Man muß schon etwas wissen','Wie ist
+  │ es aber: Ist der Ruf') { $i = $t.IndexOf($p); if ($i -ge 0) { "[$p] @$i : " +
+  │ $t.Substring([Math]::Max(0,$i-260), 560).Replace("`n",' ') ; "" } else { "[$p] not found" } }
+  └ 6 lines…
+
+● Locate section numbers in German text (shell)
+  │ $t = [IO.File]::ReadAllText((Join-Path $env:TEMP 'pu-de.txt'), [Text.Encoding]::UTF8)
+  │ function SecAt($pos) { $m = [regex]::Matches($t.Substring(0,$pos), '\{\{ParPUde\|(\d+)\}\}');
+  │ if ($m.Count) { $m[$m.Count-1].Groups[1].Value } else { '?' } }
+  │ "§ at Möchtest: " + (SecAt 29789); "§ at 'Man muß schon': " + (SecAt 40528)
+  │ foreach ($p in 'Institutionen','Gepflogenheit') { $ms = [regex]::Matches($t, …
+  └ 10 lines…
+
+● Read sources.ts
+  │ src\content\sources.ts
+  └ L184:214 (31 lines read)
+
+● Check §21 role phrase and Part II presence (shell)
+  │ $t = [IO.File]::ReadAllText((Join-Path $env:TEMP 'pu-de.txt'), [Text.Encoding]::UTF8)
+  │ function SecAt($pos) { $m = [regex]::Matches($t.Substring(0,$pos), '\{\{ParPUde\|(\d+)\}\}');
+  │ if ($m.Count) { $m[$m.Count-1].Groups[1].Value } else { '?' } }
+  │ foreach ($p in 'Rolle, die das Aussprechen','Hasen','Aspekt','Philosophie der
+  │ Psychologie','Teil II','Gesicht') { $i = $t.IndexOf($p); if ($i -ge 0) { "[$p] § " + (SecAt …
+  └ 10 lines…
+
+The German page has only Part I (it ends at §693), so PPF xi still can't be checked from it. I'll try one search on the same wiki for a Part II page before leaving PPF xi as uncheckable.
+
+● Search wiki for German PPF xi (shell)
+  │ $ProgressPreference='SilentlyContinue'
+  │ try { $r = Invoke-WebRequest -UseBasicParsing -TimeoutSec 60 -Uri
+  │ 'https://www.wittgensteinproject.org/w/api.php?action=query&list=search&srsearch=%22Bemerken+e
+  │ ines+Aspekts%22&format=json'; $j =
+  │ [Text.Encoding]::UTF8.GetString($r.RawContentStream.ToArray()) | ConvertFrom-Json; …
+  └ 3 lines…
+
+● Read rounds.ts
+  │ src\games\family\rounds.ts
+  └ L20:110 (91 lines read)
+
+/ Search (grep)
+  │ "function patternItem" (src\games\pupil\levels.ts)
+  └ No matches found
+
+Adding `alone` to the lottery can't create a feature shared by every card, because chess lacks `alone`. `patternItem` isn't a function declaration, so I'll search for its definition.
+
+/ Search (grep)
+  │ "(const|function|export) \w*patternItem|patternItem\s*=" (src\games\pupil)
+  └ 11 lines found
+
+● Verify German §23 list items (shell)
+  │ $t = [IO.File]::ReadAllText((Join-Path $env:TEMP 'pu-de.txt'), [Text.Encoding]::UTF8)
+  │ function SecAt($pos) { $m = [regex]::Matches($t.Substring(0,$pos), '\{\{ParPUde\|(\d+)\}\}');
+  │ if ($m.Count) { $m[$m.Count-1].Groups[1].Value } else { '?' } }
+  │ foreach ($p in 'Befehlen, und nach Befehlen handeln','Berichten eines Hergangs','Grüßen') { $i
+  │ = $t.IndexOf($p); if ($i -ge 0) { "[$p] § " + (SecAt $i) + ": " + $t.Substring($i, …
+  └ 4 lines…
+
+All the §23 phrases are confirmed. One claim still needs checking before the rewrite: item 2 says every other twist compares two forms with the same meaning, so I'll read all the twist prompts.
+
+/ Search (grep)
+  │ "prompt:|answer: "" (src\games\pupil\levels.ts)
+  └ 12 lines found
+
+● Write final review and verify format (shell)
+  │ $path = 'D:\githubprojects\language-games\planning\content-review-copilot.md'
+  │ $t = @'
+  │ # Content review: English, pedagogy and citations (Copilot)
+  │
+  │ Reviewed: the five `rounds.ts` files, `pupil/levels.ts`, `content/sources.ts`, and the …
+  └ 117 lines…
+
+● Inspect other agent's in-progress diffs (shell)
+  │ cd D:\githubprojects\language-games
+  │ git --no-pager diff --stat -- src
+  │ "===== builder/rounds.ts"; git --no-pager diff -U1 -- src/games/builder/rounds.ts
+  │ "===== FamilyGame.tsx (hunks touching negate/templates)"; git --no-pager diff -U0 --
+  │ src/games/family/FamilyGame.tsx | Select-String -Pattern '^@@|negate|Both|Not …
+  └ 77 lines…
+
+● Verify cited line numbers at d31ace7 (shell)
+  │ cd D:\githubprojects\language-games
+  │ $f = (git --no-pager show d31ace7:src/games/family/FamilyGame.tsx) -split "`n"
+  │ foreach ($n in 319,429,551) { "FamilyGame.tsx:$n  " + $f[$n-1].Trim() }
+  │ $p = (git --no-pager show d31ace7:src/games/pupil/PupilGame.tsx) -split "`n"
+  │ "PupilGame.tsx:29  " + $p[28].Trim()…
+  └ 9 lines…
+
+Every cited line is correct at `d31ace7`. Before finalizing item 4's "used only for pupil-2" wording, I'll confirm that pi-217 isn't referenced anywhere else.
+
+/ Search (grep)
+  │ "pi-217" (src)
+  └ 4 lines found
+
+● Update baseline and item 4 wording (shell)
+  │ $path = 'D:\githubprojects\language-games\planning\content-review-copilot.md'
+  │ $t = [IO.File]::ReadAllText($path, [Text.Encoding]::UTF8)
+  │ $old1 = 'Baseline: HEAD `d31ace7` (2026-11-01 00:44 +08:00); none of the reviewed files had
+  │ uncommitted edits at 00:55. Line numbers refer to that tree.'
+  │ $new1 = 'Baseline: HEAD `d31ace7` (2026-11-01 00:44 +08:00); line numbers refer to that …
+  └ 21 lines…
+
+● Read content-review-copilot.md
+  │ planning\content-review-copilot.md
+  └ 32 lines read
+
+The final file is 32 lines with six items, CRLF line endings and no BOM. I'll delete my scratch files and check that git shows nothing new from me except the review.
+
+● Delete scratch files; final git check (shell)
+  │ $d =
+  │ 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files'
+  │ $targets = @((Join-Path $env:TEMP 'pu-de.txt'), (Join-Path $env:TEMP 'd31.diff')) +
+  │ (Get-ChildItem $d -File | Where-Object { $_.Name -match
+  │ '^(probe\d*\.mjs|hooks\.mjs|register\.mjs|de-sections\d*\.txt)$' } | ForEach-Object FullName)…
+  └ 17 lines…
+
+I've rewritten `planning/content-review-copilot.md` (32 lines). The other agent's commit `d31ace7` had already applied 23 of my first-pass fixes, so the review now lists the six problems that remain, worst first:
+
+1. **p-5 teaches a false rule:** "most others take -ing" leads learners to write "avoid to swim".
+2. **p-5's "stopped to smoke" twist** accepts only "Both are in use", though "Correct it" is just as reasonable.
+3. **Family cards produce wrong sentences**, e.g. "Not true: the lottery cannot be played alone."
+4. **The pi-217 gloss** is about a/an, but it now appears only after the verb-pattern and uncountable-noun session.
+5. **The p-2 twist prompt** contradicts the -es and -ies rules the player just taught.
+6. **The scene-1 level label** leaves out "to the right of".
+
+Every Wittgenstein section number in the content files holds against the German text, which I re-fetched. I edited no source files.
+
+Not covered: no playthrough in a browser, and PPF xi can't be checked because the German source has only Part I.
+
+
+
+Changes    +80 -0
+AI Credits 946.74 (56m 27s)
+Tokens     ↑ 8.8m (8.3m cached, 523.2k written) • ↓ 259.8k (217.8k reasoning)
+Resume     copilot --resume=65cae396-5ae9-4c4f-bf55-231188668105
