@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, HintButton, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
+import { onRadioKeys, radioTabIndex } from "@/components/game/radio";
 import { cn } from "@/lib/utils";
 import type { SourceId } from "@/content/sources";
 import { nextGame } from "@/content/games";
@@ -221,7 +222,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
         </p>
         {!looked || (!truth && !done) ? (
           <>
-            <div className="grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="How many">
+            <div className="grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="How many" onKeyDown={onRadioKeys}>
               {QUANTIFIERS.map((x, i) => (
                 <button
                   key={x}
@@ -229,6 +230,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
                   role="radio"
                   data-shortcut=""
                   aria-checked={q === x}
+                  tabIndex={radioTabIndex(q === x, i, q !== null)}
                   onClick={() => {
                     setQ(x);
                     setLooked(null);
@@ -488,13 +490,14 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
         <p className="text-[15px] text-muted-foreground lg:text-[18px]">
           {agree(n, "Does", "Do")} {n.name} belong with these {session.kind}? Say one true sentence.
         </p>
-        <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Kind of sentence">
-          {(["both", "unlike"] as const).map((m) => (
+        <div className="grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Kind of sentence" onKeyDown={onRadioKeys}>
+          {(["both", "unlike"] as const).map((m, i) => (
             <button
               key={m}
               type="button"
               role="radio"
               aria-checked={mode === m}
+              tabIndex={radioTabIndex(mode === m, i, true)}
               disabled={!!result?.ok}
               onClick={() => {
                 setMode(m);

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArtDirected, GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
+import { onRadioKeys, radioTabIndex } from "@/components/game/radio";
 import { cn } from "@/lib/utils";
 import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
@@ -505,13 +506,19 @@ function FetchPlay({
                 <Plus className="size-4" aria-hidden />
               </button>
             </div>
-            <div className="flex flex-1 rounded-full border border-border bg-card p-1" role="radiogroup" aria-label="Where to">
-              {(["builder", "left", "right"] as const).map((p) => (
+            <div
+              className="flex flex-1 rounded-full border border-border bg-card p-1"
+              role="radiogroup"
+              aria-label="Where to"
+              onKeyDown={onRadioKeys}
+            >
+              {(["builder", "left", "right"] as const).map((p, i) => (
                 <button
                   key={p}
                   type="button"
                   role="radio"
                   aria-checked={place === p}
+                  tabIndex={radioTabIndex(place === p, i, true)}
                   onClick={() => {
                     setOutcome(null);
                     setPlace(p);
@@ -871,7 +878,10 @@ function UsePlay({
           overlay={
             <div className="absolute top-[4%] left-[3%] max-w-[62%] rounded-2xl border border-ink/15 bg-card px-3 py-1.5 shadow-sm">
               <p className="text-xs font-bold text-muted-foreground">{keeper ? "The stock-keeper" : "The builder"}</p>
-              <p className="flex items-center gap-1 font-heading text-[clamp(17px,4.6vw,26px)] leading-tight font-semibold" aria-live="polite">
+              <p
+                className="flex items-center gap-1 font-heading text-[clamp(17px,4.6vw,26px)] leading-tight font-semibold"
+                aria-live="polite"
+              >
                 {pick ? pick.reaction : round.says}
                 <button
                   type="button"
@@ -885,7 +895,14 @@ function UsePlay({
             </div>
           }
         >
-          <Image src={`/art/builder/use/${round.id}.webp`} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+          <Image
+            src={`/art/builder/use/${round.id}.webp`}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 700px, 133vw"
+            className="object-cover"
+          />
         </SceneCanvas>
         <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
           {round.clues.map((c) => (

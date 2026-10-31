@@ -190,7 +190,12 @@ function Round({
         {!solved && (
           <>
             {round.ask && !asked && (
-              <Button variant="outline" size="lg" className="h-auto min-h-12 justify-start py-2 text-left text-[16px] whitespace-normal" onClick={ask}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-auto min-h-12 justify-start py-2 text-left text-[16px] whitespace-normal"
+                onClick={ask}
+              >
                 Ask first: “{round.ask.question}”
               </Button>
             )}

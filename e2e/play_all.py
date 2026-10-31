@@ -360,6 +360,30 @@ def play_later_sessions(page: Page) -> None:
     shot(page, "later-pupil-end")
 
 
+# --- Keyboard only (desktop) -------------------------------------------------------
+
+def play_keyboard(page: Page) -> None:
+    if not DESKTOP:
+        return
+    # A radio group is one Tab stop; arrow keys move the choice (WAI-ARIA radio group).
+    page.goto(f"{BASE}/play/family")
+    page.evaluate("localStorage.clear()")  # start from round 1, not the finished sessions above
+    page.reload()
+    page.get_by_role("radio", name="All").focus()
+    page.keyboard.press("ArrowRight")
+    expect(page.get_by_role("radio", name="Most")).to_be_focused()
+    expect(page.get_by_role("radio", name="Most")).to_have_attribute("aria-checked", "true")
+    expect(page.get_by_role("radio", name="All")).to_have_attribute("tabindex", "-1")
+    # The café round can be answered with Tab and Enter alone.
+    page.goto(f"{BASE}/play/cafe")
+    for _ in range(60):
+        page.keyboard.press("Tab")
+        if page.evaluate("document.activeElement.innerText").strip().endswith("Close the window."):
+            break
+    page.keyboard.press("Enter")
+    expect(page.get_by_text("What the words were doing here")).to_be_visible()
+
+
 def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -380,6 +404,7 @@ def main() -> int:
             ("pupil", play_pupil),
             ("family", play_family),
             ("later sessions", play_later_sessions),
+            ("keyboard", play_keyboard),
         ]:
             fn(page)
             print(f"PASS {name}")
