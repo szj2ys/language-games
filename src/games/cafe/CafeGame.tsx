@@ -66,6 +66,7 @@ function Round({
   const [chosen, setChosen] = useDraft<number | null>(round.id, "chosen", null);
   const [asked, setAsked] = useDraft(round.id, "asked", false);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
+  const [lastSaid, setLastSaid] = useDraft<string | null>(round.id, "lastSaid", null);
   const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const pick = chosen === null ? null : round.options[chosen];
   const solved = !!pick?.fits;
@@ -78,6 +79,7 @@ function Round({
   const choose = (i: number) => {
     const o = round.options[i];
     setChosen(i);
+    setLastSaid(o.reaction);
     speak(o.reaction.replace(/\([^)]*\)/g, ""));
     if (o.fits) onDone(misses === 0 ? 2 : 1, 2, misses === 0, [round.says], firstMiss ?? undefined);
     else {
@@ -96,10 +98,12 @@ function Round({
 
   const ask = () => {
     setAsked(true);
+    if (round.ask) setLastSaid(round.ask.answer);
     if (round.ask) speak(round.ask.answer);
   };
 
-  const bubble = pick ? pick.reaction : asked && round.ask ? round.ask.answer : round.says;
+  // The bubble shows the latest thing said: the reaction to a choice, or the answer to a question asked after it.
+  const bubble = lastSaid ?? round.says;
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
