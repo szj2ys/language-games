@@ -51,7 +51,7 @@ export const SESSIONS: Session[] = [
     id: "scene-1",
     title: "Make it true",
     blurb: "A sentence is a little model of how things stand. Build the scene it describes.",
-    english: "Prepositions of place: in, on, to the left of, to the right of, next to",
+    english: "Warm-up (A2): in, on, next to, to the left of; two facts true at once",
     source: "tlp-2.1",
     rounds: [
       {
@@ -92,7 +92,7 @@ export const SESSIONS: Session[] = [
         message: [c("book", "next to", "lamp"), c("ball", "on", "book")],
         things: ["book", "lamp", "ball"],
         start: { lamp: { spot: 1, row: "front" } },
-        hint: "Next to = in the very next place, on the same row.",
+        hint: "Next to = in the very next place, in the same row.",
       },
       {
         id: "s1-6",
@@ -132,7 +132,7 @@ export const SESSIONS: Session[] = [
         scene: { book: { spot: 0, row: "front" }, ball: { on: "book" }, box: { spot: 2, row: "front" } },
         report: [c("ball", "in", "book"), c("book", "left of", "box")],
         options: ["in", "on", "next to"],
-        hint: "Where is the ball really? The sentence must name the thing it is on.",
+        hint: "Where is the ball really — inside the book, or on top of it?",
       },
       {
         id: "s2-4",

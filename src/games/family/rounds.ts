@@ -42,17 +42,17 @@ const GAMES: Card[] = [
   card("chess", "chess", ["winner", "skill", "board"]),
   card("football", "football", ["winner", "skill", "ball", "group"], ["luck"]),
   card("poker", "poker", ["winner", "skill", "luck", "cards", "group"]),
-  card("patience", "patience", ["skill", "luck", "cards", "alone"], ["winner"]),
-  card("wall", "ball against a wall", ["skill", "ball", "alone"]),
-  card("ring", "ring-a-ring-a-roses", ["group"]),
+  card("patience", "patience (solitaire)", ["skill", "luck", "cards", "alone"], ["winner"]),
+  card("wall", "throwing a ball at a wall", ["skill", "ball", "alone"]),
+  card("ring", "ring-a-ring-a-roses (a circle game)", ["group"]),
 ];
 
 const TOOL_FEATURES: Feature[] = [
   { id: "modify", plural: "change the thing they work on", singular: "changes the thing it works on", colour: "#b0553e" },
   { id: "handle", plural: "have a handle", singular: "has a handle", colour: "#42649a" },
-  { id: "join", plural: "join things together", singular: "joins things together", colour: "#64775a" },
-  { id: "cut", plural: "cut", singular: "cuts", colour: "#c9a24a" },
-  { id: "measure", plural: "measure", singular: "measures", colour: "#7a5c8a" },
+  { id: "join", plural: "are used to join things", singular: "is used to join things", colour: "#64775a" },
+  { id: "cut", plural: "are used to cut things", singular: "is used to cut things", colour: "#c9a24a" },
+  { id: "measure", plural: "are used to measure things", singular: "is used to measure things", colour: "#7a5c8a" },
   { id: "metal", plural: "are made of metal", singular: "is made of metal", colour: "#5b5f60" },
   { id: "wood", plural: "are partly made of wood", singular: "is partly made of wood", colour: "#8a6a3b" },
 ];
@@ -61,12 +61,12 @@ const tool = (id: string, name: string, on: string[], blurred: string[] = []) =>
 
 // PI §11: "a hammer, pliers, a saw, a screw-driver, a rule, a glue-pot, glue, nails and screws".
 const TOOLS: Card[] = [
-  tool("hammer", "hammer", ["modify", "handle", "join", "metal", "wood"]),
-  tool("saw", "saw", ["modify", "handle", "cut", "metal", "wood"]),
-  tool("ruler", "ruler", ["measure", "wood"]),
-  tool("gluepot", "glue-pot", ["handle", "join"]),
-  tool("screwdriver", "screwdriver", ["modify", "handle", "join", "metal"]),
-  tool("pliers", "pliers", ["modify", "handle", "cut", "metal"]),
+  tool("hammer", "the hammer", ["modify", "handle", "join", "metal", "wood"]),
+  tool("saw", "the saw", ["modify", "handle", "cut", "metal", "wood"]),
+  tool("ruler", "the ruler", ["measure", "wood"]),
+  tool("gluepot", "the glue-pot", ["handle", "join"]),
+  tool("screwdriver", "the screwdriver", ["modify", "handle", "join", "metal"]),
+  { ...tool("pliers", "the pliers", ["modify", "handle", "cut", "metal"]), plural: true },
 ];
 
 export const SESSIONS: Session[] = [
@@ -74,7 +74,7 @@ export const SESSIONS: Session[] = [
     id: "family-1",
     title: "What is a game?",
     blurb: "Look for what all these games have in common. Don't think — look!",
-    english: "Quantifiers about a group: all, most, some, none of these; 'both … and'",
+    english: "Quantifiers about a group: all, most, some, none of these; 'both … and …'",
     kind: "games",
     source: "pi-66",
     cards: GAMES,
@@ -100,7 +100,7 @@ export const SESSIONS: Session[] = [
       {
         id: "f1-6",
         mode: "newcomer",
-        newcomer: card("lottery", "the lottery", ["winner", "luck", "group"]),
+        newcomer: card("lottery", "the lottery", ["winner", "luck"], ["group"]),
         hint: "Is the lottery like poker in any way? Is it unlike most of these games?",
       },
     ],
@@ -117,7 +117,7 @@ export const SESSIONS: Session[] = [
     rounds: [
       { id: "f2-1", mode: "claim", feature: "modify", hint: "What does the ruler change? What does the glue-pot change?" },
       { id: "f2-2", mode: "claim", feature: "handle", hint: "Look at the ruler." },
-      { id: "f2-3", mode: "claim", feature: "measure", hint: "Which of these can tell you how long something is?" },
+      { id: "f2-3", mode: "claim", feature: "cut", hint: "Which of these could cut a plank or a wire?" },
       { id: "f2-4", mode: "thread", hint: "Each next tool must share something with the one before it." },
       {
         id: "f2-5",

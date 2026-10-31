@@ -130,7 +130,7 @@ export function describe(scene: Scene): string[] {
     else if ("on" in l) out.push(`The ${t} is on the ${l.on}.`);
     else
       out.push(
-        `The ${t} is at ${["the far left", "left of centre", "right of centre", "the far right"][l.spot]}, ${l.row === "back" ? "at the back" : "at the front"}.`,
+        `The ${t} is ${["at the far left", "just left of centre", "just right of centre", "at the far right"][l.spot]}, ${l.row === "back" ? "at the back" : "at the front"}.`,
       );
   }
   return out;

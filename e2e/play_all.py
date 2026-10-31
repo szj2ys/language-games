@@ -246,9 +246,9 @@ def play_family(page: Page) -> None:
         page.get_by_role("button", name="Look").click()
         next_round(page)
     # Thread: chess -skill- poker -cards- patience -alone- wall -ball- football -group- ring
-    for name, link in [("chess", None), ("poker", "both need skill"), ("patience", "both are played with cards"),
-                       ("ball against a wall", "both can be played alone"), ("football", "both are played with a ball"),
-                       ("ring-a-ring-a-roses", "both are played in a group")]:
+    for name, link in [("chess", None), ("poker", "need skill"), ("patience (solitaire)", "are played with cards"),
+                       ("throwing a ball at a wall", "can be played alone"), ("football", "are played with a ball"),
+                       ("ring-a-ring-a-roses (a circle game)", "are played in a group")]:
         page.get_by_role("button", name=name, exact=True).click()
         if link:
             page.get_by_role("button", name=link).click()
@@ -256,7 +256,7 @@ def play_family(page: Page) -> None:
     shot(page, "family-thread")
     next_round(page)
     # Newcomer: crossword and patience both can be played alone.
-    page.get_by_label("Which one").select_option(label="patience")
+    page.get_by_label("Which one").select_option(label="patience (solitaire)")
     page.get_by_label("What they share").select_option(label="can be played alone")
     page.get_by_role("button", name="Say it").click()
     expect(page.get_by_text("joins the family")).to_be_visible()

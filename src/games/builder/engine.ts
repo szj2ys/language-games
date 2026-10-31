@@ -17,6 +17,11 @@ export const NUMBER_WORDS = ["one", "two", "three", "four"] as const;
 
 const PLURAL: Record<Stone, string> = { block: "blocks", pillar: "pillars", slab: "slabs", beam: "beams", arch: "arches" };
 
+/** "a slab", "an arch". */
+export function an(stone: Stone): string {
+  return stone === "arch" ? "an arch" : `a ${stone}`;
+}
+
 export function plural(stone: Stone, count: number): string {
   return count === 1 ? stone : PLURAL[stone];
 }
@@ -74,7 +79,7 @@ export function interpret(u: Utterance, yard: Stone[]): AssistantResponse {
     if (!p || typeof p === "string") return { kind: "asks", question: "This? Which one — point at it." };
     const pointed = yard[p.stoneIndex];
     if (!pointed) return { kind: "asks", question: "Which one?" };
-    if (stone && stone !== pointed) return { kind: "asks", question: `That one is a ${pointed}, not a ${stone}.` };
+    if (stone && stone !== pointed) return { kind: "asks", question: `That one is ${an(pointed)}, not ${an(stone)}.` };
     stone = pointed;
   }
   if (!stone) return { kind: "asks", question: "Bring what?" };

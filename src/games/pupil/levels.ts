@@ -144,7 +144,7 @@ export const LEVELS: Level[] = [
       item: { word: "clever", forms: {}, correct: "cleverer" },
       prompt: "The pupil writes “more clever”. The rule you taught says two syllables take “more”.",
       answer: "both",
-      why: "Both are in use: “cleverer” and “more clever” are both common. Here the rule runs out and what speakers actually do decides (PI §217: “This is simply what I do”).",
+      why: "Both are in use: “cleverer” and “more clever” are both common. Here the rule runs out and what speakers actually do decides (PI §84: the application of a word “is not everywhere bounded by rules”).",
     },
   },
 ];

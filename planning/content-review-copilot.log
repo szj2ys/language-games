@@ -1,0 +1,491 @@
+I'll start by reading the authored content files and checking where the German Wittgenstein texts were saved.
+
+/ Search (glob)                                                                                   5s
+  │ "**/*.{md,txt,json,html}" in planning
+  └ 10 files found
+
+● Inspect repo status and content files (shell)                                                   8s
+  │ git --no-pager status --short; git --no-pager log --oneline -n 10; Get-ChildItem -Recurse -File
+  │ -Path src\games, src\content, planning -ErrorAction SilentlyContinue | Select-Object FullName,
+  │ Length | Format-Table -AutoSize | Out-String -Width 250
+  └ 69 lines…
+
+● Read rounds.ts                                                                                 10s
+  │ src\games\scene\rounds.ts
+  └ 125 lines read
+
+● Read rounds.ts                                                                                 11s
+  │ src\games\builder\rounds.ts
+  └ 206 lines read
+
+● Read rounds.ts                                                                                 12s
+  │ src\games\cafe\rounds.ts
+  └ 272 lines read
+
+● Read levels.ts                                                                                 13s
+  │ src\games\pupil\levels.ts
+  └ 151 lines read
+
+● Read sources.ts                                                                                13s
+  │ src\content\sources.ts
+  └ 289 lines read
+
+● Read rounds.ts                                                                                 14s
+  │ src\games\family\rounds.ts
+  └ 120 lines read
+
+Now the engines, to see exactly how answers are judged (needed for the "only one accepted" check).
+
+● Read engine.ts                                                                                  7s
+  │ src\games\family\engine.ts
+  └ 76 lines read
+
+● Read engine.ts                                                                                  7s
+  │ src\games\scene\engine.ts
+  └ 171 lines read
+
+● Read engine.ts                                                                                  8s
+  │ src\games\pupil\engine.ts
+  └ 172 lines read
+
+● Read engine.ts                                                                                  9s
+  │ src\games\builder\engine.ts
+  └ 142 lines read
+
+Now the game components (how scene "tell"/"check" and family claims are scored) and a search for the German texts fetched in earlier sessions.
+
+/ Search (grep)                                                                                   6s
+  │ "placesFor|whyFalse|options|fix|strongest|claimHolds|correct|right answer|score"
+  │ (src\games\scene\SceneGame.tsx)
+  └ 16 lines found
+
+/ Search (grep)                                                                                   6s
+  │ "strongest|claimHolds|counterexample|QUANTIFIERS|newcomer|sharedFeatures|Most|blurred"
+  │ (src\games\family\FamilyGame.tsx)
+  └ 25 lines found
+
+● Find sessions on language-games (session history)                                               8s
+  │ SELECT id, cwd, summary, created_at FROM sessions WHERE (cwd ILIKE '%language-ga…
+  └ Query returned 0 rows.
+
+● Local sessions on language-games (session history)                                             11s
+  │ SELECT id, cwd, summary, created_at FROM sessions WHERE cwd LIKE '%language-game…
+  └ 2 row(s) returned
+
+● Read FamilyGame.tsx                                                                            12s
+  │ src\games\family\FamilyGame.tsx
+  └ L110:210 (101 lines read)
+
+● Read FamilyGame.tsx                                                                            13s
+  │ src\games\family\FamilyGame.tsx
+  └ L355:430 (76 lines read)
+
+● Read FamilyGame.tsx                                                                             6s
+  │ src\games\family\FamilyGame.tsx
+  └ L215:355 (141 lines read)
+
+● Read SceneGame.tsx                                                                              7s
+  │ src\games\scene\SceneGame.tsx
+  └ L405:560 (156 lines read)
+
+/ Search (grep)                                                                                   8s
+  │ "function negate" (src\games\family\FamilyGame.tsx)
+  └ 13 lines found
+
+Searching for the German Wittgenstein texts fetched in the earlier session (repo, reports, session-state).
+
+✗ Search (grep)                                                                                   6s
+  │ "Platte|Bausteine|Sprachspiel|Familienähnlichkeit|Würfel|Säule" (planning, reports,
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925,
+  │ ~\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105)
+  └ rg: C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\inuse.621
+    16.hold: The process cannot access the file because another process has locked a portion of the
+    file. (os error 33)
+
+● List reports and previous session files (shell)                                                 8s
+  │ Get-ChildItem -Recurse -File D:\githubprojects\language-games\reports | Select-Object FullName,
+  │ Length | Format-Table -AutoSize | Out-String -Width 250; Get-ChildItem -Recurse -File
+  │ C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925 -ErrorAction
+  │ SilentlyContinue | Select-Object FullName, Length | Format-Table -AutoSize | Out-String -Width
+  │ 250
+  └ 10 lines…
+
+/ Search (grep)
+  │ "Platte|Bausteine|Sprachspiel|Familienähnlichkeit|Würfel|Säule" (planning, reports,
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files)
+  └ 11 files found
+
+● List previous session folder files (shell)                                                      5s
+  │ Get-ChildItem -Recurse -File
+  │ C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925 -ErrorAction
+  │ SilentlyContinue | Where-Object { $_.Name -notlike 'inuse*' } | Select-Object
+  │ @{n='Path';e={$_.FullName.Replace('C:\Users\Administrator\.copilot\session-state\c930032f-629f-4
+  │ 7fe-9878-bd8195b99925','')}}, Length | Format-Table -AutoSize | Out-String -Width 200
+  └ 35 lines…
+
+Resuming: verifying the quotations against the German PI/ÜG/TLP texts saved in the earlier session.
+
+● Read verify-pu.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu.txt
+  └ 1 line read
+
+● Read verify-pu2.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu2.txt
+  └ 17 lines read
+
+● Read verify-pu3.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu3.txt
+  └ 23 lines read
+
+● Read verify-pu4.txt
+  │ ~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\verify-pu4.txt
+  └ 14 lines read
+
+/ Search (grep)
+  │ "\|(115|341)\|"
+  │ (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sources\lwp-UG.wiki)
+  └ No matches found
+
+/ Search (grep)
+  │ "ParPUde\|(2|8|201)\|" (~\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sour
+  │ ces\lwp-Philosophische_Untersuchungen.wiki)
+  └ No matches found
+
+● Inspect wiki markup format around sections (shell)
+  │ $p='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sou
+  │ rces'; python -c "import re,sys;t=open(r'$p\lwp-Philosophische_Untersuchungen.wiki',encoding='ut
+  │ f-8').read();i=t.find('Würfel, Säulen');print(repr(t[i-600:i+300]));u=open(r'$p\lwp-UG.wiki',enc
+  │ oding='utf-8').read();j=u.find('Spiel des Zweifelns');print(repr(u[j-400:j+120]))"
+  └ 2 lines…
+
+● Extract German PI/ÜG sections to a file (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\s
+  │ ources';
+  │ $o='C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files';
+  │ @"
+  │ import re…
+  └ 25 lines…
+
+● Inspect TLP side-by-side text format (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\sou
+  │ rces'; python -c
+  │ "t=open(r'$s\tlp-klement.txt',encoding='utf-8').read();print(len(t));i=t.find('Wir machen uns
+  │ Bilder');print(repr(t[i-300:i+500]))"
+  └ 2 lines…
+
+● Read de-sections.txt
+  │ ~\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files\de-sections.txt
+  └ 51 lines read
+
+● Extract TLP propositions German and Ogden (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\s
+  │ ources'; @"
+  │ import re
+  │ t=open(r'$s\tlp-klement.txt',encoding='utf-8').read()
+  │ for n in ['2.1','2.21','4.01','5.6','6.54']:…
+  └ 8 lines…
+
+German quotes so far match. Checking the remaining ones (§19 vs §20 for the "Slab!" question, §109, PPF aspect passage, TLP 6.54, §185).
+
+● Extract remaining German passages for verification (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\s
+  │ ources';
+  │ $o='C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files';
+  │ @"
+  │ import re…
+  └ No Content
+
+● Read de-sections2.txt
+  │ ~\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files\de-sections2.txt
+  └ 25 lines read
+
+/ Search (grep)
+  │ "misattrib|wrong|not in|fake|spurious|Anscombe|§21|§43|§217|§201|PPF" (~\.copilot\session-state\
+  │ c930032f-629f-47fe-9878-bd8195b99925\checkpoints\001-verifying-citations-for-wittge.md)
+  └ 21 lines found
+
+/ Search (grep)
+  │ ""(pi|tlp|oc)-[0-9a-z.\-]+"" in !**/sources.ts (src)
+  └ 51 lines found
+
+/ Search (grep)
+  │ "teaches|ostensive|new word|arch|curved|Who says|speaker|keeper|stock|clues"
+  │ (src\games\builder\BuilderGame.tsx)
+  └ 15 lines found
+
+/ Search (grep)
+  │ "rosa|tom|lena|Rosa|Tom|Lena|role|You are|ask|fits" (src\games\cafe\CafeGame.tsx)
+  └ 14 lines found
+
+/ Search (grep)
+  │ "twist|both|correct|Correct|in use" (src\games\pupil\PupilGame.tsx)
+  └ 17 lines found
+
+● Read CafeGame.tsx
+  │ src\games\cafe\CafeGame.tsx
+  └ L96:200 (105 lines read)
+
+● Read BuilderGame.tsx
+  │ src\games\builder\BuilderGame.tsx
+  └ L706:790 (69 lines read)
+
+● Read BuilderGame.tsx
+  │ src\games\builder\BuilderGame.tsx
+  └ L636:650 (15 lines read)
+
+Café renders per-round art plus clues; builder "use" rounds show no art of the carried stone. Checking the brief for the intended level/variety so I don't flag deliberate choices.
+
+● Read BRIEF.md
+  │ planning\BRIEF.md
+  └ 25 lines read
+
+/ Search (grep)
+  │ "B1|B2|CEFR|British|American|culture|cultural|Chinese|level|both|persons|refus"
+  │ (planning\DECISIONS.md, planning\ACCEPTANCE.md)
+  └ 13 lines found
+
+Two new a/an slips found in builder templates ("a arch"). Let me confirm the exact code paths and check the §68 wording and Cambridge's "Excuse me?" usage label.
+
+● Read BuilderGame.tsx
+  │ src\games\builder\BuilderGame.tsx
+  └ L560:580 (21 lines read)
+
+● Check PI §68 German and Anscombe wording sources (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\s
+  │ ources'; @"
+  │ import re
+  │ pu=open(r'$s\lwp-Philosophische_Untersuchungen.wiki',encoding='utf-8').read()
+  │ parts=re.split(r'\{\{ParPUde\|([0-9]+)\}\}',pu); P={}…
+  └ 17 lines…
+
+Confirming the "a arch" article slips in the builder templates before writing.
+
+/ Search (grep)
+  │ "arch" (src\games\builder)
+  └ 11 lines found
+
+/ Search (grep)
+  │ ""a " \+|a \$\{|an \$\{|"an " \+" (src)
+  └ 4 lines found
+
+● Read engine.ts
+  │ src\games\builder\engine.ts
+  └ L70:95 (26 lines read)
+
+● Read BuilderGame.tsx
+  │ src\games\builder\BuilderGame.tsx
+  └ L420:440 (21 lines read)
+
+Confirmed: `engine.ts:82` can produce "That one is a arch, not a slab." in b3-5/b3-6. Re-reading the content files now so each replacement quotes the exact current text.
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ 272 lines read
+
+● Read rounds.ts
+  │ src\games\family\rounds.ts
+  └ 120 lines read
+
+f2-5 sets `plural: true` on nails — re-checking FamilyGame.tsx to confirm whether the templates already honour it before I claim agreement errors.
+
+/ Search (grep)
+  │ "plural|singular|both|Unlike|unlike|half|negate|Does |belong|What about|join to"
+  │ (src\games\family)
+  └ 70 lines found
+
+FamilyGame.tsx differs from my earlier notes (plural agreement and "no more than half" now exist). Checking git history to see what changed, then re-verifying every finding against the current files.
+
+● Check recent commits and working tree status (shell)
+  │ git --no-pager log --oneline -12 --date=iso --format="%h %ad %s"; git --no-pager status --short
+  │ --untracked-files=all
+  └ 9 lines…
+
+● Read git log and filtered status output (shell)
+  │ $f='C:\Users\ADMINI~1\AppData\Local\Temp\1793464003169-copilot-tool-output-62116-c7759c96-b458-4
+  │ 5ab-938a-fd86cf6379c8.txt'; Get-Content $f -TotalCount 14; "---status (non-qa)---"; Get-Content
+  │ $f | Select-Object -Skip 12 | Where-Object { $_ -notmatch '^\s*[ MADRCU?]{1,2}\s+qa/' } |
+  │ Select-Object -First 40; "---qa count---"; (Get-Content $f | Where-Object { $_ -match 'qa/'
+  │ }).Count
+  └ 57 lines…
+
+Another agent is actively changing the repo (commit c929124 at 00:15 fixed "arches, plural agreement"; uncommitted edits to every `*Game.tsx`). I'll re-verify each finding against the current tree.
+
+● Show last commit per content file and diff stat (shell)
+  │ Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"; foreach($p in
+  │ 'src/games/builder/rounds.ts','src/games/scene/rounds.ts','src/games/cafe/rounds.ts','src/games/
+  │ pupil/levels.ts','src/games/family/rounds.ts','src/content/sources.ts','src/games/family/engine.
+  │ ts','src/games/builder/engine.ts','src/games/scene/engine.ts','src/games/pupil/engine.ts'){ $l =
+  │ git --no-pager log -1 --format="%h %ad" --date=format:"%m-%d %H:%M" -- $p; "$p :: $l" }; git
+  │ --no-pager diff --stat
+  └ 33 lines…
+
+Builder rounds (new session 4), pupil levels, family and sources changed in the last 20 minutes. Re-reading them in full.
+
+● Read rounds.ts
+  │ src\games\builder\rounds.ts
+  └ 206 lines read
+
+● Read rounds.ts
+  │ src\games\scene\rounds.ts
+  └ 125 lines read
+
+● Read levels.ts
+  │ src\games\pupil\levels.ts
+  └ 151 lines read
+
+Pupil p-3's way label is already fixed ("After a final e, just add -d"), so that finding is dropped. Now re-reading sources.ts and the current family templates.
+
+● Read sources.ts
+  │ src\content\sources.ts
+  └ 289 lines read
+
+● Read FamilyGame.tsx
+  │ src\games\family\FamilyGame.tsx
+  └ L150:200 (51 lines read)
+
+● Read FamilyGame.tsx
+  │ src\games\family\FamilyGame.tsx
+  └ L360:490 (131 lines read)
+
+● Read FamilyGame.tsx
+  │ src\games\family\FamilyGame.tsx
+  └ L236:330 (95 lines read)
+
+Family plural agreement and the "half" message are already fixed upstream, so those drop out. Checking the remaining engine strings and where pi-217 and §84 stand.
+
+/ Search (grep)
+  │ "left of centre|right of centre|SOURCES\)|Object\.values\(SOURCES|pi-217|"pi-217"" (src)
+  └ 4 lines found
+
+● Verify PI §84 and §201 German wording (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\s
+  │ ources'; @"
+  │ import re
+  │ pu=open(r'$s\lwp-Philosophische_Untersuchungen.wiki',encoding='utf-8').read()
+  │ parts=re.split(r'\{\{ParPUde\|([0-9]+)\}\}',pu); P={}…
+  └ 14 lines…
+
+/ Search (grep)
+  │ "describe\(" (src\games\scene)
+  └ 6 lines found
+
+● Print the end of PI §201 in German (shell)
+  │ $s='C:\Users\Administrator\.copilot\session-state\c930032f-629f-47fe-9878-bd8195b99925\files\s
+  │ ources'; @"
+  │ import re
+  │ pu=open(r'$s\lwp-Philosophische_Untersuchungen.wiki',encoding='utf-8').read()
+  │ parts=re.split(r'\{\{ParPUde\|([0-9]+)\}\}',pu); P={}…
+  └ 4 lines…
+
+§201 verified ("von Fall zu Fall der Anwendung"). Checking the family claim engine to confirm f2-3 accepts "Some" when only the ruler measures.
+
+● Read engine.ts
+  │ src\games\family\engine.ts
+  └ 82 lines read
+
+Confirmed: f2-3 accepts "Some of these tools measure." when only the ruler measures. One more check: can a fetch round deliver an arch (BuilderGame.tsx:432 "not a arch")?
+
+/ Search (grep)
+  │ "STONES|FETCH_YARD|yardKinds =|const yard" (src\games\builder\BuilderGame.tsx)
+  └ 1 line found
+
+/ Search (grep)
+  │ "stone: |\["block"|FetchPlay|function Fetch|setStone|Stone\[\]"
+  │ (src\games\builder\BuilderGame.tsx)
+  └ 11 lines found
+
+● Check node, tsx, vitest and builder engine exports (shell)
+  │ node --version; Test-Path node_modules\.bin\tsx.cmd; Test-Path node_modules\.bin\vitest.cmd;
+  │ Select-String -Path src\games\builder\engine.ts -Pattern '^import|^export function' |
+  │ ForEach-Object { $_.Line }
+  └ 9 lines…
+
+Node 24 strips types natively and these modules have no runtime imports, so I can call them directly.
+
+● Run real engine functions to capture evidence (shell)
+  │ $dir='C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files
+  │ '; $repo='file:///D:/githubprojects/language-games/src/games'; @"
+  │ const B = await import('$repo/builder/engine.ts');
+  │ const R = await import('$repo/builder/rounds.ts');
+  │ const FE = await import('$repo/family/engine.ts');…
+  └ 30 lines…
+
+● Create content-review-copilot.md +80
+  └ planning\content-review-copilot.md
+
+Review written. Verifying line count, that it renders as expected, and that the only repo change from me is the new file.
+
+● Count lines, check git status, remove temp probe (shell)
+  │ $f='planning\content-review-copilot.md'; "lines: " + (Get-Content $f).Count; "items: " +
+  │ (Select-String -Path $f -Pattern '^\d+\. \*\*').Count; git --no-pager status --short
+  │ --untracked-files=all -- planning src; Remove-Item 'C:\Users\Administrator\.copilot\session-st
+  │ ate\65cae396-5ae9-4c4f-bf55-231188668105\files\probe.mjs'; "probe removed: " + -not (Test-Path
+  │ 'C:\Users\Administrator\.copilot\session-state\65cae396-5ae9-4c4f-bf55-231188668105\files\pro…
+  └ 6 lines…
+
+The other agent's `src` edits have since been committed. Re-checking that the line numbers I cited still point at the right code.
+
+/ Search (grep)
+  │ "both have\?|join to|both \$\{feature|don't both|both \$\{f\.plural\}\.`|\{cap\(n\.name\)\}
+  │ and|Point at \$\{known|That one is a|left of centre" (src\games\family\FamilyGame.tsx,
+  │ src\games\builder\BuilderGame.tsx, src\games\builder\engine.ts, src\games\scene\engine.ts)
+  └ 9 lines found
+
+● Check new commits and content file changes (shell)
+  │ git --no-pager log --oneline -3; git --no-pager log -1 --format=%h -- src/content/sources.ts
+  │ src/games/cafe/rounds.ts src/games/family/rounds.ts src/games/builder/rounds.ts
+  │ src/games/pupil/levels.ts src/games/scene/rounds.ts
+  └ 4 lines…
+
+Code moved under me (new commits d7eda92, 340fed1, 4e80745), including a new pupil session. Checking what changed in the six content files since my baseline.
+
+● Diff content files since baseline commit (shell)
+  │ git --no-pager diff --stat c929124 HEAD -- src/content/sources.ts src/games/cafe/rounds.ts
+  │ src/games/family/rounds.ts src/games/builder/rounds.ts src/games/pupil/levels.ts
+  │ src/games/scene/rounds.ts src/games/pupil/engine.ts src/games/family/engine.ts; git --no-pager
+  │ diff c929124 HEAD -- src/content/sources.ts src/games/cafe/rounds.ts src/games/family/rounds.ts
+  │ src/games/builder/rounds.ts src/games/scene/rounds.ts
+  └ 13 lines…
+
+The six content files changed a lot since my baseline (+494/−126 lines): new sessions and reworded rounds. I'll read the diff and re-check each of the 25 items against the current HEAD.
+
+● Read 1793464842079-copilot-tool-output-62116-083a2c38-1c60-4d5f-8ab1-3c2a080e07bb.txt
+  │ C:\Users\ADMINI~1\AppData\Local\Temp\1793464842079-copilot-tool-output-62116-083a2c38-1c60-4d5f-
+  │ 8ab1-3c2a080e07bb.txt
+  └ L1:260 (260 lines read)
+
+Mostly Prettier reformatting so far; sources.ts wording is unchanged. Reading on for real content changes.
+
+● Read 1793464842079-copilot-tool-output-62116-083a2c38-1c60-4d5f-8ab1-3c2a080e07bb.txt
+  │ C:\Users\ADMINI~1\AppData\Local\Temp\1793464842079-copilot-tool-output-62116-083a2c38-1c60-4d5f-
+  │ 8ab1-3c2a080e07bb.txt
+  └ L260:560 (301 lines read)
+
+● Read 1793464842079-copilot-tool-output-62116-083a2c38-1c60-4d5f-8ab1-3c2a080e07bb.txt
+  │ C:\Users\ADMINI~1\AppData\Local\Temp\1793464842079-copilot-tool-output-62116-083a2c38-1c60-4d5f-
+  │ 8ab1-3c2a080e07bb.txt
+  └ L560:900 (307 lines read)
+
+● Read content-review-copilot.md
+  │ planning\content-review-copilot.md
+  └ 80 lines read
+
+● Read levels.ts
+  │ src\games\pupil\levels.ts
+  └ 254 lines read
+
+● Show pupil engine diff and new commits (shell)                                                  5s
+  │ git --no-pager diff c929124 HEAD -- src/games/pupil/engine.ts; git --no-pager log --format='%h
+  │ %ad %s' --date=format:'%H:%M' c929124..HEAD
+  └ 43 lines…
+
+/ Search (grep)
+  │ "blurredNote|Objection|join the family|no more than half|function negate|function agree|Some of
+  │ these|claimText|strongest\(|`\$\{q\}|of these \$\{|Most of|None of|All of"
+  │ (src\games\family\FamilyGame.tsx)
+  └ 10 lines found
+
+/ Search (grep)
+  │ "twist|forms\[|\.forms|answer ===|"both"|"correct"|"accept"|label:" in *.tsx (src\games\pupil)
+  └ 12 lines found
+

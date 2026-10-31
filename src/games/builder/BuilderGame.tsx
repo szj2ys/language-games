@@ -12,6 +12,7 @@ import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
 import {
   NUMBER_WORDS,
+  an,
   callFor,
   englishNotes,
   interpret,
@@ -646,7 +647,7 @@ function CallPlay({
                       badge={`×${k.n}`}
                       selected={pointed}
                       onClick={() => setPointAt(pointed ? undefined : { stoneIndex: k.first })}
-                      ariaLabel={`Point at ${known ? "a " + k.stone : "the curved stone"}`}
+                      ariaLabel={`Point at ${known ? an(k.stone) : "the curved stone"}`}
                     />
                   </div>
                 );

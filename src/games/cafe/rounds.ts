@@ -72,7 +72,7 @@ export const SESSIONS: Session[] = [
         ],
         ask: { question: "Would you like some more tea?", answer: "I thought you'd never ask." },
         use: "a hint — a polite way to ask for more tea",
-        note: "The same sentence as before, but a different job. Wittgenstein: for many words, meaning is their use (PI §43).",
+        note: "The same sentence as before, but a different job. Wittgenstein: “For a large class of cases … the meaning of a word is its use in the language” (PI §43).",
       },
       {
         id: "c1-3",
@@ -85,17 +85,17 @@ export const SESSIONS: Session[] = [
           say("“Sugar is bad for you.”", false, "Noted. The sugar, please?"),
         ],
         use: "a request, shaped like a question about ability",
-        note: "'Can you…?' is grammatically a question about ability, but here it does the work of a polite order.",
+        note: "'Can you…?' is grammatically a question about ability, but here it does the work of a polite request.",
       },
       {
         id: "c1-4",
         speaker: "tom",
-        says: "Can you pass the exam?",
+        says: "So — can you pass the test, do you think?",
         clues: ["He is holding your driving-test letter.", "He looks worried for you."],
         options: [
           act("Hand him something.", false, "Er — I didn't want anything."),
           say("“I hope so. I've practised a lot.”", true, "You'll be fine. Good luck tomorrow."),
-          say("“Pass it to whom?”", false, "No — I mean, will you get through it?"),
+          say("“Pass it to whom?”", false, "No — I mean, do you think you'll pass?"),
         ],
         use: "a real question — about your chances",
         note: "Same frame, 'Can you pass…?', different game: this time it really is a question, and an answer is what fits.",
@@ -121,10 +121,10 @@ export const SESSIONS: Session[] = [
         options: [
           say("“It's ten past eleven.”", false, "I know what time it is. That was a hint."),
           act("Say sorry and start packing up.", true, "Thank you. See you tomorrow."),
-          say("“No, do you?”", false, "(She jingles the keys.)"),
+          say("“No, do you?”", false, "(She shakes the keys.)"),
         ],
         use: "a complaint — a hint that it is time to go",
-        note: "The same words as before. Here the speaker knows the time; the words remind you of it. Giving orders, asking, complaining: different language-games (PI §23).",
+        note: "The same words as before. Here the speaker knows the time; the words remind you of it. §23 lists giving orders, asking and greeting among many language-games; hinting and complaining are more of the same kind.",
       },
     ],
   },
@@ -132,7 +132,7 @@ export const SESSIONS: Session[] = [
     id: "cafe-2",
     title: "Which one?",
     blurb: "Sometimes the words are not enough. Ask, point, and agree on what is meant.",
-    english: "Clarifying questions: 'Do you mean…?', 'Which one?', 'the one with…'",
+    english: "Clarifying questions: 'Do you mean…?', 'The … one or the … one?', 'The other what, sorry?'",
     source: "pi-23",
     rounds: [
       {
@@ -142,14 +142,14 @@ export const SESSIONS: Session[] = [
         clues: [
           "He is pointing at the counter.",
           "On it: a lemon cake and a chocolate cake.",
-          "He is allergic to chocolate (he told you yesterday).",
+          "He is allergic to chocolate (he told you when he came in).",
         ],
         options: [
           act("Bring the chocolate cake.", false, "Oh — I can't eat chocolate, remember?"),
           act("Bring the lemon cake.", true, "Perfect, thank you."),
           say("“Yes, you could.”", false, "…Could I have it, then?"),
         ],
-        ask: { question: "The lemon one or the chocolate one?", answer: "The lemon one, please." },
+        ask: { question: "Do you mean the lemon one or the chocolate one?", answer: "The lemon one, please." },
         use: "a request with a pointing word ('those')",
         note: "'Those' needs the pointing gesture and what you know about him. Words, gestures and shared history work together.",
       },
@@ -161,7 +161,7 @@ export const SESSIONS: Session[] = [
         options: [
           act("Guess: bring a coffee.", false, "Coffee? I never drink coffee, dear."),
           say("“Sorry, I'm new — what's your usual?”", true, "Ah, welcome! A pot of mint tea and one ginger biscuit."),
-          say("“The usual is unusual today.”", false, "…I'll wait for the other girl."),
+          say("“The usual is unusual today.”", false, "…I'll wait for the manager, dear."),
         ],
         use: "an order that relies on a shared history",
         note: "'The usual' only works inside a practice you share. When you are new to the game, asking is the right move.",
@@ -199,12 +199,12 @@ export const SESSIONS: Session[] = [
         clues: ["You offered her a second slice of cake.", "She is smiling and looking at the cake."],
         options: [
           act("Take the cake away at once.", false, "Oh. (She looks a little sad.)"),
-          say("“Go on — it's on the house.”", true, "Well… if you insist! Just a small one."),
+          say("“Are you sure? Just a small piece?”", true, "Well… if you insist. Just a small one."),
           say("“Why not? Are you ill?”", false, "No, no, it's just… never mind."),
         ],
-        ask: { question: "Are you sure? There's plenty.", answer: "Well… perhaps a very small piece." },
+        ask: { question: "Is it too sweet for you?", answer: "No, no, it's lovely. I'm just being polite." },
         use: "a polite refusal that invites a second offer",
-        note: "In some situations, a first 'no' is part of the ritual of being polite. Her smile and her eyes on the cake are part of what she says.",
+        note: "In English a first 'no' usually means no, so check once, lightly, and don't push. Here her smile and her eyes on the cake invite that check. In some cultures a host is expected to insist after a refusal; in English that can feel pushy.",
         // Not universal: in other places and with other people the first no means no.
       },
       {
@@ -226,7 +226,7 @@ export const SESSIONS: Session[] = [
     id: "cafe-3",
     title: "Excuse me?",
     blurb: "Short, everyday phrases do the most different jobs. Watch who says them, and when.",
-    english: "'Would you like to…?', 'I'm fine', 'Excuse me' — offers, instructions, apologies and requests",
+    english: "'Would you like to…?', 'I'm fine', 'Excuse me' — offers, instructions, greetings, reassurances and requests",
     source: "pi-23",
     rounds: [
       {
@@ -274,7 +274,7 @@ export const SESSIONS: Session[] = [
         says: "I'm fine, thanks.",
         clues: ["She has just tripped over a bag and dropped her cup.", "She is holding her ankle.", "Her face is pale."],
         options: [
-          say("“Good to hear! What can I get you?”", false, "(She winces.) …Nothing right now."),
+          say("“Good to hear! What can I get you?”", false, "(It clearly hurts.) …Nothing right now."),
           say("“Are you sure? Sit down a moment — I'll get you some ice.”", true, "Actually… yes. Thank you. That would help."),
           act("Start sweeping up the cup and say nothing.", false, "(She limps to a chair on her own.)"),
         ],
@@ -309,7 +309,7 @@ export const SESSIONS: Session[] = [
           say("“You're excused.”", false, "…I didn't hear you."),
         ],
         use: "a request to repeat",
-        note: "With a rising voice and a frown, 'Excuse me?' means 'I didn't hear — please say it again'. Three uses of one phrase in one café.",
+        note: "With a rising voice, 'Excuse me?' means 'I didn't hear — please say it again'. 'Sorry?' and 'Pardon?' do the same job and are more usual in Britain. Said sharply, 'Excuse me?!' can mean 'How rude!'. And 'Excuse me!' after you bump into someone is an apology.",
       },
     ],
   },

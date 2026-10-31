@@ -294,9 +294,9 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
 
   function threadPrompt(): string {
     if (chain.length === 0) return "Tap a card to start the thread.";
-    if (pending) return `What do ${last?.name} and ${pending.name} both have?`;
+    if (pending) return `What do ${last?.name} and ${pending.name} have in common?`;
     if (complete) return "The thread is complete.";
-    return `Tap the next card to join to ${last?.name}.`;
+    return `Tap a card that shares something with ${last?.name}.`;
   }
 
   const pick = (c: Card) => {
@@ -316,13 +316,13 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
           1 + (r.fibres >= 3 ? 1 : 0) + (misses === 0 ? 1 : 0),
           3,
           misses === 0 && !hint,
-          next.slice(1).map((s, i) => `${cap(next[i].card.name)} and ${s.card.name} both ${feature(s.link)!.plural}.`),
+          next.slice(1).map((s, i) => `Both ${next[i].card.name} and ${s.card.name} ${feature(s.link)!.plural}.`),
         );
         setDone(true);
       }
     } else {
       setMisses((m) => m + 1);
-      setBad(`${cap(last.name)} and ${pending.name} don't both ${f.plural}.`);
+      setBad(`It isn't true that both ${last.name} and ${pending.name} ${f.plural}.`);
       track("repair_used", { game: GAME, round: round.id });
     }
   };
@@ -355,7 +355,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
                 className="min-h-11 rounded-lg border-2 bg-card px-2.5 py-1.5 text-left text-[15px] font-bold hover:bg-paper-deep"
                 style={{ borderColor: f.colour }}
               >
-                both {f.plural}
+                {f.plural}
               </button>
             ))}
           </div>
@@ -374,7 +374,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
                     className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px]"
                     style={{ borderColor: feature(s.link)?.colour }}
                   >
-                    both {feature(s.link)?.plural}
+                    Both {chain[i - 1].card.name} and {s.card.name} {feature(s.link)?.plural}.
                   </span>
                 )}
                 <span className="font-heading text-[18px] font-semibold">
@@ -414,10 +414,6 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   );
 }
 
-function cap(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 // Newcomer: link it with "both", or keep it at the edge with "unlike". -------------
 
 function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound; session: Session; onDone: Done; onNext: () => void }) {
@@ -430,7 +426,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
   const [hint, setHint] = useDraft(round.id, "hint", false);
   const f = session.features.find((x) => x.id === feat)!;
   const o = session.cards.find((c) => c.id === other)!;
-  const sentence = `${cap(n.name)} and ${o.name} both ${f.plural}.`;
+  const sentence = `Both ${n.name} and ${o.name} ${f.plural}.`;
   const unlikeText = `Unlike most of these ${session.kind}, ${n.name} ${negate(f, n.plural)}.`;
 
   const say = () => {
@@ -498,7 +494,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 rounded-lg bg-card px-3 py-2 font-heading text-[18px]">
           {mode === "both" ? (
             <>
-              {cap(n.name)} and
+              Both {n.name} and
               <Select
                 value={other}
                 onChange={setOther}
@@ -506,7 +502,6 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
                 label="Which one"
                 options={session.cards.map((c) => [c.id, c.name])}
               />
-              both
               <Select
                 value={feat}
                 onChange={setFeat}

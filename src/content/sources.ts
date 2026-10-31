@@ -64,7 +64,8 @@ export const SOURCES = {
     ref: "§8",
     quote:
       'Let us now look at an expansion of language (2). Besides the four words "block", "pillar", etc., let it contain a series of words used as the shopkeeper in (1) used the numerals … further, let there be two words, which may as well be "there" and "this" … that are used in connexion with a pointing gesture',
-    gloss: "Add numbers and pointing words, and the same four-word game can do much more: 'Two slabs — there!'",
+    gloss:
+      "Add numbers and pointing words, and the same four-word game can do much more: 'Two slabs — there!' ('Connexion' is an old spelling of 'connection'.)",
     url: PI_URL,
   },
   "pi-11": {
@@ -126,7 +127,7 @@ export const SOURCES = {
     ref: "§43",
     quote:
       'For a large class of cases—though not for all—in which we employ the word "meaning" it can be defined thus: the meaning of a word is its use in the language.',
-    gloss: "Note the caution: 'not for all'. Here, what 'It's cold in here' means depended on what it was being used to do.",
+    gloss: "Note the caution: 'not for all'. Here, what 'It's a bit cold in here' meant depended on what it was being used to do.",
     limits: "This is not a slogan that meaning is always and only use.",
     url: PI_URL,
   },
@@ -165,7 +166,7 @@ export const SOURCES = {
     quote:
       "…any interpretation still hangs in the air along with what it interprets, and cannot give it any support. Interpretations by themselves do not determine meaning.",
     gloss:
-      "A loose explanation was one more sign to interpret, and the pupil read it its own way. The precise one worked — because the pupil already knew how to use words like 'sound' and 'stressed'.",
+      "A loose explanation was one more sign to interpret, and the pupil read it its own way. The precise one worked only after your examples had ruled out the pupil's own reading: the explanation needed the practice behind it.",
     limits:
       "The pupil's few ways of going on are a toy model. Wittgenstein's point is not that explanations fail, but that none works without a practice of using it (§§198–202).",
     url: PI_URL,
@@ -186,7 +187,8 @@ export const SOURCES = {
     ref: "§217",
     quote:
       'If I have exhausted the justifications I have reached bedrock, and my spade is turned. Then I am inclined to say: "This is simply what I do."',
-    gloss: "Why 'an hour' and not 'a hour'? At some point the reasons stop, and there is just what English speakers do.",
+    gloss:
+      "Why does English choose 'a' or 'an' by sound and not by spelling? At some point the reasons stop, and there is just what English speakers do.",
     url: PI_URL,
   },
   "pi-133": {
@@ -220,7 +222,8 @@ export const SOURCES = {
     work: "TLP",
     ref: "2.1",
     quote: "We make to ourselves pictures of facts.",
-    gloss: "In the early Tractatus, a sentence works like a model: its parts stand for things, its structure for how they stand.",
+    gloss:
+      "In the Tractatus, his early book, a sentence works like a model: its parts stand for things, its structure for how they stand. (1922 English: today we would say 'We picture facts to ourselves'.)",
     limits: "Wittgenstein later criticised this picture view; the game shows the early idea, not his final word.",
     url: TLP_URL,
   },
@@ -246,6 +249,7 @@ export const SOURCES = {
     ref: "5.6",
     quote: "The limits of my language mean the limits of my world.",
     gloss: "Every word you can use is a move you can make.",
+    limits: "In the Tractatus this line is about logic and the self (5.6–5.641), not vocabulary; the learning reading is ours.",
     url: TLP_URL,
   },
   "tlp-6.54": {

@@ -27,7 +27,7 @@ export function PupilGame() {
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
           sources={g.sessionIndex === 0 ? ["pi-185", "pi-198", "pi-202"] : ["pi-217", "pi-202"]}
-            nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
+          nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
           onNext={g.nextSession}
           onReplay={g.replay}
         />

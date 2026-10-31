@@ -22,7 +22,7 @@ export type CallRound = {
   numbers: boolean;
   there: boolean;
   thisWord: boolean;
-  /** Teach a new word after the round, as in an ostensive definition (PI §6). */
+  /** Teach a new word after the round, as in the ostensive teaching of words (PI §6). */
   teaches?: Stone;
   plan: string;
   hint: string;
@@ -59,7 +59,7 @@ export const SESSIONS: Session[] = [
     id: "builder-1",
     title: "Four words",
     blurb: "The builder has a language of four words. Learn it by doing what it asks.",
-    english: "Naming things; one-word orders",
+    english: "Warm-up (A2): one-word orders; a bare noun as a whole request",
     source: "pi-2",
     rounds: [
       { id: "b1-1", role: "fetch", want: { stone: "slab", count: 1, place: "builder" }, hint: "A slab is broad and flat." },
@@ -74,14 +74,14 @@ export const SESSIONS: Session[] = [
     id: "builder-2",
     title: "Two slabs — there!",
     blurb: "Add numbers and a pointing word. Same game, many more orders.",
-    english: "Number words, plural -s, 'there' with a gesture",
+    english: "Warm-up (A2): numbers, plurals, 'there' with a gesture",
     source: "pi-8",
     rounds: [
       {
         id: "b2-1",
         role: "fetch",
         want: { stone: "slab", count: 2, place: "builder" },
-        hint: "Two means two. Plural nouns end in -s: slabs.",
+        hint: "Two means two. Most nouns add -s for the plural: slabs.",
       },
       {
         id: "b2-2",
@@ -216,7 +216,11 @@ export const SESSIONS: Session[] = [
         role: "use",
         speaker: "keeper",
         says: "Three slabs.",
-        clues: ["You just asked the stock-keeper: “How many slabs are left?”", "She is counting the pile with her clipboard."],
+        clues: [
+          "You just asked the stock-keeper: “How many slabs are left?”",
+          "She is counting the pile.",
+          "You are holding the stock list.",
+        ],
         options: [
           {
             text: "Carry three slabs to her.",
@@ -234,7 +238,7 @@ export const SESSIONS: Session[] = [
         role: "use",
         speaker: "builder",
         says: "Slab?",
-        clues: ["You are carrying a stone he has not seen before.", "He looks at it, unsure, with his eyebrows raised."],
+        clues: ["You are carrying a beam. From the scaffold he can't see it clearly.", "He looks at it, unsure, with his eyebrows raised."],
         options: [
           { text: "Answer: “No — it's a beam.”", fits: true, reaction: "Ah. A beam. Put it over there." },
           { text: "Go and fetch him a slab.", fits: false, reaction: "I didn't ask for one — I asked what that is." },
@@ -276,7 +280,11 @@ export const SESSIONS: Session[] = [
         role: "use",
         speaker: "keeper",
         says: "Two beams.",
-        clues: ["A delivery cart has just arrived.", "The stock-keeper is reading the delivery note aloud."],
+        clues: [
+          "A delivery cart has just arrived.",
+          "The stock-keeper is reading the delivery note aloud.",
+          "You are holding the stock list.",
+        ],
         options: [
           { text: "Write “2 beams” on the stock list.", fits: true, reaction: "Good. Two beams in." },
           { text: "Bring her two beams.", fits: false, reaction: "They're right here on the cart — I'm telling you what arrived." },
