@@ -1,0 +1,3 @@
+Use your built-in image generation tool (gpt-image-2) to create ONE image using the attached reference, then copy the resulting PNG to art/scene/box-closed.png in the current directory. Do nothing else.
+
+Image prompt: The same sage-green cardboard box as in the reference image, same size, colour, line style and three-quarter view from slightly above, but now CLOSED with its flat lid on, so the top is a flat sage-green surface. Hand-cut paper illustration with subtle screen-print grain, charcoal ink outlines. The single subject is centred and fully visible, isolated on a perfectly flat, uniform, pure magenta #FF00FF background with no shadow on the background, no gradient, no floor, no other objects. Square 1:1. No text.

@@ -1,0 +1,3 @@
+Use your built-in image generation tool (gpt-image-2) to create ONE image using the attached reference, then copy the resulting PNG to art/tall/stage.png in the current directory. Do nothing else.
+
+Image prompt: A tall portrait version (aspect 3:4) of the attached illustration of a tabletop paper theatre; extend upward with more terracotta curtain valance, the top of the theatre frame and a dark cobalt proscenium. The bottom part must keep the same composition, colours and style as the reference (same ground, platforms or floor, nothing moved); only add more scenery above it. Hand-cut paper illustration with subtle screen-print grain. No people, no loose objects, no text.
