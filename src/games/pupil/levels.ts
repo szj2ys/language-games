@@ -70,11 +70,11 @@ export const LEVELS: Level[] = [
     id: "p-3",
     title: "Yesterday I…",
     task: "Teach the pupil to spell the past tense.",
-    english: "Past -ed spelling: drop silent e, double a final consonant after a short stressed vowel",
+    english: "Past -ed spelling: drop silent e; double a final consonant after one vowel letter in a stressed last syllable",
     ways: [
       { id: "ed", label: "Always add -ed" },
       { id: "drop-e", label: "After a final e, just add -d" },
-      { id: "double-any", label: "…and double the last consonant after a short vowel" },
+      { id: "double-any", label: "…and double the last consonant after a single vowel letter" },
       { id: "double-stressed", label: "…but only when that syllable is stressed" },
     ],
     exam: [
@@ -93,9 +93,9 @@ export const LEVELS: Level[] = [
       pastItem({ word: "listen", stressedLast: false }),
     ],
     explain: [
-      { text: "Double the last letter after a short vowel.", readAs: "double-any" },
+      { text: "Double the last letter after a single vowel.", readAs: "double-any" },
       {
-        text: "Drop a silent e; double a final consonant only after a short, stressed vowel.",
+        text: "Drop a silent e; double a final consonant after a single vowel letter, but only when the last syllable is stressed.",
         readAs: "double-stressed",
         needs: { ruledOut: "double-any", otherwise: "double-any" },
       },
@@ -185,7 +185,7 @@ export const LEVELS_2: Level[] = [
     ],
     twist: {
       item: { word: "stop", forms: {}, correct: "stop smoking" },
-      prompt: "New word: the pupil writes “He stopped to smoke.” Your example sentence said “He stopped smoking.”",
+      prompt: "New verb: the pupil writes “He stopped to smoke.” Is that English — or should it be “He stopped smoking”?",
       answer: "both",
       why: "Both are good English — with different meanings. “He stopped smoking” means he gave it up; “He stopped to smoke” means he paused in order to smoke. The form follows what you want to say.",
     },

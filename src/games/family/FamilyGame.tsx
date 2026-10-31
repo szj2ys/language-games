@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+
 import { Check, CircleHelp, Undo2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, HintButton, SessionEnd } from "@/components/game/chrome";
@@ -288,8 +288,8 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
 
 function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; session: Session; onDone: Done; onNext: () => void }) {
   const [chain, setChain] = useDraft<{ card: Card; link?: string }[]>(round.id, "chain", []);
-  const [pending, setPending] = useState<Card | null>(null);
-  const [bad, setBad] = useState<string | null>(null);
+  const [pending, setPending] = useDraft<Card | null>(round.id, "pending", null);
+  const [bad, setBad] = useDraft<string | null>(round.id, "bad", null);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
   const [hint, setHint] = useDraft(round.id, "hint", false);
   const [done, setDone] = useDraft(round.id, "done", false);
@@ -475,7 +475,7 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
         <div className="mx-auto w-40">
           <CardTile card={n} badge={<span className="absolute top-1.5 left-1.5 rounded-full bg-ochre px-2 text-xs font-bold">New</span>} />
         </div>
-        <div className="grid grid-cols-6 gap-1.5" aria-label={`These ${session.kind}`}>
+        <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6" aria-label={`These ${session.kind}`}>
           {session.cards.map((c) => (
             <CardTile key={c.id} card={c} small />
           ))}

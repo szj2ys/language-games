@@ -103,7 +103,7 @@ function layout(scene: Scene, spotX: number[], scale = 1): Placed[] {
       thing: t,
       x: holder.x,
       // On the box: it rests on the closed lid; on the book: on the cover.
-      bottom: holder.bottom + holderH * (holder.thing === "box" ? 0.7 : 0.85),
+      bottom: holder.bottom + holderH * (holder.thing === "box" ? 0.7 : 0.52),
       w,
       z: holder.z + 2,
     };
