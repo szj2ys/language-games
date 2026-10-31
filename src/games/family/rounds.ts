@@ -69,6 +69,28 @@ const TOOLS: Card[] = [
   { ...tool("pliers", "the pliers", ["modify", "handle", "cut", "metal"]), plural: true },
 ];
 
+const LANGUAGE_FEATURES: Feature[] = [
+  { id: "spoken", plural: "can be spoken aloud", singular: "can be spoken aloud", colour: "#42649a" },
+  { id: "written", plural: "can be written down", singular: "can be written down", colour: "#b0553e" },
+  { id: "orders", plural: "can give orders", singular: "can give orders", colour: "#64775a" },
+  { id: "stories", plural: "can tell a story", singular: "can tell a story", colour: "#c9a24a" },
+  { id: "hands", plural: "are used with the hands", singular: "is used with the hands", colour: "#7a5c8a" },
+  { id: "special", plural: "are used for one special job", singular: "is used for one special job", colour: "#5b5f60" },
+];
+
+const lang = (id: string, name: string, on: string[], blurred: string[] = []) => card(id, name, on, blurred, LANGUAGE_FEATURES);
+
+// PI §18: "Our language can be seen as an ancient city … and this surrounded by a multitude of new
+// boroughs" — the symbolism of chemistry, the notation of the calculus. Are these all languages?
+const LANGUAGES: Card[] = [
+  lang("english", "English", ["spoken", "written", "orders", "stories"]),
+  lang("signlanguage", "sign language", ["orders", "stories", "hands"]),
+  lang("roadsigns", "road signs", ["orders", "special"]),
+  lang("chemistry", "chemical formulas", ["written", "special"]),
+  lang("music", "music notation", ["written", "special"], ["stories"]),
+  lang("morse", "Morse code", ["orders", "special", "hands"], ["spoken"]),
+];
+
 export const SESSIONS: Session[] = [
   {
     id: "family-1",
@@ -124,6 +146,32 @@ export const SESSIONS: Session[] = [
         mode: "newcomer",
         newcomer: { ...tool("nails", "nails", ["join", "metal"]), plural: true },
         hint: "Nails are on Wittgenstein's list of tools. What do they share with the hammer?",
+      },
+    ],
+  },
+  {
+    id: "family-3",
+    title: "What is a language?",
+    blurb: "Wittgenstein's builders have only four words (§2). Is that a language? Is a road sign? Look before you decide.",
+    english: "Talking about language itself: 'can be …', 'is used for …', 'both … and', 'unlike'",
+    kind: "languages",
+    source: "pi-18",
+    cards: LANGUAGES,
+    features: LANGUAGE_FEATURES,
+    rounds: [
+      {
+        id: "f3-1",
+        mode: "claim",
+        feature: "spoken",
+        hint: "Can you say chemical formulas aloud the way you speak English? Can you speak road signs?",
+      },
+      { id: "f3-2", mode: "claim", feature: "orders", hint: "A stop sign gives an order. Does a chemical formula?" },
+      { id: "f3-3", mode: "thread", hint: "Start with English. Each next card must share something with the one before it." },
+      {
+        id: "f3-4",
+        mode: "newcomer",
+        newcomer: lang("builders", "the builders' language", ["spoken", "orders", "special"]),
+        hint: "The builders' four words (§2): they are spoken and they give orders. Which card shares that?",
       },
     ],
   },

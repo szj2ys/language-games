@@ -8,6 +8,7 @@ import { GameFrame, GameLoading, HintButton, SessionEnd } from "@/components/gam
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
+import type { SourceId } from "@/content/sources";
 import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
 import { useShortcuts } from "@/components/game/shortcuts";
@@ -43,7 +44,13 @@ export function FamilyGame() {
           english={session.english}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
-          sources={g.sessionIndex === 0 ? ["pi-66", "pi-67"] : ["pi-11", "pi-14"]}
+          sources={
+            [
+              ["pi-66", "pi-67"],
+              ["pi-11", "pi-14"],
+              ["pi-18", "pi-2"],
+            ][g.sessionIndex] as SourceId[]
+          }
           nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
           onNext={g.nextSession}
           onReplay={g.replay}

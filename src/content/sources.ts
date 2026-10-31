@@ -86,6 +86,18 @@ export const SOURCES = {
     gloss: "You can force one definition onto every tool, but only by twisting the words. The ruler was the counterexample.",
     url: PI_URL,
   },
+  "pi-18": {
+    id: "pi-18",
+    work: "PI",
+    ref: "§18",
+    quote:
+      "Our language can be seen as an ancient city: a maze of little streets and squares, of old and new houses, and of houses with additions from various periods; and this surrounded by a multitude of new boroughs with straight regular streets and uniform houses.",
+    gloss:
+      "Chemical formulas and music notation are like the new suburbs of a city: built for one job, joined to the old town. Is the town ever complete?",
+    limits:
+      "Wittgenstein asks whether a language of orders alone is 'incomplete'; he does not settle what counts as a language by definition.",
+    url: PI_URL,
+  },
   "pi-19": {
     id: "pi-19",
     work: "PI",
