@@ -1,0 +1,19 @@
+Reading the brief first to see what the plan must cover.
+
+● Read BRIEF.md
+  │ planning\BRIEF.md
+  └ 25 lines read
+
+● List repo root, planning dir names, git state (shell)
+  │ Get-ChildItem -Force -Name; "---planning---"; Get-ChildItem -Force -Name planning; "---git---";
+  │ git --no-pager log --oneline -n 10; git --no-pager status --short
+  └ 12 lines…
+
+The brief asks for a game-design plan for a Next.js app that teaches English through Wittgenstein. Next I'll check the acceptance criteria (not another plan) and load the matching website-MVP skill.
+
+● skill(website-mvp)
+
+● Read ACCEPTANCE.md
+  │ planning\ACCEPTANCE.md
+  └ 67 lines read
+
