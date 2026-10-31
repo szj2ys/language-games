@@ -435,7 +435,7 @@ function FetchPlay({
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div className="flex flex-1 flex-col lg:block">
+      <div className="flex flex-col lg:block">
         <Site
           facing={facing}
           pointing={!!round.points}
@@ -683,7 +683,7 @@ function CallPlay({
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div className="flex flex-1 flex-col lg:block">
+      <div className="flex flex-col lg:block">
         <Site
           facing={pointAt === "left" ? "left" : "right"}
           pointing={typeof pointAt === "string"}
@@ -871,7 +871,7 @@ function UsePlay({
   const keeper = round.speaker === "keeper";
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <div className="flex flex-1 flex-col lg:block">
+      <div className="flex flex-col lg:block">
         {/* Each situation is drawn (gpt-image-2): the beam in her arms, the sliding slab, the pile being counted. */}
         <SceneCanvas
           label={round.clues.join(" ")}
