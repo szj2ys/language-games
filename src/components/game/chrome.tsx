@@ -293,7 +293,7 @@ export function SceneCanvas({
       aria-label={label}
       className={cn(
         "relative w-full overflow-hidden bg-paper-deep sm:aspect-[16/9] sm:flex-none sm:rounded-2xl",
-        tall ? "min-h-[75vw] flex-1" : "aspect-[4/3]",
+        tall ? "min-h-[75vw] flex-1 sm:min-h-0" : "aspect-[4/3]",
         className,
       )}
     >

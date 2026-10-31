@@ -445,12 +445,18 @@ function NewcomerPlay({ round, session, onDone, onNext }: { round: NewcomerRound
     if (mode === "both") {
       ok = n.features[f.id] === true && o.features[f.id] === true;
       const lacking = n.features[f.id] === true ? o : n;
-      why = ok
-        ? `True — ${n.name} ${agree(n, "joins", "join")} the family through ${o.name}.`
-        : `Not true: ${lacking.name} ${negate(f, lacking.plural)}.`;
+      if (ok) why = `True — ${n.name} ${agree(n, "joins", "join")} the family through ${o.name}.`;
+      // An unclear feature is neither true nor false: say so instead of correcting.
+      else if (lacking.features[f.id] === "blurred")
+        why = `That's unclear for ${lacking.name} — is it really “${f.plural}”? Choose something they clearly share.`;
+      else why = `Not true: ${lacking.name} ${negate(f, lacking.plural)}.`;
     } else {
       const most = claimHolds(session.cards, f.id, "Most");
       ok = n.features[f.id] === false && most;
+      if (n.features[f.id] === "blurred") {
+        setResult({ ok: false, why: `That's unclear for ${n.name}. Choose something it clearly lacks.` });
+        return;
+      }
       if (ok)
         why = `True — ${n.name} ${agree(n, "sits", "sit")} at the edge of the family. Both answers can be right: the edges are blurred (§71).`;
       else if (!most) why = `That doesn't set it apart: no more than half of these ${session.kind} ${f.plural} anyway.`;

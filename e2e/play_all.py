@@ -125,6 +125,10 @@ def play_builder(page: Page) -> None:
 def play_scene(page: Page) -> None:
     page.goto(f"{BASE}/play/scene")
     expect(page.get_by_role("heading", level=1, name="Picture Theatre")).to_be_visible()
+    # The stage must fit the window: on desktop it keeps its 16:9 shape; on a phone it fills down to the controls.
+    stage = page.locator("figure").first.bounding_box()
+    vp = page.viewport_size
+    assert stage and stage["y"] + stage["height"] <= vp["height"], f"stage runs off the screen: {stage}"
 
     def put(thing: str, where: str) -> None:
         page.get_by_role("button", name=thing, exact=True).first.click()

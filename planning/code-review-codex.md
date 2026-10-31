@@ -41,3 +41,15 @@
 10. **P3 — A past-tense rule describes the wrong transformation.** `src/games/pupil/levels.ts:72`.
     Input: applying “Drop a final e, then -d” to `like` produces `likd`, and to `hope` produces `hopd`. The engine correctly appends `d` without dropping `e`; this erroneous authored label currently has no UI consumer.
     Fix: change the label to “Keep the final e and add -d,” or “Drop the final e, then add -ed.”
+
+## Second pass
+
+1. **P2 — Phone minimum stage height also applies on desktop.** `src/components/game/chrome.tsx:296`.
+   Input: open `http://localhost:3417/play/scene` at 1440×900, then choose the key in the first round.
+   What goes wrong: `min-h-[75vw]` makes the stage 1080px tall despite its desktop 16:9 ratio. Browser measurement put it at y=136–1216; the task sentence and box placement target fall below the viewport, forcing scrolling between the task and controls. Slab! and Go On! inherit the same oversized stage.
+   Fix: restrict the minimum height to phones, for example with `sm:min-h-0`, so the desktop aspect ratio determines stage height.
+
+2. **P3 — An uncertain lottery feature produces a categorical false correction.** `src/games/family/rounds.ts:103`; `src/games/family/FamilyGame.tsx:446–450`.
+   Input: in Family Threads `f1-6`, choose Both → poker → “are played in a group” → Say it.
+   What goes wrong: reproduced at 390×844, the feedback says “Not true: the lottery is not played in a group.” The changed data marks this feature `"blurred"`, but feedback treats every non-true value as false, teaching a definite negation where the classification is uncertain.
+   Fix: handle `"blurred"` separately before generating positive or negative corrections; explain the uncertainty and ask for an unambiguous shared feature.
