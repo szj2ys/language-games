@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Check, Lightbulb, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -160,13 +160,17 @@ export function SessionEnd({
  * sends: the game's name and its scene, so the first paint is the picture,
  * not a blank page.
  */
-export function GameLoading({ game, poster, tall }: { game: string; poster: string; tall?: string }) {
+export function GameLoading({ game, poster, posterSquare }: { game: string; poster: string; posterSquare?: string }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[1400px] flex-col" aria-busy="true">
       <GameHeader game={game} title="Loading…" round={0} total={0} />
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8 lg:px-4">
-        <SceneCanvas tall={tall}>
-          <Image src={poster} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+        <SceneCanvas frame={posterSquare ? "own" : undefined}>
+          {posterSquare ? (
+            <ArtDirected wide={poster} square={posterSquare} />
+          ) : (
+            <Image src={poster} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+          )}
         </SceneCanvas>
       </div>
     </div>
@@ -265,9 +269,11 @@ export function HintButton({ used, onUse }: { used: boolean; onUse: () => void }
 }
 
 /**
- * A 16:9 scene that fills more of a phone: below `sm` the frame is 4:3 and the
- * 16:9 canvas inside it is shown at 133% with its sides trimmed, so every
- * position given in % of the canvas still lands on the same spot in the art.
+ * A 16:9 scene on desktop. On a phone it is framed around the action instead:
+ * `frame="square"` shows a square crop of the middle of the 16:9 canvas (the
+ * game moves its objects inward to stay inside it); `frame="own"` means the game
+ * draws its own square picture for phones. Without `frame`, the phone sees a 4:3
+ * crop. Positions in % of the canvas land on the same spot in the art.
  * `overlay` sits on the visible frame (speech bubbles), not on the canvas.
  */
 export function SceneCanvas({
@@ -275,40 +281,55 @@ export function SceneCanvas({
   overlay,
   label,
   className,
-  tall,
+  frame,
 }: {
   children: React.ReactNode;
   overlay?: React.ReactNode;
   label?: string;
   className?: string;
-  /**
-   * A taller version of the backdrop (image-model outpainting of the same art).
-   * With it, the phone stage grows to fill the screen down to the controls: the
-   * tall art fills the frame and the 16:9 game canvas sits at its foot, faded in.
-   */
-  tall?: string;
+  frame?: "square" | "own";
 }) {
   return (
     <figure
       aria-label={label}
       className={cn(
-        "relative w-full overflow-hidden bg-paper-deep sm:aspect-[16/9] sm:flex-none sm:rounded-2xl",
-        tall ? "min-h-[75vw] flex-1 sm:min-h-0" : "aspect-[4/3]",
+        "relative w-full overflow-hidden bg-paper-deep sm:aspect-[16/9] sm:rounded-2xl",
+        frame ? "aspect-square" : "aspect-[4/3]",
         className,
       )}
     >
-      {tall && <Image src={tall} alt="" fill priority sizes="100vw" className="object-cover object-bottom sm:hidden" />}
       <div
         className={cn(
-          "absolute left-[-16.667%] w-[133.333%] sm:inset-y-0 sm:left-0 sm:w-full",
-          tall
-            ? "bottom-0 aspect-[16/9] [mask-image:linear-gradient(to_bottom,transparent,black_16%)] sm:aspect-auto sm:[mask-image:none]"
-            : "inset-y-0",
+          "@container absolute inset-y-0 sm:left-0 sm:w-full",
+          frame === "square" && "left-[-38.889%] w-[177.778%]",
+          frame === "own" && "left-0 w-full",
+          !frame && "left-[-16.667%] w-[133.333%]",
         )}
       >
         {children}
       </div>
       {overlay}
     </figure>
+  );
+}
+
+/**
+ * One picture for phones and another for wider screens, chosen by the browser
+ * before any script runs, so the first paint is already the right art.
+ */
+export function ArtDirected({ wide, square, className }: { wide: string; square: string; className?: string }) {
+  const common = { alt: "", sizes: "(min-width: 1024px) 700px, 100vw", fetchPriority: "high" as const };
+  const {
+    props: { srcSet: wideSet },
+  } = getImageProps({ ...common, src: wide, width: 1600, height: 900 });
+  const {
+    props: { srcSet: squareSet, ...rest },
+  } = getImageProps({ ...common, src: square, width: 900, height: 900 });
+  return (
+    <picture>
+      <source media="(min-width: 640px)" srcSet={wideSet} />
+      <source media="(max-width: 639px)" srcSet={squareSet} />
+      <img {...rest} alt="" className={cn("absolute inset-0 size-full object-cover", className)} />
+    </picture>
   );
 }

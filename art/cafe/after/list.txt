@@ -1,0 +1,18 @@
+c1-1|rosa|c1-1|The window beside Rosa is now firmly CLOSED, the curtains hang still; Rosa, an older woman with silver hair in a bun and a mustard cardigan, sits relaxed and smiling with her hands around her steaming tea.
+c1-2|rosa|c1-2|Rosa, an older woman with silver hair in a bun and a mustard cardigan, sits at the café table beside the closed window, happily pouring herself tea from a fresh blue-and-white teapot now on her table.
+c1-3|tom|c1-3|Tom, a young man with curly dark hair, glasses and a sage-green jumper, now holds the sugar bowl and spoons sugar into his black coffee, smiling.
+c1-4|tom|c1-4|Tom, a young man with curly dark hair, glasses and a sage-green jumper, gives an encouraging thumbs-up across the café table, smiling warmly, the letter put down on the table.
+c1-5|lena|c1-5|Lena, a young woman with a long auburn braid in a cobalt coat, hurries out through the café door towards a waiting bus, waving goodbye; the wall clock shows ten to five.
+c1-6|lena|c1-6|Lena, a young woman with a long auburn braid in a cobalt coat, stands by the café door holding the shop keys, smiling, as the lights are being switched off; chairs stacked, music player switched off.
+c2-1|tom|c2-1|Tom, a young man with curly dark hair, glasses and a sage-green jumper, sits at a table happily eating a slice of pale yellow lemon cake; the chocolate cake stays under its glass dome on the counter.
+c2-2|rosa|c2-2|Rosa, an older woman with silver hair in a bun and a mustard cardigan, sits at a café table with a pot of mint tea and one ginger biscuit on a small plate, smiling contentedly.
+c2-3|lena|c2-3|Lena, a young woman with a long auburn braid in a cobalt coat, now sits on the chair with her coffee; a coat hangs on a hook on the wall instead of the chair; the café is busy.
+c2-4|tom|c2-4|Tom, a young man with curly dark hair, glasses and a sage-green jumper, holds up a straight new spoon happily; the bent spoon lies on a saucer.
+c2-5|rosa|c2-5|Rosa, an older woman with silver hair in a bun and a mustard cardigan, smiles and accepts a small slice of cake on a plate, delighted.
+c2-6|rosa|c2-6|Rosa, an older woman with silver hair in a bun and a mustard cardigan, sits back contentedly at a clean, cleared café table, patting her stomach, the plates taken away.
+c3-1|tom|c3-1|Tom, a young man with curly dark hair, glasses and a sage-green jumper, wearing a manager's apron, nods approvingly at spotless, wiped café tables at closing time.
+c3-2|rosa|c3-2|Rosa, an older woman with silver hair in a bun and a mustard cardigan, beams proudly as a bitten slice of her homemade lemon cake sits on a plate in front of the viewer.
+c3-3|lena|c3-3|Lena, a young woman with a long auburn braid in a cobalt coat, stands at the café counter happily taking a flat white coffee in a cup.
+c3-4|lena|c3-4|Lena, a young woman with a long auburn braid in a cobalt coat, sits on a café chair with her foot up on a stool and an ice pack on her ankle, looking relieved and grateful.
+c3-5|tom|c3-5|Tom, a young man with curly dark hair, glasses and a sage-green jumper, walks easily down a now clear aisle carrying a heavy tray of cups; the chair has been pulled in under the table.
+c3-6|lena|c3-6|Lena, a young woman with a long auburn braid in a cobalt coat, stands at the café counter, nodding and handing over cash coins; the card machine has a small paper sign taped to it (no readable text).

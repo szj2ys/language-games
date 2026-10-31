@@ -4,12 +4,13 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Check, Eye, Hand, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
+import { ArtDirected, GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
 import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
+import { useIsPhone } from "@/lib/use-phone";
 import { useShortcuts } from "@/components/game/shortcuts";
 import {
   NUMBER_WORDS,
@@ -31,12 +32,38 @@ import type { SourceId } from "@/content/sources";
 
 const GAME = "builder";
 
-/** Where things sit in the site picture, as % of its width and height. */
-const SPOT: Record<Place, { x: number; y: number }> = {
-  left: { x: 19, y: 47 },
-  right: { x: 82, y: 47 },
-  builder: { x: 60, y: 80 },
+/**
+ * Where things sit in the site picture, as % of its width and height. Phones get
+ * their own square picture of the same site (gpt-image-2), framed around the
+ * action instead of a strip of the wide one.
+ */
+type Geometry = {
+  bg: string;
+  spot: Record<Place, { x: number; y: number }>;
+  builder: { left: number; w: number; h: number };
+  person: { w: number; h: number; rest: number };
+  target: { top: number; h: number; w: number };
 };
+
+const WIDE: Geometry = {
+  bg: "/art/builder/site.webp",
+  spot: { left: { x: 19, y: 47 }, right: { x: 82, y: 47 }, builder: { x: 60, y: 80 } },
+  builder: { left: 36, w: 22, h: 64 },
+  person: { w: 18, h: 58, rest: 88 },
+  target: { top: 38, h: 24, w: 34 },
+};
+
+const SQUARE: Geometry = {
+  bg: "/art/square/site.webp",
+  spot: { left: { x: 19, y: 52 }, right: { x: 81, y: 52 }, builder: { x: 62, y: 88 } },
+  builder: { left: 30, w: 28, h: 52 },
+  person: { w: 24, h: 48, rest: 90 },
+  target: { top: 42, h: 18, w: 38 },
+};
+
+function useGeometry(): Geometry {
+  return useIsPhone() ? SQUARE : WIDE;
+}
 
 /** What an unlabelled stone looks like, for people who cannot see the picture. */
 const SHAPE: Record<Stone, string> = {
@@ -61,7 +88,7 @@ type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "cou
 
 export function BuilderGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" tall="/art/tall/site.webp" />;
+  if (!g.ready) return <GameLoading game="Slab!" poster="/art/builder/site.webp" posterSquare="/art/square/site.webp" />;
   const { round, session, sessionIndex, finished } = g;
   const speak = g.speech.speak;
   return (
@@ -102,7 +129,7 @@ export function BuilderGame() {
           key={round.id}
           round={round}
           speak={speak}
-          onDone={(firstTry, said, marks) => g.complete(marks, 3, firstTry, [said])}
+          onDone={(firstTry, said, marks, missed) => g.complete(marks, 3, firstTry, [said], missed)}
           onNext={g.next}
         />
       )}
@@ -142,9 +169,10 @@ function Site({
   /** Show the stock-keeper with her clipboard instead of the assistant. */
   keeper?: boolean;
 }) {
+  const geo = useGeometry();
   return (
     <SceneCanvas
-      tall="/art/tall/site.webp"
+      frame="own"
       overlay={
         bubble && (
           <div
@@ -173,11 +201,16 @@ function Site({
         )
       }
     >
-      <Image src="/art/builder/site.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
+      <ArtDirected wide={WIDE.bg} square={SQUARE.bg} />
       {/* The builder, A. He turns to point; facing right is his resting pose. */}
       <div
-        className="absolute bottom-[3%] h-[64%] w-[22%] transition-transform duration-300"
-        style={{ left: "36%", transform: facing === "left" ? "scaleX(-1)" : undefined }}
+        className="absolute bottom-[3%] transition-transform duration-300"
+        style={{
+          left: `${geo.builder.left}%`,
+          width: `${geo.builder.w}%`,
+          height: `${geo.builder.h}%`,
+          transform: facing === "left" ? "scaleX(-1)" : undefined,
+        }}
       >
         <Image
           src={pointing ? "/art/builder/builder.webp" : "/art/builder/builder-call.webp"}
@@ -188,20 +221,24 @@ function Site({
         />
       </div>
       {keeper && (
-        <div className="absolute bottom-[2%] left-[66%] h-[60%] w-[18%]">
+        <div className="absolute bottom-[2%]" style={{ left: "66%", width: `${geo.person.w}%`, height: `${geo.person.h}%` }}>
           <Image src="/art/builder/keeper.webp" alt="" fill sizes="140px" className="object-contain object-bottom" />
         </div>
       )}
       {/* The assistant, B, walks to wherever the stones go. */}
       <div
-        className="absolute bottom-[2%] h-[58%] w-[18%] transition-[left] duration-700 ease-out"
-        style={{ left: walking ? `${SPOT[walking].x + (walking === "right" ? -26 : 4)}%` : "88%" }}
+        className="absolute bottom-[2%] transition-[left] duration-700 ease-out"
+        style={{
+          left: walking ? `${geo.spot[walking].x + (walking === "right" ? -geo.person.w - 8 : 4)}%` : `${geo.person.rest}%`,
+          width: `${geo.person.w}%`,
+          height: `${geo.person.h}%`,
+        }}
       >
         <Image src="/art/builder/assistant.webp" alt="" fill sizes="140px" className="object-contain object-bottom" />
       </div>
-      {ghost && <StonePile delivery={ghost} ghost />}
+      {ghost && <StonePile delivery={ghost} spot={geo.spot} ghost />}
       {delivered.map((d, i) => (
-        <StonePile key={i} delivery={d} offset={i} />
+        <StonePile key={i} delivery={d} spot={geo.spot} offset={i} />
       ))}
       {pointTargets &&
         (["left", "right"] as const).map((p) => (
@@ -211,9 +248,10 @@ function Site({
             onClick={() => onPointPlace?.(p)}
             aria-pressed={pointedPlace === p}
             aria-label={`Point at the ${p} platform`}
+            style={{ top: `${geo.target.top}%`, height: `${geo.target.h}%`, width: `${geo.target.w}%` }}
             className={cn(
-              "absolute top-[38%] h-[24%] w-[34%] rounded-xl border-2 border-dashed transition-colors",
-              p === "left" ? "left-[2%]" : "right-[2%]",
+              "absolute rounded-xl border-2 border-dashed transition-colors",
+              p === "left" ? "left-[1%]" : "right-[1%]",
               pointedPlace === p ? "border-ochre bg-ochre/25" : "border-card/80 hover:bg-card/20",
             )}
           >
@@ -224,8 +262,18 @@ function Site({
   );
 }
 
-function StonePile({ delivery, offset = 0, ghost }: { delivery: Delivery; offset?: number; ghost?: boolean }) {
-  const at = SPOT[delivery.place];
+function StonePile({
+  delivery,
+  spot,
+  offset = 0,
+  ghost,
+}: {
+  delivery: Delivery;
+  spot: Geometry["spot"];
+  offset?: number;
+  ghost?: boolean;
+}) {
+  const at = spot[delivery.place];
   return (
     <div
       className={cn(
@@ -239,7 +287,7 @@ function StonePile({ delivery, offset = 0, ghost }: { delivery: Delivery; offset
       aria-hidden
     >
       {Array.from({ length: delivery.count }, (_, i) => (
-        <div key={i} className="relative -mx-[2%] h-[clamp(28px,8vw,60px)] w-[clamp(34px,10vw,76px)]">
+        <div key={i} className="relative -mx-[1.5cqw] h-[14cqw] w-[13cqw] sm:h-[7.5cqw] sm:w-[8.5cqw]">
           <Image
             src={`/art/builder/${delivery.stone}.webp`}
             alt=""
@@ -281,7 +329,7 @@ function StoneCard({
       aria-label={ariaLabel}
       data-shortcut={shortcut ? "" : undefined}
       className={cn(
-        "relative flex min-h-28 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-card px-2 py-2 sm:min-h-24 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
+        "relative flex min-h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 bg-card px-2 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
         selected ? "border-cobalt bg-cobalt/10" : "border-border hover:border-ink/30",
       )}
     >
@@ -407,7 +455,7 @@ function FetchPlay({
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         <fieldset disabled={solved}>
           <legend className="sr-only">Which stone?</legend>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
+          <div className={cn("grid gap-2 lg:grid-cols-2", advanced ? "grid-cols-4" : "grid-cols-2 sm:grid-cols-4")}>
             {(["block", "pillar", "slab", "beam"] as const).map((s) => (
               <StoneCard
                 key={s}
@@ -500,7 +548,7 @@ function FetchPlay({
           )}
         </div>
         {hint && !outcome && (
-          <p role="status" className="text-[15px]">
+          <p role="status" className="text-[15px] lg:text-[17px]">
             {round.hint}
           </p>
         )}
@@ -547,7 +595,7 @@ function CallPlay({
   round: CallRound;
   speak: (t: string) => void;
   /** Marks: the build is right, the English needed no note, and it worked first time. */
-  onDone: (firstTry: boolean, said: string, marks: number) => void;
+  onDone: (firstTry: boolean, said: string, marks: number, missed?: string) => void;
   onNext: () => void;
 }) {
   const [notes, setNotes] = useDraft<string[]>(round.id, "notes", []);
@@ -557,6 +605,7 @@ function CallPlay({
   const [outcome, setOutcome] = useDraft<Outcome | null>(round.id, "outcome", null);
   const [tries, setTries] = useDraft(round.id, "tries", 0);
   const [hint, setHint] = useDraft(round.id, "hint", false);
+  const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const solved = outcome?.score === 3;
 
   const bank: Tile[] = useMemo(() => {
@@ -601,8 +650,11 @@ function CallPlay({
       if (m.score === 3) {
         const firstTry = tries === 0 && !hint;
         // The outcome is scored; the English note is coaching and costs nothing (DECISIONS D5).
-        onDone(firstTry, said, firstTry ? 3 : 2);
-      } else track("repair_used", { game: GAME, round: round.id });
+        onDone(firstTry, said, firstTry ? 3 : 2, firstMiss ?? undefined);
+      } else {
+        if (!firstMiss) setFirstMiss(said);
+        track("repair_used", { game: GAME, round: round.id });
+      }
     } else {
       setTimeout(() => speak(r.question), 900);
     }
@@ -611,6 +663,8 @@ function CallPlay({
   const undo = () => {
     setOutcome(null);
     setReply(null);
+    setTiles([]);
+    setPointAt(undefined);
   };
 
   const tileText = (t: Tile) =>
@@ -634,7 +688,7 @@ function CallPlay({
           onPointPlace={(p) => setPointAt((cur) => (cur === p ? undefined : p))}
           walking={outcome ? outcome.delivery.place : null}
         />
-        <p className="px-3 pt-2 text-[15px] lg:px-0">
+        <p className="px-3 pt-2 text-[15px] lg:text-[17px] lg:px-0">
           <span className="font-bold">Plan:</span> {round.plan}
         </p>
       </div>
@@ -679,7 +733,7 @@ function CallPlay({
                 disabled={!!outcome}
                 onClick={() => setTiles((ts) => ts.filter((_, j) => j !== i))}
                 aria-label={`Remove ${tileText(t)}`}
-                className="h-10 rounded-lg bg-ink px-3 text-[17px] font-bold text-paper"
+                className="h-11 rounded-lg bg-ink px-3 text-[17px] font-bold text-paper"
               >
                 {tileText(t)}
               </button>
@@ -712,7 +766,7 @@ function CallPlay({
 
         {outcome && !solved && <Marks outcome={outcome} want={round.goal} />}
         {notes.length > 0 && outcome && (
-          <ul role="status" className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px]" aria-label="English notes">
+          <ul role="status" className="flex flex-col gap-1 rounded-xl bg-ochre/15 p-3 text-[15px] lg:text-[17px]" aria-label="English notes">
             {notes.map((n) => (
               <li key={n}>
                 <span className="font-bold">English note:</span> {n}
@@ -720,8 +774,14 @@ function CallPlay({
             ))}
           </ul>
         )}
+        {solved && outcome && !round.teaches && (
+          <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px] lg:text-[18px]">
+            Your call worked: {NUMBER_WORDS[outcome.delivery.count - 1]} {plural(outcome.delivery.stone, outcome.delivery.count)},{" "}
+            {outcome.delivery.place === "builder" ? "brought to you" : `on the ${outcome.delivery.place} platform`}.
+          </p>
+        )}
         {solved && round.teaches && (
-          <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px]">
+          <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px] lg:text-[17px]">
             New word: <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>. You pointed and said “this”; now the
             builder names it. Next time you can simply call it.
           </p>
@@ -744,7 +804,7 @@ function CallPlay({
           )}
         </div>
         {hint && !outcome && (
-          <p role="status" className="text-[15px]">
+          <p role="status" className="text-[15px] lg:text-[17px]">
             {round.hint}
           </p>
         )}
@@ -812,7 +872,7 @@ function UsePlay({
         />
         <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
           {round.clues.map((c) => (
-            <li key={c} className="flex items-start gap-2 text-[15px]">
+            <li key={c} className="flex items-start gap-2 text-[15px] lg:text-[17px]">
               <Eye className="mt-0.5 size-4 shrink-0 text-cobalt" aria-hidden />
               {c}
             </li>
@@ -855,7 +915,7 @@ function UsePlay({
             <div role="status" className="flex flex-col gap-2 rounded-xl bg-sage/15 p-4">
               <p className="text-sm font-bold text-sage">What the words were doing here</p>
               <p className="font-heading text-[20px] leading-snug">{round.use.charAt(0).toUpperCase() + round.use.slice(1)}.</p>
-              <p className="text-[15px] leading-relaxed">{round.note}</p>
+              <p className="text-[15px] lg:text-[17px] leading-relaxed">{round.note}</p>
             </div>
             <Button size="lg" className="h-12 text-lg" onClick={onNext} autoFocus>
               Next

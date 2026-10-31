@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Check, CircleHelp, RotateCcw, Undo2, X } from "lucide-react";
+import { Check, CircleHelp, Undo2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameFrame, GameLoading, HintButton, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
@@ -79,7 +79,7 @@ function CardTile({
     <>
       <span
         className={cn(
-          "relative block aspect-square w-full overflow-hidden rounded-lg bg-paper-deep",
+          "relative block aspect-[3/4] w-full overflow-hidden rounded-lg bg-paper-deep sm:aspect-square",
           light === "off" && "opacity-35 grayscale",
           light === "blurred" && "opacity-70 blur-[1.5px]",
         )}
@@ -121,7 +121,7 @@ function HintRow({ hint, shown, onShow }: { hint: string; shown: boolean; onShow
     <div className="flex items-center gap-3">
       <HintButton used={shown} onUse={onShow} />
       {shown && (
-        <p role="status" className="text-[15px]">
+        <p role="status" className="text-[15px] lg:text-[17px]">
           {hint}
         </p>
       )}
@@ -151,7 +151,7 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
       setMisses((m) => m + 1);
       if (!firstMiss) setFirstMiss(claimText(q, session.kind, feature));
       track("repair_used", { game: GAME, round: round.id });
-    } else if (q === best) finish(q);
+    } else finish(q);
   };
   useShortcuts({
     "1": done
@@ -236,7 +236,10 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
             </div>
             {objector && (
               <p role="status" className="rounded-xl bg-terracotta/10 p-3 text-[16px]">
-                <span className="font-bold">Objection!</span> What about {objector.name}? Look at it again.
+                <span className="font-bold">Objection!</span>{" "}
+                {looked === "Most"
+                  ? `Only ${session.cards.filter((c) => c.features[feature.id] === true).length} of these ${session.cards.length} ${session.kind} ${feature.plural}.`
+                  : `What about ${objector.name}? Look at it again.`}
               </p>
             )}
             <div className="flex gap-2">
@@ -246,33 +249,19 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
               </Button>
             </div>
             {hint && (
-              <p role="status" className="text-[15px]">
+              <p role="status" className="text-[15px] lg:text-[17px]">
                 {round.hint}
               </p>
             )}
           </>
-        ) : !done ? (
-          <>
-            <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
-              True of these {session.kind} — but you can say more than “{looked?.toLowerCase()}”.
-            </p>
-            <div className="flex gap-2">
-              <Button size="lg" className="h-12 flex-1 text-lg" onClick={() => setLooked(null)} autoFocus>
-                <RotateCcw className="size-4" aria-hidden /> Say more
-              </Button>
-              <Button size="lg" variant="outline" className="h-12 flex-1" onClick={() => finish(looked!)}>
-                Keep it
-              </Button>
-            </div>
-          </>
         ) : (
           <>
             <p role="status" className="rounded-xl bg-sage/15 p-3 text-[16px]">
-              {looked === best ? "True — and the strongest true claim. " : "True. "}
+              {looked === best ? "True — and the strongest true claim. " : `True — though “${best}” would say more. `}
               Note “of these”: the claim is about the {session.kind} on the table, not every {session.kind.slice(0, -1)} there is.
             </p>
             {blurred.length > 0 && (
-              <p className="text-[15px]">
+              <p className="text-[15px] lg:text-[17px]">
                 <span className="font-bold">{blurred.map((c) => c.name).join(", ")}</span> was set aside as unclear
                 {round.blurredNote ? `: ${round.blurredNote}` : "."}
               </p>
@@ -317,6 +306,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
   const linkWith = (f: Feature) => {
     if (!pending || !last) return;
     if (last.features[f.id] === true && pending.features[f.id] === true) {
+      setBad(null);
       const next = [...chain, { card: pending, link: f.id }];
       setChain(next);
       setPending(null);
@@ -341,7 +331,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
     <div className="flex flex-1 flex-col gap-3 px-3 pb-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-col gap-2">
         <p className="text-[15px] text-muted-foreground lg:text-[17px]">{threadPrompt()}</p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="relative grid grid-cols-3 gap-2">
           {session.cards.map((c) => (
             <CardTile
               key={c.id}
@@ -352,6 +342,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
               light={used.has(c.id) ? "on" : "plain"}
             />
           ))}
+          <ThreadLines chain={chain} cards={session.cards} features={session.features} />
         </div>
       </div>
       <div className="mt-auto flex flex-col gap-3 lg:mt-0">
@@ -362,7 +353,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
                 key={f.id}
                 type="button"
                 onClick={() => linkWith(f)}
-                className="min-h-11 rounded-lg border-2 bg-card px-2.5 py-1.5 text-left text-[15px] font-bold hover:bg-paper-deep"
+                className="min-h-11 rounded-lg border-2 bg-card px-2.5 py-1.5 text-left text-[15px] lg:text-[17px] font-bold hover:bg-paper-deep"
                 style={{ borderColor: f.colour }}
               >
                 {f.plural}
@@ -371,7 +362,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
           </div>
         )}
         {bad && (
-          <p role="status" className="rounded-lg bg-terracotta/10 px-3 py-2 text-[15px]">
+          <p role="status" className="rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[17px]">
             {bad} Try another link.
           </p>
         )}
@@ -381,7 +372,7 @@ function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; se
               <li key={s.card.id} className="flex flex-col">
                 {s.link && (
                   <span
-                    className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px]"
+                    className="ml-3 flex items-center gap-2 border-l-4 py-1 pl-3 text-[15px] lg:text-[17px]"
                     style={{ borderColor: feature(s.link)?.colour }}
                   >
                     Both {chain[i - 1].card.name} and {s.card.name} {feature(s.link)?.plural}.
@@ -604,5 +595,43 @@ function Select({
         </option>
       ))}
     </select>
+  );
+}
+
+/**
+ * The thread drawn through the cards: one coloured fibre per link, in the
+ * colour of what the two neighbours share. No single colour runs through all.
+ */
+function ThreadLines({ chain, cards, features }: { chain: { card: Card; link?: string }[]; cards: Card[]; features: Feature[] }) {
+  const cols = 3;
+  const rows = Math.ceil(cards.length / cols);
+  const centre = (c: Card) => {
+    const i = cards.findIndex((x) => x.id === c.id);
+    return { x: ((i % cols) + 0.5) * (100 / cols), y: (Math.floor(i / cols) + 0.42) * (100 / rows) };
+  };
+  if (chain.length < 2) return null;
+  return (
+    <svg className="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+      {chain.slice(1).map((step, i) => {
+        const a = centre(chain[i].card);
+        const b = centre(step.card);
+        const colour = features.find((f) => f.id === step.link)?.colour ?? "#252a2d";
+        return (
+          <line
+            key={step.card.id}
+            x1={a.x}
+            y1={a.y}
+            x2={b.x}
+            y2={b.y}
+            stroke={colour}
+            strokeWidth={1.6}
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            style={{ strokeWidth: 7 }}
+            opacity={0.9}
+          />
+        );
+      })}
+    </svg>
   );
 }

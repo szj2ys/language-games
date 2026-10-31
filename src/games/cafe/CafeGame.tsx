@@ -125,19 +125,20 @@ function Round({
             </div>
           }
         >
-          {/* One picture per round, drawn so the clues can be seen, not only read. */}
+          {/* One picture per round, drawn so the clues can be seen, not only read — and one for the moment after. */}
           <Image
-            src={`/art/cafe/rounds/${round.id}.webp`}
+            key={solved ? "after" : "before"}
+            src={solved ? `/art/cafe/after/${round.id}.webp` : `/art/cafe/rounds/${round.id}.webp`}
             alt=""
             fill
             priority
             sizes="(min-width: 1024px) 700px, 133vw"
-            className="object-cover"
+            className="object-cover animate-in duration-500 fade-in"
           />
         </SceneCanvas>
-        <ul className="flex flex-col gap-1 px-3 pt-2 lg:px-0" aria-label="What you can see">
+        <ul className={cn("flex flex-col gap-1 px-3 pt-2 lg:px-0", solved && "sr-only")} aria-label="What you can see">
           {round.clues.map((c) => (
-            <li key={c} className="flex items-start gap-2 text-[15px]">
+            <li key={c} className="flex items-start gap-2 text-[15px] lg:text-[17px]">
               <Eye className="mt-0.5 size-4 shrink-0 text-cobalt" aria-hidden />
               {c}
             </li>
@@ -146,47 +147,47 @@ function Round({
       </div>
 
       <div className="mt-auto flex flex-col gap-2 px-3 pb-4 lg:mt-0 lg:px-0">
+        <p className="text-[15px] text-muted-foreground lg:text-[17px]">
+          {NAME[round.speaker]} says “{round.says}” {solved ? "You chose:" : "What do you do?"}
+        </p>
+        {round.options.map((o, i) => {
+          const tried = chosen === i && !o.fits;
+          if (solved && !o.fits) return null;
+          return (
+            <button
+              key={o.text}
+              type="button"
+              onClick={() => choose(i)}
+              disabled={tried || solved}
+              data-shortcut=""
+              className={cn(
+                "flex min-h-14 items-center gap-2.5 rounded-xl border-2 bg-card px-3 py-2 text-left text-[17px] transition-colors hover:border-ink/30",
+                tried && "border-terracotta/40 opacity-60",
+                solved && "border-sage bg-sage/10 hover:border-sage",
+                !tried && !solved && "border-border",
+              )}
+            >
+              <kbd className="pointer-coarse:hidden mr-1 rounded bg-paper-deep px-1.5 text-xs font-bold text-muted-foreground" aria-hidden>
+                {i + 1}
+              </kbd>
+              {o.kind === "do" ? (
+                <Hand className="size-5 shrink-0 text-terracotta" aria-label="Do" />
+              ) : (
+                <MessageCircleQuestion className="size-5 shrink-0 text-cobalt" aria-label="Say" />
+              )}
+              <span className={cn(o.kind === "say" && "font-heading text-[18px]")}>{o.text}</span>
+            </button>
+          );
+        })}
         {!solved && (
           <>
-            <p className="text-[15px] text-muted-foreground lg:text-[17px]">
-              {NAME[round.speaker]} says “{round.says}” What do you do?
-            </p>
-            {round.options.map((o, i) => {
-              const tried = chosen === i && !o.fits;
-              return (
-                <button
-                  key={o.text}
-                  type="button"
-                  onClick={() => choose(i)}
-                  disabled={tried}
-                  data-shortcut=""
-                  className={cn(
-                    "flex min-h-14 items-center gap-2.5 rounded-xl border-2 bg-card px-3 py-2 text-left text-[17px] transition-colors hover:border-ink/30",
-                    tried ? "border-terracotta/40 opacity-60" : "border-border",
-                  )}
-                >
-                  <kbd
-                    className="pointer-coarse:hidden mr-1 rounded bg-paper-deep px-1.5 text-xs font-bold text-muted-foreground"
-                    aria-hidden
-                  >
-                    {i + 1}
-                  </kbd>
-                  {o.kind === "do" ? (
-                    <Hand className="size-5 shrink-0 text-terracotta" aria-label="Do" />
-                  ) : (
-                    <MessageCircleQuestion className="size-5 shrink-0 text-cobalt" aria-label="Say" />
-                  )}
-                  <span className={cn(o.kind === "say" && "font-heading text-[18px]")}>{o.text}</span>
-                </button>
-              );
-            })}
             {round.ask && !asked && (
               <Button variant="outline" size="lg" className="h-12 justify-start text-[16px]" onClick={ask}>
                 Ask first: “{round.ask.question}”
               </Button>
             )}
             {pick && !pick.fits && (
-              <p role="status" className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px]">
+              <p role="status" className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[17px]">
                 <RotateCcw className="size-4 shrink-0" aria-hidden /> Not quite what {NAME[round.speaker]} meant. Look at the clues and try
                 another response.
               </p>
@@ -197,7 +198,7 @@ function Round({
           <div role="status" className="flex flex-col gap-2 rounded-xl bg-sage/15 p-4">
             <p className="text-sm font-bold text-sage">What the words were doing here</p>
             <p className="font-heading text-[20px] leading-snug">{round.use.charAt(0).toUpperCase() + round.use.slice(1)}.</p>
-            <p className="text-[15px] leading-relaxed">{round.note}</p>
+            <p className="text-[15px] lg:text-[17px] leading-relaxed">{round.note}</p>
           </div>
         )}
         {solved && (

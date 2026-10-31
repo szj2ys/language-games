@@ -16,7 +16,7 @@ const GAME = "pupil";
 
 export function PupilGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" tall="/art/tall/classroom.webp" />;
+  if (!g.ready) return <GameLoading game="Go On!" poster="/art/pupil/classroom.webp" />;
   const { session, round, finished } = g;
   return (
     <GameFrame game="Go On!" g={g}>
@@ -89,7 +89,6 @@ function Lesson({
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-1 flex-col lg:block">
         <SceneCanvas
-          tall="/art/tall/classroom.webp"
           overlay={
             <>
               {/* The pupil's slate: what it writes is all we can see of its rule. */}
@@ -130,7 +129,7 @@ function Lesson({
             <Image src="/art/pupil/pupil.webp" alt="" fill sizes="220px" className="object-contain object-bottom" />
           </div>
         </SceneCanvas>
-        <p className="px-3 pt-2 text-[15px] lg:px-0">{level.task}</p>
+        <p className="px-3 pt-2 text-[15px] lg:text-[17px] lg:px-0">{level.task}</p>
       </div>
 
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
@@ -170,7 +169,7 @@ function Lesson({
               ))}
             </div>
             {explained.length > 0 && (
-              <p role="status" className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px]">
+              <p role="status" className="rounded-lg bg-ochre/15 px-3 py-2 text-[15px] lg:text-[17px]">
                 {exam.passed
                   ? "This time the explanation worked: an example had already shown the pupil what its key word means. Explanations work inside a practice, not instead of one (§§198–202)."
                   : "The pupil nods — and reads your sentence its own way. An explanation is one more sign to interpret (§198)."}

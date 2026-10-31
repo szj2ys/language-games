@@ -1,0 +1,1091 @@
+Reading additional input from stdin...
+OpenAI Codex v0.165.0
+--------
+workdir: D:\githubprojects\language-games
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: ultra
+reasoning summaries: none
+session id: 01a19305-bb7e-75c1-a1a9-58e3b893351e
+--------
+user
+Use your built-in image generation tool (gpt-image-2) to create ONE image using the attached reference images, then copy the resulting PNG to art/cafe/after/c2-3.png in the current directory. Do nothing else.
+
+Image prompt: The moment after, in the same scene as the first reference: Lena, a young woman with a long auburn braid in a cobalt coat, now sits on the chair with her coffee; a coat hangs on a hook on the wall instead of the chair; the café is busy. Match the reference images exactly: same character, same café interior, same composition and camera as the first reference scene, only changed as described. Hand-cut paper illustration with subtle screen-print grain, charcoal ink outlines, muted cobalt, terracotta, sage, ochre and warm ivory, friendly adult picture-book style. Wide landscape 16:9. Keep the top-right quarter calm and uncluttered. No text, letters, numbers, logos or watermarks.
+2026-10-31T17:33:10.729752Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: "Bearer resource_metadata=\"https://mcp.atlassian.com/.well-known/oauth-protected-resource/v2/mcp\"" })
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+I’ll use the imagegen skill to create one image from your references and save it to `art/cafe/after/c2-3.png`.
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command "Get-Content -LiteralPath 'C:/Users/Administrator/.codex/skills/.system/imagegen/SKILL.md'" in D:\githubprojects\language-games
+ succeeded in 200ms:
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision tree
+
+Think about two separate questions:
+
+1. **Intent:** is this a new image or an edit of an existing image?
+2. **Execution strategy:** is this one asset or many assets/variants?
+
+Intent:
+- If the user wants to modify an existing image while preserving parts of it, treat the request as **edit**.
+- If the user provides images only as references for style, composition, mood, or subject guidance, treat the request as **generate**.
+- If the user provides no images, treat the request as **generate**.
+
+Built-in edit semantics:
+- Built-in edit mode is for images already visible in the conversation context, such as attached images or images generated earlier in the thread.
+- If the user wants to edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it with `view_image` first so the image is available in conversation context.
+8. If the user asked for a photo, illustration, sprite, product image, banner, or other explicitly raster-style asset, use `image_gen` rather than substituting SVG/HTML/CSS placeholders. If the request is for an icon, logo, or UI graphic that should match existing repo-native SVG/vector/code assets, prefer editing those directly instead.
+9. Augment the prompt based on specificity:
+   - If the user's prompt is already specific and detailed, normalize it into a clear spec without adding creative requirements.
+   - If the user's prompt is generic, add tasteful augmentation only when it materially improves output quality.
+10. Use the built-in `image_gen` tool by default.
+11. For transparent-output requests, ask built-in `image_gen` for a transparent background and preserve the generated alpha channel.
+12. Inspect outputs and validate: subject, style, composition, text accuracy, and invariants/avoid items.
+13. Iterate with a single targeted change, then re-check.
+14. For preview-only work, render the image inline; the underlying file may remain at the default `$CODEX_HOME/generated_images/...` path.
+15. For project-bound work, move or copy the selected artifact into the workspace and update any consuming code or references. Never leave a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+
+## Transparent image requests
+
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+
+## Prompt augmentation
+
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+
+### Specificity policy
+
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+- arbitrary side-specific placement unless the surrounding layout supports it
+
+## Use-case taxonomy (exact slugs)
+
+Classify each request into one of these buckets and keep the slug consistent across prompts and references.
+
+Generate:
+- photorealistic-natural — candid/editorial lifestyle scenes with real texture and natural lighting.
+- product-mockup — product/packaging shots, catalog imagery, merch concepts.
+- ui-mockup — app/web interface mockups and wireframes; specify the desired fidelity.
+- infographic-diagram — diagrams/infographics with structured layout and text.
+- scientific-educational — classroom explainers, scientific diagrams, and learning visuals with required labels and accuracy constraints.
+- ads-marketing — campaign concepts and ad creatives with audience, brand position, scene, and exact tagline/copy.
+- productivity-visual — slide, chart, workflow, and data-heavy business visuals.
+- logo-brand — logo/mark exploration, vector-friendly.
+- illustration-story — comics, children’s book art, narrative scenes.
+- stylized-concept — style-driven concept art, 3D/stylized renders.
+- historical-scene — period-accurate/world-knowledge scenes.
+
+Edit:
+- text-localization — translate/replace in-image text, preserve layout.
+- identity-preserve — try-on, person-in-scene; lock face/body/pose.
+- precise-object-edit — remove/replace a specific element (including interior swaps).
+- lighting-weather — time-of-day/season/atmosphere changes only.
+- background-extraction — transparent background / clean cutout. Ask built-in `image_gen` for actual transparency.
+- style-transfer — apply reference style while changing subject/scene.
+- compositing — multi-image insert/merge with matched lighting/perspective.
+- sketch-to-render — drawing/line art to photoreal render.
+
+## Shared prompt schema
+
+Use the following labeled spec as shared prompt scaffolding for both top-level modes:
+
+```text
+Use case: <taxonomy slug>
+Asset type: <where the asset will be used>
+Primary request: <user's main prompt>
+Input images: <Image 1: role; Image 2: role> (optional)
+Scene/backdrop: <environment>
+Subject: <main subject>
+Style/medium: <photo/illustration/3D/etc>
+Composition/framing: <wide/close/top-down; placement>
+Lighting/mood: <lighting + mood>
+Color palette: <palette notes>
+Materials/textures: <surface details>
+Text (verbatim): "<exact text>"
+Constraints: <must keep/must avoid>
+Avoid: <negative constraints>
+```
+
+Notes:
+- `Asset type` and `Input images` are prompt scaffolding, not dedicated CLI flags.
+- `Scene/backdrop` refers to the visual setting. It is not the same as the fallback CLI `background` parameter, which controls output transparency behavior.
+- Fallback-only execution notes such as `Quality:`, `Input fidelity:`, masks, output format, and output paths belong in the CLI path only. Do not treat them as built-in `image_gen` tool arguments.
+
+Augmentation rules:
+- Keep it short.
+- Add only the details needed to improve the prompt materially.
+- For edits, explicitly list invariants (`change only X; keep Y unchanged`).
+- If any critical detail is missing and blocks success, ask a question; otherwise proceed.
+
+## Examples
+
+### Generation example (hero image)
+```text
+Use case: product-mockup
+Asset type: landing page hero
+Primary request: a minimal hero image of a ceramic coffee mug
+Style/medium: clean product photography
+Composition/framing: wide composition with usable negative space for page copy if needed
+Lighting/mood: soft studio lighting
+Constraints: no logos, no text, no watermark
+```
+
+### Edit example (invariants)
+```text
+Use case: precise-object-edit
+Asset type: product photo background replacement
+Primary request: replace only the background with a warm sunset gradient
+Constraints: change only the background; keep the product and its edges unchanged; no text; no watermark
+```
+
+## Prompting best practices
+- Structure prompt as scene/backdrop -> subject -> details -> constraints.
+- Include intended use (ad, UI mock, infographic) to set the mode and polish level.
+- Use camera/composition language for photorealism.
+- Only use SVG/vector stand-ins when the user explicitly asked for vector output or a non-image placeholder.
+- Quote exact text and specify typography + placement.
+- For tricky words, spell them letter-by-letter and require verbatim rendering.
+- For multi-image inputs, reference images by index and describe how they should be used.
+- For edits, repeat invariants every iteration to reduce drift.
+- Iterate with single-change follow-ups.
+- If the prompt is generic, add only the extra detail that will materially help.
+- If the prompt is already detailed, normalize it instead of expanding it.
+- For CLI fallback only, see `references/cli.md` and `references/image-api.md` for model, `quality`, `input_fidelity`, masks, output format, and output-path guidance.
+- For transparent images, ask built-in `image_gen` for actual transparency and preserve its alpha.
+
+More principles shared by both modes: `references/prompting.md`.
+Copy/paste specs shared by both modes: `references/sample-prompts.md`.
+
+## Guidance by asset type
+Asset-type templates (website assets, game assets, wireframes, logo) are consolidated in `references/sample-prompts.md`.
+
+## gpt-image-2 guidance for CLI fallback
+
+The fallback CLI defaults to `gpt-image-2`.
+
+- Use `gpt-image-2` for new CLI/API workflows unless the user confirms a different model.
+- CLI `gpt-image-2` does not support `background=transparent`; ask before using `gpt-image-1.5` unless the user explicitly requested that model.
+- `gpt-image-2` always uses high fidelity for image inputs; do not set `input_fidelity` with this model.
+- `gpt-image-2` supports `quality` values `low`, `medium`, `high`, and `auto`.
+- Use `quality low` for fast drafts, thumbnails, and quick iterations. Use `medium`, `high`, or `auto` for final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Blocked
+2026-10-31T17:33:27.137893Z ERROR codex_core::tools::router: error=Warning: truncated output (original token count: 2636)
+Total output lines: 166
+
+[Output shortened from 19476 characters. Full output: C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19305-bb7e-75c1-a1a9-58e3b893351e/exec-17d1600c-7ae8-4e34-82a2-e664165b5cea.txt (Read it with offset/limit or grep it; do not rerun the command to see it.)]
+---
+name: "imagegen"
+description: "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas."
+---
+
+# Image Generation Skill
+
+Generates or edits images for the current project (for example website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, or infographics).
+
+## Top-level modes and rules
+
+This skill has exactly two top-level modes:
+
+- **Default built-in tool mode (preferred):** built-in `image_gen` tool for image generation, editing, and transparent-image requests. Does not require `OPENAI_API_KEY`.
+- **Fallback CLI mode:** `scripts/image_gen.py` CLI. Use when the user explicitly asks for or confirms the CLI/API/model path. Requires `OPENAI_API_KEY`.
+
+Within CLI fallback, the CLI exposes three subcommands:
+
+- `generate`
+- `edit`
+- `generate-batch`
+
+Rules:
+- Use the built-in `image_gen` tool by default for normal image generation and editing requests.
+- Do not switch to CLI fallback for ordinary quality, size, or file-path control.
+- For transparent images, ask built-in `image_gen` for a transparent background and preserve the generated alpha.
+- Never silently switch from built-in `image_gen` or CLI `gpt-image-2` to CLI `gpt-image-1.5`; ask the user first unless they explicitly requested `gpt-image-1.5`.
+- The word `batch` by itself does not mean CLI fallback. If the user asks for many assets or says to batch-generate assets without explicitly asking for CLI/API/model controls, stay on the built-in path and issue one built-in call per requested asset or variant.
+- If the built-in tool fails or is unavailable, tell the user the CLI fallback exists and that it requires `OPENAI_API_KEY`. Proceed only if the user explicitly asks for that fallback.
+- If the user explicitly asks for CLI mode, use the bundled `scripts/image_gen.py` workflow. Do not create one-off SDK runners.
+- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+Built-in save-path policy:
+- In built-in tool mode, Codex saves generated images under `$CODEX_HOME/*` by default.
+- Do not describe or rely on OS temp as the default built-in destination.
+- Do not describe or rely on a destination-path argument (if any) on the built-in `image_gen` tool. If a specific location is needed, generate first and then move or copy the selected output from `$CODEX_HOME/generated_images/...`.
+- Save-path precedence in built-in mode:
+  1. If the user names a destination, move or copy the selected output there.
+  2. If the image is meant for the current project, move or copy the final selected image into the workspace before finishing.
+  3. If the image is only for preview or brainstorming, render it inline; the underlying file can remain at the default `$CODEX_HOME/*` path.
+- Never leave a project-referenced asset only at the default `$CODEX_HOME/*` path.
+- Do not overwrite an existing asset unless the user explicitly asked for replacement; otherwise create a sibling versioned filename such as `hero-v2.png` or `item-icon-edited.png`.
+
+Shared prompt guidance for both modes lives in `references/prompting.md` and `references/sample-prompts.md`.
+
+Fallback-only docs/resources for CLI mode:
+- `references/cli.md`
+- `references/image-api.md`
+- `references/codex-network.md`
+- `scripts/image_gen.py`
+
+## When to use
+- Generate a new image (concept art, product shot, cover, website hero)
+- Generate a new image using one or more reference images for style, composition, or mood
+- Edit an existing image (inpainting, lighting or weather transformations, background replacement, object removal, compositing, transparent background)
+- Produce many assets or variants for one task
+
+## When not to use
+- Extending or matching an existing SVG/vector icon set, logo system, or illustration library inside the repo
+- Creating simple shapes, diagrams, wireframes, or icons that are better produced directly in SVG, HTML/CSS, or canvas
+- Making a small project-local asset edit when the source file already exists in an editable native format
+- Any task where the user clearly wants deterministic code-native output instead of a generated bitmap
+
+## Decision…175 tokens truncated… edit a local image file with the built-in tool, first load it with built-in `view_image` tool so the image is visible in the conversation context, then proceed with the built-in edit flow.
+- Do not promise arbitrary filesystem-path editing through the built-in tool.
+- If a local file still needs direct file-path control, masks, or other explicit CLI-only parameters, use the explicit CLI fallback only when the user asks for it.
+- For edits, preserve invariants aggressively and save non-destructively by default.
+
+Execution strategy:
+- In the built-in default path, produce many assets or variants by issuing one `image_gen` call per requested asset or variant.
+- In the CLI fallback path, use the CLI `generate-batch` subcommand only when the user explicitly chose CLI mode and needs many prompts/assets.
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it wit
+... [8960 characters omitted; read the raw file for a targeted range] ...
+ final assets, dense text, diagrams, identity-sensitive edits, or high-resolution outputs.
+- Square images are typically fastest to generate. Use `1024x1024` for fast square drafts.
+- If the user asks for 4K-style output, use `3840x2160` for landscape or `2160x3840` for portrait.
+- `gpt-image-2` size may be `auto` or `WIDTHxHEIGHT` if all constraints hold: max edge `<= 3840px`, both edges multiples of `16px`, long-to-short ratio `<= 3:1`, total pixels between `655,360` and `8,294,400`.
+
+Popular `gpt-image-2` sizes:
+- `1024x1024` square
+- `1536x1024` landscape
+- `1024x1536` portrait
+- `2048x2048` 2K square
+- `2048x1152` 2K landscape
+- `3840x2160` 4K landscape
+- `2160x3840` 4K portrait
+- `auto`
+
+## Fallback CLI mode only
+
+### Temp and output conventions
+These conventions apply only to the CLI fallback. They do not describe built-in `image_gen` output behavior.
+- Use `tmp/imagegen/` for intermediate files (for example JSONL batches); delete them when done.
+- Write final artifacts under `output/imagegen/`.
+- Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
+
+### Dependencies
+Prefer `uv` for dependency management in this repo.
+
+Required Python package:
+```bash
+uv pip install openai
+```
+
+Optional for image inspection and downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
+
+### Environment
+- `OPENAI_API_KEY` must be set for live API calls.
+- Do not ask the user for `OPENAI_API_KEY` when using the built-in `image_gen` tool.
+- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+
+If the key is missing, give the user these steps:
+1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
+2. Set `OPENAI_API_KEY` as an environment variable in their system.
+3. Offer to guide them through setting the environment variable for their OS/shell if needed.
+
+If installation is not possible in this environment, tell the user which dependency is missing and how to install it into their active environment.
+
+### Script-mode notes
+- CLI commands + examples: `references/cli.md`
+- API parameter quick reference: `references/image-api.md`
+- Network approvals / sandbox settings for CLI mode: `references/codex-network.md`
+
+## Reference map
+- `references/prompting.md`: shared prompting principles for both modes.
+- `references/sample-prompts.md`: shared copy/paste prompt recipes for both modes.
+- `references/cli.md`: fallback-only CLI usage via `scripts/image_gen.py`.
+- `references/image-api.md`: fallback-only API/CLI parameter reference.
+- `references/codex-network.md`: fallback-only network/sandbox troubleshooting for CLI mode.
+- `scripts/image_gen.py`: fallback-only CLI implementation. Use only when the user explicitly chooses or confirms CLI mode.
+
+Full hook output saved to: C:\Users\ADMINI~1\AppData\Local\Temp\hook_outputs\01a19305-bb7e-75c1-a1a9-58e3b893351e\4eacb08a-2afc-40ac-97b6-45f933ab77eb.txt
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command '$paths = @('"'C:/Users/Administrator/Documents/projects/harness/core/README.md','C:/Users/Administrator/Documents/projects/harness/AGENTS.md','C:/Users/Administrator/Documents/projects/harness/taste.md','C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/PowerCycleTest_PythonBeta/PowerCycleTest_PythonBeta.md','C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/AmdUefiFwConfig/_schema/AmdUefiFwConfig.md','C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/PSPUnlock/PSPUnlock_Python.md'); foreach ("'$p in $paths) { Write-Output $p; Get-Content -LiteralPath $p -TotalCount 65 }; Get-Content -LiteralPath '"'C:/Users/Administrator/.codex/skills/.system/imagegen/SKILL.md' | Select-Object -Skip 85 -First 55; rg -n 'image|illustration|cafe' 'C:/Users/Administrator/Documents/projects/harness/taste-log.md'; Get-Item -LiteralPath 'art/cafe/rounds/c2-3.png','art/cafe/lena.png' | Select-Object FullName,Length" in D:\githubprojects\language-games
+ succeeded in 276ms:
+C:/Users/Administrator/Documents/projects/harness/core/README.md
+# Harness core v2
+
+The harness's runtime, rebuilt in the shape of [HarnessPro](https://github.com/pzs19/HarnessPro)
+(commit `6fd2d4d`, 2026-10-28): a short always-loaded contract, a `policy.json` with Lite,
+Medium and Heavy profiles, and one standard-library hook. Everything else the harness knows lives
+in modules that a prompt loads only when it needs them. Decision record: `docs/adr/0017-core-v2.md`.
+
+| File | What it is |
+|---|---|
+| `instructions.md` | The contract. Installed as the always-loaded rule file of every agent (`~/.claude/rules/harness-runtime.md`, Codex/Copilot instructions; OMP gets it at session start). |
+| `policy.json` | Profiles, the prompt classifier, heavy paths, guard prefilters, output limits and the module table. Tune behaviour here, not in code. |
+| `hook.py` | The wired entry: loads `runtime.py` (bytecode-cached) and falls back to the last tested copy when it breaks (Entry and last-good copy below). Small and stable; replace it only by an atomic rename. |
+| `runtime.py` | The one hook's logic. Standard library only; guard modules under `scripts/` are loaded by path only when a command or edit matches their prefilter. |
+| `install.py` | `apply`, `status`, `env`. |
+| `measure.py` | Median latency and injected bytes per event; `--score` rates the classifiers on a labelled set. |
+
+## Events
+
+| Event | Claude | Codex | Job |
+|---|---|---|---|
+| UserPromptSubmit | yes | yes | Guess the profile from the words of the prompt at once and start a background second opinion from the client's small model, name up to three modules plus those the session's project calls for (`context_modules`: a web project loads `web` on "ok, go" too, its `package.json` read once per session and directory), and on a session's first prompt add the marker `HARNESS_ACTIVE:core-v2:<hash>` and the user's learned preferences (`user-memory.md`, capped at 1,600 characters). Show the few items of the user's own apps the prompt is about (Recall below). A lite prompt after the first injects nothing else. URLs are not read as the user's words (a host like `x.harness-cards.pages.dev` made a question heavy). A client's one-shot helper prompt (Orca's "Name this chat ...", 63 a day) gets nothing and starts no model call; a relayed message (Stop hook feedback, another session's message) continues the task like a task notification. |
+| PreToolUse | yes | yes | Safety rails, plus two Claude Agent checks: unsafe deletion targets (`scripts/permission_judge.py` `target_rail`), the shell guard (`scripts/shell_guard.py`), the money freeze (`scripts/money_policy.py`), unproven model-config edits (`scripts/model_preflight.py`), user-only files (`own-part.md`, `explorations.md`), one refusal of a whole-file read of a Markdown file over 40 KB, plan mode only when the user asked for a plan; for Claude's Agent tool, a refusal of Jobs review round 6 when the brief's `jobs-review.json` holds 5 rounds and the latest is not satisfied, and a note pointing a fresh verifier at the session's acceptor (resume it with SendMessage); for Claude's SendMessage to that acceptor asking for a verdict, a diff-only note at round 2 and a refusal of round 4 (7, 10, ...) until the request carries `Approach re-evaluated:` or the user asked for more rounds (review must converge: 29% of judged acceptors ran 3+ rounds, 2026-10-28; rounds per acceptor live in the session state, observed history in `review_ledger.py stats`); the first edit of a front-end file brings the `web` module once to a Claude session that has not had it (`context_modules`; harness and temp-folder pages excepted); and the move to heavy when an edit touches a heavy path or a command changes the machine or agent setup (`escalate_commands`). |
+| PostToolUse | yes | yes | Apply the second opinion when it has arrived (it never lowers a profile an edit or command raised); count tool calls per prompt; remember the acceptors Claude spawns (id, description, prompt number); at the profile's economy and strict counts, tell the agent to economise or converge. After an edit, queue the checks the edited path maps to (Edit-time checks below) and report any that failed. Codex only: a shell output over the profile's limit is shortened to a head/tail view and kept in full under `<state>/core/raw/<session>/`. |
+| PermissionRequest | yes | — | Claude stops for a command it finds dangerous; the independent reviewer (`permission_judge.verdict`) answers instead of the user. Fires only then, so it costs nothing on ordinary calls. A command the model could never allow (not every target a literal scratch path) is denied at once without the model call (22 decisions on 2026-10-29, none allowed). |
+
+Copilot CLI and OMP keep their wiring (`scripts/agent_wiring.py`); `scripts/agent-hook.py` sends
+their UserPromptSubmit and PreToolUse to this hook when the mode is v2.
+
+## Entry and last-good copy
+
+`core/hook.py` is what every client runs; `core/runtime.py` is the logic (docs/adr/0028). The runtime
+is edited in place, and on 2026-10-29 that put 32 hook errors into live sessions in 18 hours (a policy
+key the hook and policy disagreed about, invalid JSON, a NameError, a SyntaxError), each failing open
+silently. Now:
+
+- When `runtime.py` cannot load or raises, `<state>/core/last-good/runtime.py` with its own
+  `policy.json` answers, and the agent is told once per session and error (kept in
+  `<state>/core/notices/`, apart from the session state). With no last-good copy the call fails open
+  with that notice; a permission request is denied.
+- Only tested bytes reach last-good: the `promote` row of `edit_checks` (core-v2) reads `runtime.py`
+  and `policy.json` before `test_core_v2` and writes them after a pass only if they are unchanged
+  (`LastGood` rows in `events.jsonl`). A session's first prompt starts the same test in the background,
+  once per source version, when last-good does not hold the current source (a pull on another machine).
+- Not covered: an error in `hook.py` itself (no fallback; `python-syntax` checks it at edit time) and the
+  guard modules under `scripts/`, which load from the working tree and fail open one by one.
+- A missing `hook.py` blocks every tool call (Python exits 2, a blocking hook error in Claude Code), so
+  the file is replaced only by writing a temporary file and renaming it over the old one.
+
+Loading the runtime as a module lets Python reuse its compiled bytecode instead of compiling the whole
+file on every event: 5 to 7.5 ms less per event (paired runs below).
+
+Adopted from HarnessPro on 2026-10-29:
+
+- **Confidence override.** The second opinion ends with `sure` or `unsure`; an unsure label in
+  `second_opinion.unsure_raise` (only `lite`) is raised one step, never further, and never lowers
+  anything. With the rubric's new line that a change is lite only when a direct look confirms it,
+  the 100 labelled prompts of `evals/core-v2/` scored 94/100 in two runs against 92/100 for the old
+  rubric, with no heavy task called lite.
+- **Requirement recheck at each stage.** The economy and convergence reminders ask which
+  requirements work end to end, fail or lack real evidence (`LEDGER_CHECK` in `hook.py`; ProgramBench's
+  semantic evidence checkpoint).
+- **Diff hygiene.** `diff-hygiene` in `edit_checks` runs `git diff --check` on each edited tracked file.
+- **Verification traps.** The `verify` module carries five checks from SWE-bench Pro's
+  `contract-verification.md` (throwaway state, every backend, config shape and exact IDs, a real
+  fixture per branch, residue). Local incidents match them (`lessons.md`: scene-key case,
+C:/Users/Administrator/Documents/projects/harness/AGENTS.md
+# Harness repository
+
+This repository is the user's agent harness. Its runtime is core v2 (`core/README.md`, ADR 0017):
+the contract `core/instructions.md`, the profiles and modules in `core/policy.json`, and the one hook
+`core/hook.py`; a change there is done when `python -B -m unittest scripts/tests/test_core_v2.py`
+passes and `python core/measure.py` shows no slower event. `RULES.md` is authoritative after platform limits
+and the user's explicit request (order: its intro); list its headings and read the sections
+the task touches. Use English for all assistant-authored replies, documents and
+reports (RULES.md "Output language"). Terms: `GLOSSARY.md`. Settled design decisions:
+`docs/adr/`.
+
+## Portable paths
+
+The checkout moves between computers and users, so every path written into a maintained
+file (code, docs, config, examples) resolves on any machine:
+
+- **Harness files**: `<harness>/scripts/x.py`, or a bare `scripts/x.py` inside a harness
+  doc. Code resolves the root from `Path(__file__)`, with `HARNESS_ROOT` overriding.
+- **Everything else**: anchor on what each machine provides. Home-relative agent folders
+  (`~/.claude`, `~/.codex`, `~/.agents`; `Path.home()` in code), environment variables
+  (`%LOCALAPPDATA%`, `HARNESS_RUNTIME_STATE_DIR`), PATH lookup with existence-checked
+  fallbacks. Examples use placeholders: `C:\Users\<you>\...`, `/Users/<you>/...`.
+- **Shell on Windows**: Git Bash `~` can differ from the Windows profile; use
+  `$USERPROFILE` for agent folders.
+- **Historical records** (`lessons.md`, `lessons-history.md`, dated plans, lines marked
+  historical) keep the paths observed at the time; read legacy `~/.harness/` there as
+  `<harness>/`.
+
+Resolving `<harness>` and outside locations: `RULES.md` "Paths across machines". A change
+that touches paths is done when `python -B -m unittest scripts/tests/test_portable_paths.py`
+passes.
+
+## Code structure
+
+`architecture.md` maps each concern to its module and states the dependency rules: runtime
+state directories and script loading come from `scripts/harnesslib/`, imports never form a
+cycle, and every module the hooks load is listed in `scripts/harnesslib/manifest.py`. A
+change that adds, splits or moves a module is done when
+`python -B -m unittest scripts/tests/test_architecture.py` passes.
+
+## Rules never point two ways
+
+A change to rule text (RULES.md, the policy, docs, route cards, skills, prompts, or strings the
+hooks inject) is done when `python -B -m unittest scripts/tests/test_rule_conflicts.py` passes.
+When you settle a question two texts answered differently, register it in
+`scripts/rule_conflicts.py` DECISIONS with the losing wording, so it cannot come back. A rule
+born from one incident states `Remove when: <condition>` beside its rationale (docs/adr/0016).
+
+## Tests
+
+Full suite: `python -B -m unittest discover -s scripts/tests -p "test_*.py"` with Python
+3.11+ and PyYAML 6 (portability.md "Install"), for example
+`uv run --no-project --python 3.11 --with "pyyaml>=6,<7" python -B -m unittest discover ...`.
+Same interpreter, about four times faster: `python -B scripts/run-tests.py` (one process per module
+in parallel, longest first; 444 s against 1,597 s serial on 2026-10-24). Verifiers use it too.
+Two interpreters give false failures: a `python` on PATH older than 3.11 (bootstrap and
+fleet-help fail the version check), and the installed harness venv (the bootstrap fixture
+install records it as a host path).
+On Windows, put the installed Git for Windows `bin` directory on the test process's PATH
+so the shell fixtures can resolve `sh` and `bash`; no machine-wide PATH edit is needed.
+C:/Users/Administrator/Documents/projects/harness/taste.md
+# 品味宪法 / Taste Constitution (product sense + marketing instinct)
+
+Shared across all agents (Claude Code, Codex, OMP, Hermes). 这是 `RULES.md "Judgment principles"`
+的完整正文，只在**产品/营销任务**触发时展开细读。工程任务不读本文件。
+
+本文件是 `lessons.md` 的品味姊妹：`lessons.md` 积累工程教训，`taste-log.md` 积累
+**人对"什么叫做好"的判断**。宪法是积累的**产物**，不是起点——规则由 `taste-log.md`
+里反复出现的真人裁决晋升上来（同一规则出现 ≥3 次，且至少一条为 `observed-buyer` / `measured`，见 §0 来源门）。
+
+维护说明：本文件唯一真相源。Codex/Claude 在运行时通过 harness 规则指针读取本文件；
+改动后按 `runtime-setup.md` 跑 `runtime-install.py verify`（旧的 `~/.codex/rules-snapshot.py` 快照已不再使用）。
+硬上限：**禁令 6 条、评分维度 5 个**。超过即视为退化。
+
+---
+
+## 0. 何时生效 / When this binds + 校准范围
+
+**触发词**（命中任一即展开本文件，并 grep `<harness>/taste-log.md`）：
+该不该做 / 值不值得 / 要不要开发 / 这个功能 / MVP / wedge / 砍需求 / 产品方向 /
+定价 / pricing / margin / landing / 文案 / copy / hook / 标题 / offer / 套餐 /
+竞品 / ICP / 用户画像 / 出海 / SaaS / 上市 / brand / 域名 / 命名 / 转化 / CTA /
+订阅 / 付费 / 留存 / 获客。
+
+**校准范围（calibrated-to）**：本宪法校准到 **英语市场的独立 SaaS 买家**
+（`makeinterview` / `any2svg` 这类工具的目标用户）。当交付物面向的买家**不在**这个
+范围（例如中文市场、企业客户、完全不同品类），必须在输出里显式标注
+`⚠ 超出校准范围`，并把评分降权——不要把给这套买家写的规则硬套到别的市场。
+
+**证据标注规则（provenance，强制）**：本文件每条结论、每个评分、每个 gate 答案
+都必须带来源标签之一：
+
+| 标签 | 含义 | 可否晋升为禁令 |
+|---|---|---|
+| `Observed` | 来自真实产物 / 代码 / 用户原话 / 真实买家行为 / 实测转化 | ✅ 仅 `observed-buyer` / `measured`；用户原话（`user-opinion`）只作限本产品的偏好（见下方来源门） |
+| `Inference` | 由前两者推导出的判断 | ⚠️ 仅当反复出现为 Observed |
+| `Open question` | 没有来源、需要实证的假设 | ❌ 不可以 |
+
+禁止把 `Inference` 或 `Open question` 当作事实陈述。禁止编造用户画像、hook、
+claim、买家动机——那些若无来源，一律标 `Open question`。
+
+**进阶：来源门（防止把用户当下的反应硬化为普适法律）**——`taste-log.md` 里每条
+记录带 `[src:user-opinion|observed-buyer|measured]`。只有 `observed-buyer` /
+`measured` 的条目可以晋升为 §1 禁令；`user-opinion` 条目保持**建议性、限本产品**。
+理由：这个循环唯一的训练信号是用户本人，而用户自己也在学习网感；不设这道门，
+系统只会收敛到"取悦宋志军"，并把他的即时反应当成铁律。
+
+---
+
+## 1. 六条禁令 / The Kill-List（点名模型统计默认，逐条封杀）
+
+LLM 默认输出就是这些。不要写"要非通用"——要点名封杀具体 token。每条有 override
+路径：能用一句话说明为什么此情此景该破例，才可破例，否则禁止。
+
+- **K1 — 宣称没有代码路径的东西 / claim with no code path.**
+  任何 landing 文案、功能描述、卖点，必须能 `grep` 到对应代码路径。找不到 → 不许写。
+  （真实事故：pic2svg 页面宣称 "runs locally"/"记住你"，机制从未写入。）
+  **封杀**：任何未经代码验证的能力宣告。
+- **K2 — 通用营销填充词 / marketese tokens.**
+  **封杀 token**：seamless, effortless, elevate, unlock, unleash, supercharge,
+  game-changer, revolutionize/revolutionise, cutting-edge, next-gen, state-of-the-art,
+  "AI-powered"（作为卖点而非说明）, "in today's fast-paced world",
+  "take your X to the next level", "Introducing <X>", "Whether you're a X or a Y"。
+- **K3 — TAM 先行 / feature-parity 堆砌.**
+  不要用"市场很大 / 竞品都有 / 像 X 但更好"来论证该做。**封杀**：
+  "like <X> but better"、功能对齐清单、"<N> 人搜索这个词"当作需求证据。
+C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/PowerCycleTest_PythonBeta/PowerCycleTest_PythonBeta.md
+# PowerCycleTest_PythonBeta - parameter reference
+
+Source: `C:\apex_junczhai@amd.com\testflows\public\execute_power_cycle_test_python.html`
+
+`kind` legend: **enum** fixed value domain / **text** free text or number / **server-populated** filled by the APEX server, resolve at build time / **runtime-injected** written by APEX itself, never generate it / **hidden-const** not shown in the dialog.
+
+`origin` legend: blank keeps the APEX flow default / **PMM** a constant this team always overrides / **SLOT** resolved per run, see the checklist below / APEX injected by APEX itself.
+
+## Slots to resolve (2)
+
+These are **not** in the template. A required slot is omitted rather than filled with a placeholder, and the build refuses to emit JSON until it is supplied. If the route below cannot be resolved for the station under test, raise a clarification - do not carry the Example value over.
+
+### `Options.powertest` (required)
+
+- **Route**: From the scenario the ATM case names, via the mode table in the apex-powercycletest skill: S0i3 / Modern Standby -> 'Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake'; Restart -> 'Restart: Entry-OS Restart, Event-, Exit-'; S4 / Hibernate -> 'S4: Entry-OS Hibernate, Event-, Exit-HPET Wake'; S5 / Shutdown -> 'S5: Entry-OS Shutdown, Event-, Exit-Relay Power On'. The full enum has 38 values including Linux: and Chrome: variants and AIM-T, S3, G3 and combined Modern Standby-S4-OS forms; take the exact string from the field domain, never retype it.
+- **Example**: `Modern Standby: Entry-OS Standby, Event-, Exit-HPET Wake` (S0i3, woken by HPET rather than a relay) - captured on 2026-09-11. Illustrative, not authoritative.
+- **Scope of that example**: the most common PMM scenario; the other three reference items use the Restart, S4 and S5 rows of the same table
+- **If unresolved**: clarify with the case owner - do not default to the flow's own default (S5), which is not the scenario PMM runs most
+
+### `Options.loops` (required)
+
+- **Route**: The loop count the ATM case asks for. Flow default is 1. Measured across 16 real items in two queues: 1 (10 items), 3 (2 items) and 10 (4 items). It does not appear in this queue's varying set only because all four items of 04-Juncai-PMM_Feature.Quick.Check happen to run 10.
+- **Example**: `10` (ten entry/resume cycles) - captured on 2026-09-11. Illustrative, not authoritative.
+- **Scope of that example**: the 04-Juncai-PMM_Feature.Quick.Check value, not a standard - the case decides; 08-Juncai-PMM_Infrastructure uses 1 and 3
+- **If unresolved**: clarify - a wrong loop count silently produces a shorter or longer test that still reports Pass
+
+## Modules (1 modelled)
+
+### `HelperScripts` (enabled: True)
+
+| key | origin | value / route |
+|---|---|---|
+| `helperscriptsmoduletype` | **PMM** | `"HelperScripts"` |
+| `helperscriptsmoduleenabled` | **PMM** | `"True"` |
+| `helperscriptmodfailure` | **PMM** | `"stop"` |
+| `helperpreexecutiontimeout` | **PMM** | `1800` |
+| `helperpreexecutionscriptargs` | **PMM** | `""` |
+| `helperonstartscriptargs` | **PMM** | `""` |
+| `helperscripts` | **SLOT** (required) | Resolve the HelperScripts entity BY NAME in the target queue and use that GUID. The reference value 7b753ef1-b179-f111-b339-0022482b3a20 is a personal entity belonging to the exporting user and will not resolve for another user, station or queue. |
+| `helperonstopscriptargs` | **SLOT** (required) | '-loops <N>' where N is exactly the value of Options.loops, required whenever this module is attached at all. The helper counts the cycles it expects to find in the sleepstudy report, so a mismatch invalidates the evidence while the item still reports Pass. Nothing in APEX checks it - run scripts/apex_check_powercycle_loops.py over the queue export before pushing. The '-logname <name>' half seen in the reference items is export noise from one person's naming habit - omit it. A scenario that does not need the sleepstudy report (Restart) should omit this whole module instead of omitting the argument. |
+| `helperishostscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperonstartscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperonstopscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperpreexecutionscript` | APEX | literal * in the item; APEX substitutes at dispatch |
+| `helperscriptsentityname` | APEX | literal * in the item; APEX substitutes at dispatch |
+
+## Open questions
+
+- A passing run does not leave a sleepstudy HTML behind, even with Sleep Study.sleepstudyhtml = yes, which is the entire reason the HelperScripts module exists. Whether that is an APEX defect or intended behaviour is UNVERIFIED - it is recorded here as observed behaviour of 5.5.0.6, not as a diagnosis.
+- The Restart reference item carries --loops=10 but --helperonstopscriptargs='-logname sleepstudy-report_Reboot', with no -loops at all. This is NOT a loop-count defect: a Restart run does not need the sleepstudy report, so nothing reads the helper's output. The item is over-configured rather than mis-configured - the clean form for Restart is to detach the whole HelperScripts module, not to add the missing -loops.
+- Ten items of 08-Juncai-PMM_Infrastructure have the helper attached, --loops=1, and no -loops. They are plausibly correct via the helper script's own default, but that default is UNVERIFIED - it is not in the queue and has to be read out of the helper script once. Until then those ten are WARN, not clean.
+- --pctworkload=none in all four items, so the entire Workload block below it never executes. operatingsystemtype=Windows, workload=314be6b7-aaf4-eb11-b563-281878b51121, workloadpreset and workloadrunparameters all differ from the form default but are INERT - they are copy-paste inheritance, not PMM policy, and are deliberately not listed as fixed. Do not promote them.
+
+## Workloads
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| PowerCycleTest Workload Options | `pctworkload` |  | enum | `none` (Do not run any workloads) / `after` (Run workload(s) after state change) / `thru` (Run workload(s) through state change) | `"none"` |
+| Workload run mode | `workloadrunmode` |  | enum | `sequence` (Sequence) / `parallel` (Parallel) | `"sequence"` |
+| Workload Total run time (sec) | `totalruntime` |  | text |  | `30` |
+| Workload Cycle up time (sec) | `workloadcycleuptime` |  | text |  | `30` |
+| Workload Cycle down time (sec) | `workloadcycledowntime` |  | text |  | `0` |
+| Sync Workloads with Modules | `syncmodules` |  | enum | `smswewem` (sM -> sW -> eW -> eM) / `swsmewem` (sW -> sM -> eW -> eM) / `smswemew` (sM -> sW -> eM -> eW) / `swsmemew` (sW -> sM -> eM -> eW) | `"swsmemew"` |
+| Initial workload running check before 1st loop | `initcheck` |  | enum | `no` (No) / `yes` (Yes) | `"no"` |
+| Skip Workload Result Host Copy | `workloadresultcopy` |  | enum | `no` (Yes) / `yes` (No) | `"yes"` |
+C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/AmdUefiFwConfig/_schema/AmdUefiFwConfig.md
+# AmdUefiFwConfig - parameter reference
+
+Source: `C:\apex_junczhai@amd.com\testflows\public\amd_uefi_fw_config.html`
+
+`kind` legend: **enum** fixed value domain / **text** free text or number / **server-populated** filled by the APEX server, resolve at build time / **runtime-injected** written by APEX itself, never generate it / **hidden-const** not shown in the dialog.
+
+`origin` legend: blank keeps the APEX flow default / **PMM** a constant this team always overrides / **SLOT** resolved per run, see the checklist below / APEX injected by APEX itself.
+
+## Slots to resolve (1)
+
+These are **not** in the template. A required slot is omitted rather than filled with a placeholder, and the build refuses to emit JSON until it is supplied. If the route below cannot be resolved for the station under test, raise a clarification - do not carry the Example value over.
+
+### `AMD UEFI FW Config (AFC).afcarguments` (required)
+
+- **Route**: An unbounded free-text field, passed through verbatim to `fw_config` on the SUT. THERE IS NO ENUMERABLE DOMAIN and there never will be one: the value can name any BIOS/CBS token the platform exposes, or a path to a settings .txt file, so it cannot be reduced to a dropdown. Do not try to publish a value list - derive the value, and use the examples below only to recognise the shape. The flow's own form ships six examples and a reference page, which are the authoritative mode list: `-p` print every setting to the log; `-p > cmos_settings.txt` store current settings to a file; `-f c:\cmos_settings\cmos_settings.txt` load settings from a file on the APEX Host or the SUT; `-m AMDPBS.AMDPBSOption.SpecialDisplayFeatures=0x4` load a space-separated list of settings from the command line; `-v` print version; `-h` print help. Reference: https://amd.atlassian.net/wiki/spaces/BIOSC/pages/613839006/AMD+UEFI+FW+Config+AFC . Three of the six do real work and the flow treats each differently. (1) `-m <TOKEN>=<value> [<TOKEN>=<value> ...]` - tokens in AMD dotted form, AMDCBS.* and AMDPBS.* both legal; this is the mode to use when the case names specific options. (2) `-f <path>` - the flow resolves the path on the Host or file share first, copies it to the SUT AFC directory and rewrites the argument to the bare file name, and falls back to treating it as an SUT-local path. The path MUST NOT contain a space - the flow parses it with `split("-f")[-1].strip().split(" ")[0]`, which truncates at the first space with no error. (3) `-p > <file>` - the redirect is executed by the SUT shell and the flow then copies that file back into the run's result directory; bare `-p` prints into testflow.log and produces NO artifact, because the copy-back is gated on the regex `(-p)\s*>`. `-v` and `-h` are diagnostics with no place in a queue item. Token names and legal values come from the platform's BIOS/CBS definition, not from this skill - look them up, do not copy a token from another program's item.
+- **Example**: `-m AMDCBS.SMUCommonOptions.SystemConfiguration=0x01` (select cTDP configuration index 1 on Medusa) - captured on 2026-09-13. Illustrative, not authoritative.
+- **Scope of that example**: mode (1) with a single token, and nothing more - it is one observed value, not a recommended default. The same queue also shows mode (1) with two tokens (`...SystemConfiguration=0x0F AMDCBS.SMUDebugOptions.SMUFeatures.P3T=0x01`), mode (2) as `-f \\<fileshare>\share\<user>\Tool\AFC\Settings\<Program>\ACDC_DC.txt`, and mode (3) as `-p > cmos_settings.txt`. The observed `-f` paths are one operator's personal share and are environment-bound (P-009) - resolve the share and the per-program settings file for the station under test, never carry that path across.
+- **If unresolved**: clarify with the case owner. There is no safe default: the flow's own default is `-p > cmos_settings.txt`, which reads settings and changes nothing, so an unresolved slot left at the default produces an item that passes while configuring nothing.
+
+## Open questions
+
+- Is `--onfailure=Continue` right for a flow that configures BIOS? It is the form default and is unanimous across all 23 items, so by P-002 it is inheritance and not a recorded team decision. The concrete risk is reachable: on a failed apply the flow raises AFC_EXECUTION_ERROR (98) and, under Continue, the queue proceeds - every downstream item then runs at the previous BIOS configuration and can still report Pass. Whether PMM wants Stop here is a decision for the queue owner; it has not been made, and this file must not manufacture one.
+- The `False` half of `rebootafterexecution` has not been observed in a run artifact. Every AFC `testflowArguments.json` found on the Host carries `true`. The type is confirmed boolean, so the flow's truthiness test `self.args.get('rebootafterexecution')` behaves correctly on `false` - but that is read from the conversion rule and the source, not from a `false` run. Now that the policy is unconditional True, this can only be settled from one of the three non-conforming items.
+- Should the three AFC-print_settings items in queue 08 be corrected to True? That is a write to a production queue and is out of this skill's read-only scope. Raised, not actioned.
+
+## AMD UEFI FW Config (AFC)
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| AFC Arguments | `afcarguments` | **SLOT** | text |  | _resolve per run_ |
+
+## HDT Soft-Fuse
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| Path of HDT soft fuse file: | `softfusefile` |  | file |  | `""` |
+
+## (top level)
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| Reboot After Execution | `rebootafterexecution` | **PMM** | enum | `True` / `False` | `true` |
+| Reboot Retries | `rebootretries` |  | text |  | `0` |
+| RebootTimeout (sec) | `reboottimeoutsec` |  | text |  | `600` |
+| HDT Usage | `hdtusage` |  | enum | `None` / `RelaysOnly` / `RelaysAndPowerDetect` / `Full` | `"None"` |
+| ADS Usage | `adsusage` |  | enum | `None` / `NoScanNoPDM` / `NoScan` / `ScanOnly` / `Full` | `"None"` |
+| On Failure | `onfailure` |  | enum | `Stop` / `Pause` / `Continue` | `"Continue"` |
+| Pause/Stop Fail Type | `pausestopfailtype` |  | enum | `All` / `59` (ExecutorUnresponsive) | `59` |
+|  | `testqueue` | APEX | runtime-injected |  | `"*"` |
+|  | `testqueueloop` | APEX | runtime-injected |  | `"*"` |
+|  | `testqueueitemid` | APEX | runtime-injected |  | `"*"` |
+|  | `testqueueitemindex` | APEX | runtime-injected |  | `"*"` |
+|  | `numtestqueueitemsenabled` | APEX | runtime-injected |  | `"*"` |
+|  | `testname` | APEX | runtime-injected |  | `"*"` |
+|  | `teststation` | APEX | runtime-injected |  | `"*"` |
+|  | `teststationid` | APEX | runtime-injected |  | `"*"` |
+|  | `platform` | APEX | runtime-injected |  | `"*"` |
+|  | `macaddrs` | APEX | runtime-injected |  | `"*"` |
+|  | `email` | APEX | runtime-injected |  | `"*"` |
+|  | `region` | APEX | runtime-injected |  | `"*"` |
+|  | `hdtip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsswitchtype` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsusername` | APEX | runtime-injected |  | `"*"` |
+|  | `ipspassword` | APEX | runtime-injected |  | `"*"` |
+C:/Users/Administrator/Documents/projects/LLMwiki/APEX/TestFlow/PSPUnlock/PSPUnlock_Python.md
+# PSPUnlock_Python - parameter reference
+
+Source: `C:\apex_junczhai@amd.com\testflows\public\psp_unlock.html`
+
+`kind` legend: **enum** fixed value domain / **text** free text or number / **server-populated** filled by the APEX server, resolve at build time / **runtime-injected** written by APEX itself, never generate it / **hidden-const** not shown in the dialog.
+
+`origin` legend: blank keeps the APEX flow default / **PMM** a constant this team always overrides / **SLOT** resolved per run, see the checklist below / APEX injected by APEX itself.
+
+## (top level)
+
+| UI label | field | origin | kind | domain | default |
+|---|---|---|---|---|---|
+| On Failure | `onfailure` |  | enum | `Stop` / `Pause` / `Continue` | `"Stop"` |
+| Pause/Stop Fail Type | `pausestopfailtype` |  | enum | `All` / `59` (ExecutorUnresponsive) | `"All"` |
+| Log Level | `loglevel` |  | enum | `Debug` / `Info` / `Warn` / `Error` / `Fatal` / `Unknown` | `"Info"` |
+|  | `hdtusage` |  | hidden-const |  | `"Full"` |
+|  | `testqueue` | APEX | runtime-injected |  | `"*"` |
+|  | `testname` | APEX | runtime-injected |  | `"*"` |
+|  | `teststation` | APEX | runtime-injected |  | `"*"` |
+|  | `teststationid` | APEX | runtime-injected |  | `"*"` |
+|  | `platform` | APEX | runtime-injected |  | `"*"` |
+|  | `macaddrs` | APEX | runtime-injected |  | `"*"` |
+|  | `region` | APEX | runtime-injected |  | `"*"` |
+|  | `email` | APEX | runtime-injected |  | `"*"` |
+|  | `region` | APEX | runtime-injected |  | `"*"` |
+|  | `hdtip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsip` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsswitchtype` | APEX | runtime-injected |  | `"*"` |
+|  | `ipsusername` | APEX | runtime-injected |  | `"*"` |
+|  | `ipspassword` | APEX | runtime-injected |  | `"*"` |
+|  | `hostip` | APEX | runtime-injected |  | `"*"` |
+|  | `sutip` | APEX | runtime-injected |  | `"*"` |
+|  | `localserver` | APEX | runtime-injected |  | `"*"` |
+|  | `logfile` | APEX | runtime-injected |  | `"*"` |
+|  | `executionid` | APEX | runtime-injected |  | `"*"` |
+|  | `cpusid` | APEX | runtime-injected |  | `"*"` |
+
+- For many distinct assets, do not use `n` as a substitute for separate prompts. `n` is for variants of one prompt; distinct assets need distinct built-in calls or distinct CLI `generate-batch` jobs.
+
+Assume the user wants a new image unless they clearly ask to change an existing one.
+
+## Workflow
+1. Decide the top-level mode: built-in by default, including transparent-output requests; fallback CLI only if explicitly requested or confirmed.
+2. Decide the intent: `generate` or `edit`.
+3. Decide whether the output is preview-only or meant to be consumed by the current project.
+4. Decide the execution strategy: single asset vs repeated built-in calls vs CLI `generate-batch`.
+5. Collect inputs up front: prompt(s), exact text (verbatim), constraints/avoid list, and any input images.
+6. For every input image, label its role explicitly:
+   - reference image
+   - edit target
+   - supporting insert/style/compositing input
+7. If the edit target is only on the local filesystem and you are staying on the built-in path, inspect it with `view_image` first so the image is available in conversation context.
+8. If the user asked for a photo, illustration, sprite, product image, banner, or other explicitly raster-style asset, use `image_gen` rather than substituting SVG/HTML/CSS placeholders. If the request is for an icon, logo, or UI graphic that should match existing repo-native SVG/vector/code assets, prefer editing those directly instead.
+9. Augment the prompt based on specificity:
+   - If the user's prompt is already specific and detailed, normalize it into a clear spec without adding creative requirements.
+   - If the user's prompt is generic, add tasteful augmentation only when it materially improves output quality.
+10. Use the built-in `image_gen` tool by default.
+11. For transparent-output requests, ask built-in `image_gen` for a transparent background and preserve the generated alpha channel.
+12. Inspect outputs and validate: subject, style, composition, text accuracy, and invariants/avoid items.
+13. Iterate with a single targeted change, then re-check.
+14. For preview-only work, render the image inline; the underlying file may remain at the default `$CODEX_HOME/generated_images/...` path.
+15. For project-bound work, move or copy the selected artifact into the workspace and update any consuming code or references. Never leave a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+
+## Transparent image requests
+
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+
+## Prompt augmentation
+
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+
+### Specificity policy
+
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+122:[domain:branding][verdict:prefer][blame:user-opinion][src:user-opinion] 2026-10-04 — pic2svg/any2svg: user overrode a two-brand split (keep engine internal name `any2svg`) in favour of a full mechanical rename. Reason to record: "internal" identifiers do not stay internal — the engine filename leaks into served evidence JSON, the published verifier scripts, and the Docker build; the OG image and provider-side product names leak the brand regardless of naming strategy. [proposed] Full-consistency brand wins over internal-name stability when any internal string is user-reachable.[id:lsn-28222fb5]
+153:- What the user said: "这两个真不是一个专业的做网站的做出来的，太丑了，给我用image2进行优化"
+154:- Rule extracted: For this pic2svg example, the user wants illustration quality beyond crude placeholder geometry and specifically requested Image 2 refinement. This does not authorize a different page layout or claim approval of the replacement.
+
+FullName                                                   Length
+--------                                                   ------
+D:\githubprojects\language-games\art\cafe\rounds\c2-3.png 2696002
+D:\githubprojects\language-games\art\cafe\lena.png        1721280
+
+
+hook: PostToolUse
+hook: PostToolUse
+2026-10-31T17:33:33.093776Z ERROR codex_core::tools::router: error=Warning: truncated output (original token count: 2653)
+Total output lines: 104
+
+[Output shortened from 32189 characters. Full output: C:/Users/Administrator/AppData/Local/Harness/core/raw/01a19305-bb7e-75c1-a1a9-58e3b893351e/exec-188a15d8-f090-4a47-897a-ca85a2d4ec7d.txt (Read it with offset/limit or grep it; do not rerun the command to see it.)]
+Warning: truncated output (original token count: 9560)
+Total output lines: 427
+
+C:/Users/Administrator/Documents/projects/harness/core/README.md
+# Harness core v2
+
+The harness's runtime, rebuilt in the shape of [HarnessPro](https://github.com/pzs19/HarnessPro)
+(commit `6fd2d4d`, 2026-10-28): a short always-loaded contract, a `policy.json` with Lite,
+Medium and Heavy profiles, and one standard-library hook. Everything else the harness knows lives
+in modules that a prompt loads only when it needs them. Decision record: `docs/adr/0017-core-v2.md`.
+
+| File | What it is |
+|---|---|
+| `instructions.md` | The contract. Installed as the always-loaded rule file of every agent (`~/.claude/rules/harness-runtime.md`, Codex/Copilot instructions; OMP gets it at session start). |
+| `policy.json` | Profiles, the prompt classifier, heavy paths, guard prefilters, output limits and the module table. Tune behaviour here, not in code. |
+| `hook.py` | The wired entry: loads `runtime.py` (bytecode-cached) and falls back to the last tested copy when it breaks (Entry and last-good copy below). Small and stable; replace it only by an atomic rename. |
+| `runtime.py` | The one hook's logic. Standard library only; guard modules under `scripts/` are loaded by path only when a command or edit matches their prefilter. |
+| `install.py` | `apply`, `status`, `env`. |
+| `measure.py` | Median latency and injected bytes per event; `--score` rates the classifiers on a labelled set. |
+
+## Events
+
+| Event | Claude | Codex | Job |
+|---|---|---|---|
+| UserPromptSubmit | yes | yes | Guess the profile from the words of the prompt at once and start a background second opinion from the client's small model, name up to three modules plus those the session's project calls for (`context_modules`: a web project loads `web` on "ok, go" too, its `package.json` read once per session and directory), and on a session's first prompt add the marker `HARNESS_ACTIVE:core-v2:<hash>` and the user's learned preferences (`user-memory.md`, capped at 1,600 characters). Show the few items of the user's own apps the prompt is about (Recall below). A lite prompt after the first injects nothing else. URLs are not read as the user's words (a host like `x.harness-cards.pages.dev` made a question heavy). A client's one-shot helper prompt (Orca's "Name this chat ...", 63 a day) gets nothing and starts no model call; a relayed message (Stop hook feedback, another session's message) continues the task like a task notification. |
+| PreToolUse | yes | yes | Safety rails, plus two Claude Agent checks: unsafe deletion targets (`scripts/permission_judge.py` `target_rail`), the shell guard (`scripts/shell_guard.py`), the money freeze (`scripts/money_policy.py`), unproven model-config edits (`scripts/model_preflight.py`), user-only files (`own-part.md`, `explorations.md`), one refusal of a whole-file read of a Markdown file over 40 KB, plan mode only when the user asked for a plan; for Claude's Agent tool, a refusal of Jobs review round 6 when the brief's `jobs-review.json` holds 5 rounds and the latest is not satisfied, and a note pointing a fresh verifier at the session's acceptor (resume it with SendMessage); for Claude's SendMessage to that acceptor asking for a verdict, a diff-only note at round 2 and a refusal of round 4 (7, 10, ...) until the request carries `Approach re-evaluated:` or the user asked for more rounds (review must converge: 29% of judged acceptors ran 3+ rounds, 2026-10-28; rounds per acceptor live in the session state, observed history in `review_ledger.py stats`); the first edit of a front-end file brings the `web` module once to a Claude session that has not had it (`context_modules`; harness and temp-folder pages excepted); and the move to heavy when an edit touches a heavy path or a command changes the machine or agent setup (`escalate_commands`). |
+| PostToolUse | yes | yes | Apply the second opinion when it has arrived (it never lowers a profile an edit or command raised); count tool calls per prompt; remember the acceptors Claude spawns (id, description, prompt number); at the profile's economy and strict counts, tell the agent to economise or converge. After an edit, queue the checks the edited path maps to (Edit-time checks below) and report any that failed. Codex only: a shell output over the profile's limit is shortened to a head/tail view and kept in full under `<state>/core/raw/<session>/`. |
+| PermissionRequest | yes | — | Claude stops for a command it finds dangerous; the independent reviewer (`permission_judge.verdict`) answers instead of the user. Fires only then, so it costs nothing on ordinary calls. A com…192 tokens truncated… its own
+  `policy.json` answers, and the agent is told once per session and error (kept in
+  `<state>/core/notices/`, apart from the session state). With no last-good copy the call fails open
+  with that notice; a permission request is denied.
+- Only tested bytes reach last-good: the `promote` row of `edit_checks` (core-v2) reads `runtime.py`
+  and `policy.json` before `test_core_v2` and writes them after a pass only if they are unchanged
+  (`LastGood` rows in `events.jsonl`). A session's first prompt starts the same test in the background,
+  once per source version, when last-good does not hold the current source (a pull on another machine).
+- Not covered: an error in `hook.py` itself (no fallback; `python-syntax` checks it at edit time) and the
+  guard modules under `scripts/`, which load from the working tree and fail open one by one.
+- A missing `hook.py` blocks every tool call (Python exits 2, a blocking hook error in Claude Code), so
+  the file is replaced only by writing a temporary file and renaming it over the old one.
+
+Loading the runtime as a module lets Python reuse its compiled bytecode instead of compiling the whole
+file on every event: 5 to 7.5 ms less per event (paired runs below).
+
+Adopted from HarnessPro on 2026-10-29:
+
+- **Confidence override.** The second opinion ends with `sure` or `unsure`; an unsure label in
+  `second_opinion.unsure_raise` (only `lite`) is raised one step, never further, and never lowers
+  anything. With the rubric's new line that a change is lite only when a direct look confirms it,
+  the 100 labelled prompts of `evals/core-v2/` scored 94/100 in two runs against 92/100 for the old
+  rubric, with no heavy task called lite.
+- **Requirement recheck at each stage.** The economy and convergence reminders ask which
+... [21597 characters omitted; read the raw file for a targeted range] ...
+a project-referenced asset only at the default `$CODEX_HOME/generated_images/...` path.
+16. For batches or multi-asset requests, persist every requested deliverable final in the workspace unless the user explicitly asked to keep outputs preview-only. Discarded variants do not need to be kept unless requested.
+17. If the user explicitly chooses or confirms the CLI fallback, then use the fallback-only docs for model, quality, size, `input_fidelity`, masks, output format, output paths, and network setup.
+18. Always report the final saved path(s) for any workspace-bound asset(s), plus the final prompt or prompt set and whether the built-in tool or fallback CLI mode was used.
+
+## Transparent image requests
+
+Ask built-in `image_gen` for a genuinely transparent background and preserve its alpha.
+
+## Prompt augmentation
+
+Reformat user prompts into a structured, production-oriented spec. Make the user's goal clearer and more actionable, but do not blindly add detail.
+
+Treat this as prompt-shaping guidance, not a closed schema. Use only the lines that help, and add a short extra labeled line when it materially improves clarity.
+
+### Specificity policy
+
+Use the user's prompt specificity to decide how much augmentation is appropriate:
+
+- If the prompt is already specific and detailed, preserve that specificity and only normalize/structure it.
+- If the prompt is generic, you may add tasteful augmentation when it will materially improve the result.
+
+Allowed augmentations:
+- composition or framing hints
+- polish level or intended-use hints
+- practical layout guidance
+- reasonable scene concreteness that supports the stated request
+
+Not allowed augmentations:
+- extra characters or objects that are not implied by the request
+- brand names, slogans, palettes, or narrative beats that are not implied
+122:[domain:branding][verdict:prefer][blame:user-opinion][src:user-opinion] 2026-10-04 — pic2svg/any2svg: user overrode a two-brand split (keep engine internal name `any2svg`) in favour of a full mechanical rename. Reason to record: "internal" identifiers do not stay internal — the engine filename leaks into served evidence JSON, the published verifier scripts, and the Docker build; the OG image and provider-side product names leak the brand regardless of naming strategy. [proposed] Full-consistency brand wins over internal-name stability when any internal string is user-reachable.[id:lsn-28222fb5]
+153:- What the user said: "这两个真不是一个专业的做网站的做出来的，太丑了，给我用image2进行优化"
+154:- Rule extracted: For this pic2svg example, the user wants illustration quality beyond crude placeholder geometry and specifically requested Image 2 refinement. This does not authorize a different page layout or claim approval of the replacement.
+
+FullName                                                   Length
+--------                                                   ------
+D:\githubprojects\language-games\art\cafe\rounds\c2-3.png 2696002
+D:\githubprojects\language-games\art\cafe\lena.png        1721280
+
+
+Full hook output saved to: C:\Users\ADMINI~1\AppData\Local\Temp\hook_outputs\01a19305-bb7e-75c1-a1a9-58e3b893351e\329d5847-8cdb-4a32-9633-819c3e9bba23.txt
+hook: PostToolUse Completed
+hook: PostToolUse Blocked
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+exec
+"C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe" -Command '$source = '"'C:/Users/Administrator/.codex/generated_images/01a19305-bb7e-75c1-a1a9-58e3b893351e/exec-c7098956-989d-40e1-a5f0-8064c1bf1f71.png'; "'$destination = '"'D:/githubprojects/language-games/art/cafe/after/c2-3.png'; New-Item -ItemType Directory -Path (Split-Path -Parent "'$destination) -Force | Out-Null; Copy-Item -LiteralPath $source -Destination $destination -Force; $originalHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash; $savedHash = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash; if ($originalHash -ne $savedHash) { throw '"'Copied PNG does not match generated PNG' }; Get-Item -LiteralPath "'$destination | Select-Object FullName,Length; Write-Output '"'PNG copy verified: SHA256 matches.'" in D:\githubprojects\language-games
+ succeeded in 179ms:
+
+FullName                                                  Length
+--------                                                  ------
+D:\githubprojects\language-games\art\cafe\after\c2-3.png 2595534
+PNG copy verified: SHA256 matches.
+
+
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+codex
+Saved the generated PNG to `art/cafe/after/c2-3.png`.
+hook: Stop
+hook: Stop Completed
+tokens used
+18,621
+Saved the generated PNG to `art/cafe/after/c2-3.png`.

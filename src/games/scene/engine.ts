@@ -156,6 +156,15 @@ export function placesFor(scene: Scene, clause: Clause): Loc[] {
   return allLocs(scene, clause.a).filter((l) => holds({ ...without, [clause.a]: l }, clause));
 }
 
+/** What the player actually built for a sentence's two things: "The key is on the box." */
+export function builtSentence(scene: Scene, c: Clause): string {
+  if (!scene[c.a] || !scene[c.b]) return `The ${!scene[c.a] ? c.a : c.b} was not on the stage.`;
+  const actual = (["in", "on", "behind", "in front of", "next to", "left of", "right of"] as const).find((rel) =>
+    holds(scene, { a: c.a, rel, b: c.b }),
+  );
+  return actual ? say({ a: c.a, rel: actual, b: c.b }) : `The ${c.a} was not ${REL_TEXT[c.rel]} the ${c.b}.`;
+}
+
 /** Why a sentence is false of a scene, in one line: "The key is on the box, not in it." */
 export function whyFalse(scene: Scene, c: Clause): string {
   if (!scene[c.a] || !scene[c.b]) return `The ${!scene[c.a] ? c.a : c.b} is not on the stage yet.`;

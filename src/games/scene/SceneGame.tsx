@@ -10,6 +10,7 @@ import { track } from "@/components/analytics";
 import { cn } from "@/lib/utils";
 import { nextGame } from "@/content/games";
 import { useDraft } from "@/lib/use-draft";
+import { useIsPhone } from "@/lib/use-phone";
 import {
   CONTAINERS,
   HOLDERS,
@@ -20,6 +21,7 @@ import {
   placesFor,
   removeThing,
   REL_TEXT,
+  builtSentence,
   say,
   whyFalse,
   type Clause,
@@ -34,6 +36,8 @@ const GAME = "scene";
 
 // Stage geometry, in % of the stage picture (16:9). Back row first so the front row draws over it.
 const SPOT_X = [23, 41, 59, 77];
+/** On a phone the stage is framed square around its middle, so the four places sit closer together. */
+const SPOT_X_PHONE = [31, 43.7, 56.3, 69];
 const ROW_Y = { back: 71, front: 87 };
 const ROW_SCALE = { back: 0.82, front: 1 };
 /** Sprite width in % of the stage width, and height as a multiple of width. */
@@ -60,7 +64,7 @@ type Placed = {
 };
 
 /** Turn the logical scene into sprite positions. Logic decides truth; this only draws it. */
-function layout(scene: Scene): Placed[] {
+function layout(scene: Scene, spotX: number[], scale = 1): Placed[] {
   const out: Placed[] = [];
   const at = (t: Thing, depth = 0): Placed | null => {
     const l = scene[t];
@@ -69,9 +73,9 @@ function layout(scene: Scene): Placed[] {
       const s = ROW_SCALE[l.row];
       return {
         thing: t,
-        x: SPOT_X[l.spot],
+        x: spotX[l.spot],
         bottom: 100 - ROW_Y[l.row],
-        w: SIZE[t].w * s,
+        w: SIZE[t].w * s * scale,
         z: l.row === "back" ? 10 : 30,
       };
     }
@@ -150,7 +154,6 @@ function Stage({
   onSelectPlaced,
   onDrop,
   fixed,
-  tall,
   children,
 }: {
   scene: Scene;
@@ -160,14 +163,15 @@ function Stage({
   onDrop?: (loc: Loc) => void;
   /** Things that were already standing and cannot be moved. */
   fixed?: Set<Thing>;
-  /** Let the stage grow to fill a phone screen. */
-  tall?: boolean;
   children?: React.ReactNode;
 }) {
-  const placed = layout(scene);
+  const phone = useIsPhone();
+  const spotX = phone ? SPOT_X_PHONE : SPOT_X;
+  // Framed square on a phone, the canvas is wider than the screen: draw things a little smaller so neighbours do not overlap.
+  const placed = layout(scene, spotX, phone ? 0.72 : 1);
   const holders = placed.filter((p) => HOLDERS.includes(p.thing) && scene[p.thing] && "spot" in scene[p.thing]!);
   return (
-    <SceneCanvas label={label} tall={tall ? "/art/tall/stage.webp" : undefined}>
+    <SceneCanvas label={label} frame="square">
       <Image src="/art/scene/stage.webp" alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       {placed.map((p) => (
         <Sprite
@@ -191,9 +195,9 @@ function Stage({
                 aria-label={`${row === "back" ? "Back" : "Front"} row, place ${spot + 1} from the left`}
                 className="absolute z-40 -translate-x-1/2 rounded-lg border-2 border-dashed border-cobalt/70 bg-cobalt/10 hover:bg-cobalt/25"
                 style={{
-                  left: `${SPOT_X[spot]}%`,
+                  left: `${spotX[spot]}%`,
                   bottom: row === "back" ? "27.5%" : "9%",
-                  width: "15.5%",
+                  width: phone ? "11.5%" : "15.5%",
                   height: "16.5%",
                 }}
               />
@@ -268,7 +272,7 @@ function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 
 export function SceneGame() {
   const g = useSessions(GAME, SESSIONS);
-  if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" tall="/art/tall/stage.webp" />;
+  if (!g.ready) return <GameLoading game="Picture Theatre" poster="/art/scene/stage.webp" />;
   const { session, round, finished } = g;
   return (
     <GameFrame game="Picture Theatre" g={g}>
@@ -340,7 +344,7 @@ function Controls({
         )}
       </div>
       {showHint && !checked && (
-        <p role="status" className="text-[15px]">
+        <p role="status" className="text-[15px] lg:text-[17px]">
           {hint}
         </p>
       )}
@@ -374,16 +378,35 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
     if (r.every(Boolean)) onDone(r.length, r.length, tries === 0 && !hint, round.message.map(say), firstMiss ?? undefined);
     else {
       const wrong = round.message.find((c) => !holds(scene, c));
-      if (!firstMiss && wrong) setFirstMiss(whyFalse(scene, wrong));
+      if (!firstMiss && wrong) setFirstMiss(builtSentence(scene, wrong));
       track("repair_used", { game: GAME, round: round.id });
     }
   };
+
+  const message = (
+    <>
+      <p className="text-[15px] text-muted-foreground lg:text-[17px]">The message — make every sentence true:</p>
+      <ul className="mt-1 flex flex-col gap-1.5">
+        {round.message.map((c, i) =>
+          checked ? (
+            <Verdict key={i} ok={checked[i]}>
+              {say(c)}
+              {!checked[i] && <span className="block text-[15px] lg:text-[17px] text-muted-foreground">{whyFalse(scene, c)}</span>}
+            </Verdict>
+          ) : (
+            <li key={i} className="rounded-lg bg-card px-3 py-2 font-heading text-[19px]">
+              {say(c)}
+            </li>
+          ),
+        )}
+      </ul>
+    </>
+  );
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-1 flex-col gap-3 lg:block">
         <Stage
-          tall
           scene={scene}
           label="The stage"
           selected={checked ? null : selected}
@@ -391,30 +414,19 @@ function BuildPlay({ round, onDone, onNext }: { round: BuildRound; onDone: Done;
           onSelectPlaced={checked ? undefined : (t) => setSelected((cur) => (cur === t ? null : t))}
           onDrop={checked ? undefined : drop}
         />
-        <div className="px-3 lg:px-0">
-          <p className="text-[15px] text-muted-foreground lg:text-[17px]">The message — make every sentence true:</p>
-          <ul className="mt-1 flex flex-col gap-1.5">
-            {round.message.map((c, i) =>
-              checked ? (
-                <Verdict key={i} ok={checked[i]}>
-                  {say(c)}
-                  {!checked[i] && <span className="block text-[15px] text-muted-foreground">{whyFalse(scene, c)}</span>}
-                </Verdict>
-              ) : (
-                <li key={i} className="rounded-lg bg-card px-3 py-2 font-heading text-[19px]">
-                  {say(c)}
-                </li>
-              ),
-            )}
-          </ul>
+        <div className="px-3 lg:hidden">
+          {message}
         </div>
       </div>
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
+        <div className="hidden lg:block">
+          {message}
+        </div>
         {!checked && (
           <div>
             <p className="mb-1 text-[15px] text-muted-foreground lg:text-[17px]">
               {selected
-                ? `Now tap a place on the stage for the ${selected}.`
+                ? `Now choose a place on the stage for the ${selected}.`
                 : tray.length
                   ? "Choose a thing, then where it goes."
                   : "Choose a thing on the stage to move it."}
@@ -468,6 +480,7 @@ function RelationPicker({
   onChange: (r: Relation) => void;
   disabled?: boolean;
 }) {
+  if (disabled) return <span className="font-semibold">{REL_TEXT[value]}</span>;
   return (
     <span className="relative inline-flex">
       <select
@@ -495,19 +508,24 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
   const [checked, setChecked] = useDraft<boolean[] | null>(round.id, "checked", null);
   const [tries, setTries] = useDraft(round.id, "tries", 0);
   const [hint, setHint] = useDraft(round.id, "hint", false);
+  const [firstMiss, setFirstMiss] = useDraft<string | null>(round.id, "firstMiss", null);
   const solved = !!checked && checked.every(Boolean);
 
   const check = () => {
     const r = report.map((c) => holds(round.scene, c));
     setChecked(r);
     setTries((n) => n + 1);
-    if (r.every(Boolean)) onDone(r.length, r.length, tries === 0 && !hint, report.map(say));
-    else track("repair_used", { game: GAME, round: round.id });
+    if (r.every(Boolean)) onDone(r.length, r.length, tries === 0 && !hint, report.map(say), firstMiss ?? undefined);
+    else {
+      const wrong = report.find((c) => !holds(round.scene, c));
+      if (!firstMiss && wrong) setFirstMiss(say(wrong));
+      track("repair_used", { game: GAME, round: round.id });
+    }
   };
 
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
-      <Stage tall scene={round.scene} label="What is really on the stage" />
+      <Stage scene={round.scene} label="What is really on the stage" />
       <div className="mt-auto flex flex-col gap-3 px-3 pb-4 lg:mt-0 lg:px-0">
         <p className="text-[15px] text-muted-foreground lg:text-[17px]">
           The report. Change one word in each false sentence so that it fits the stage.
@@ -530,6 +548,7 @@ function CheckPlay({ round, onDone, onNext }: { round: CheckRound; onDone: Done;
             return checked ? (
               <Verdict key={i} ok={checked[i]}>
                 {line}
+                {!checked[i] && <span className="block text-[15px] lg:text-[17px] text-muted-foreground">{whyFalse(round.scene, c)}</span>}
               </Verdict>
             ) : (
               <li key={i} className="rounded-lg bg-card px-3 py-2">
@@ -595,7 +614,7 @@ function TellPlay({ round, onDone, onNext }: { round: TellRound; onDone: Done; o
   return (
     <div className="flex flex-1 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-8 lg:px-4">
       <div className="flex flex-1 flex-col gap-2 lg:block">
-        <Stage tall={!result} scene={round.scene} label="Your stage, which your partner cannot see" />
+        <Stage scene={round.scene} label="Your stage, which your partner cannot see" />
         {result && (
           <div className="px-3 lg:px-0">
             <p className="mb-1 text-[15px] text-muted-foreground lg:text-[17px]">Your partner&apos;s stage</p>
