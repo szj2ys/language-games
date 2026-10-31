@@ -7,7 +7,7 @@ idea of *language-games*: words get their meaning in what people do with them.
 |---|---|---|---|
 | **Slab!** (`/play/builder`) | fetch stones for a builder, give the orders, tell orders from reports | orders, numbers, plurals, *this/there*, asking "Which one?" | PI §§2, 6, 8, 19–21, 27 |
 | **Picture Theatre** (`/play/scene`) | build what a sentence says, fix false reports, describe a stage | *in, on, behind, next to, to the left of* | TLP 2.1, 2.21, 4.01 |
-| **The Café** (`/play/cafe`) | read the room and respond | requests, hints, polite refusals, *Excuse me?* | PI §§21, 23, 43 |
+| **The Café** (`/play/cafe`) | read the room and respond | requests, hints, polite refusals, *Excuse me?*, *Sorry / Thank you / Never mind / Go ahead* | PI §§21, 23, 43 |
 | **Go On!** (`/play/pupil`) | teach a pupil a rule with as few examples as possible | *a/an*, plurals, *-ed*, comparatives, *-ing/to*, uncountables | PI §§84, 185, 198–202, 217 |
 | **Family Threads** (`/play/family`) | test claims about games, tools and languages, thread them by resemblance | *all/most/some/none of these*, *both … and*, *unlike* | PI §§11, 14, 18, 66–67 |
 
@@ -22,15 +22,17 @@ After the build, Codex reviewed the code (`planning/code-review-codex.md`), Copi
 citations (`planning/content-review-copilot.md`), and fresh "Steve Jobs" reviewers played the running site
 round after round (`reports/language-games-2026-10-31/jobs/jobs-review.json`). Every finding and the change it
 caused is in `planning/DECISIONS.md`.
+Copilot also authored the café's fourth session (`planning/proposed-cafe-4.ts`), and Codex play-tested the
+newest sessions (`planning/playtest-codex.md`, `planning/playtest-codex-2.md`).
 
 ## Run
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
-npm test             # game engines and content checks (Vitest)
+npm test             # game engines, content checks, every round has its picture (Vitest)
 npm run build && npm start
-python e2e/play_all.py http://localhost:3000            # plays every game end to end (Playwright)
+python e2e/play_all.py http://localhost:3000            # plays every game and the later sessions end to end (Playwright)
 python e2e/play_all.py http://localhost:3000 --desktop
 python e2e/a11y.py http://localhost:3000             # axe-core, phone and desktop
 ```

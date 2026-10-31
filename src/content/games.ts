@@ -16,7 +16,6 @@ export type GameInfo = {
   source: SourceId;
   /** Round ids, for progress. */
   rounds: string[];
-  minutes: string;
   /** How to play, in plain steps — served in the HTML for readers and crawlers alike. */
   howTo: string[];
 };
@@ -38,7 +37,6 @@ export const GAMES: GameInfo[] = [
     idea: "Words get their meaning inside an activity",
     source: "pi-2",
     rounds: ids(BUILDER),
-    minutes: "3 × 3 min",
   },
   {
     slug: "scene",
@@ -53,7 +51,6 @@ export const GAMES: GameInfo[] = [
     idea: "A sentence is a picture of how things stand",
     source: "tlp-2.1",
     rounds: ids(SCENE),
-    minutes: "3 × 3 min",
   },
   {
     slug: "cafe",
@@ -68,7 +65,6 @@ export const GAMES: GameInfo[] = [
     idea: "For many words, meaning is use",
     source: "pi-43",
     rounds: ids(CAFE),
-    minutes: "2 × 3 min",
   },
   {
     slug: "pupil",
@@ -83,12 +79,11 @@ export const GAMES: GameInfo[] = [
     idea: "Following a rule is a practice",
     source: "pi-185",
     rounds: ids(PUPIL),
-    minutes: "4 × 2 min",
   },
   {
     slug: "family",
     howTo: [
-      "Six cards show things we call games. Make the strongest claim that is true of them: all, most, some or none.",
+      "Six cards show things we call by one name: games, tools or languages. Make the strongest claim that is true of them: all, most, some or none.",
       "Thread every card into one chain, each link a feature two neighbours share.",
       "A newcomer arrives. Link it with “both”, or keep it at the edge with “unlike”.",
     ],
@@ -98,7 +93,6 @@ export const GAMES: GameInfo[] = [
     idea: "Family resemblance, not one shared essence",
     source: "pi-67",
     rounds: ids(FAMILY),
-    minutes: "2 × 4 min",
   },
 ];
 

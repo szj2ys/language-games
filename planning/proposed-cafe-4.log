@@ -294,4 +294,242 @@ My file has CRLF line endings, while the repo uses LF (`autocrlf=false`, no `.gi
   │ 0xEF); npx --yes prettier@3 --check planning/proposed-cafe-4.ts 2>&1 | Out-String -Width 300; …
   └ 12 lines…
 
-Blind picks locked before file review: R1→2 (high; 1 yes, 3 weak), R2→3 (high; 1 yes, 2 weak), R3→1 (high; 2 yes, 3 weak), R4→2 (high; 1 yes, 3 weak), R5→3 (high; 1 yes, 2 weak), R6→1 (high; 2 yes, 3 yes).
+Blind picks locked before file review: R1→2 (high; 1 yes, 3 weak), R2→3 (high; 1 yes, 2 weak), R3→1 (high; 2 yes, 3 weak), R4→2 (high; 1 yes, 3 weak), R5→3 (high; 1 yes, 2 weak), R6→1 (high; 2 yes, 3 yes).FAIL
+
+### Part A
+
+| Round | Pick | Confidence | Other options |
+|---|---:|---|---|
+| 1 | 2 | High | 1 yes—passage misread; 3 weak—rote formula confusion |
+| 2 | 3 | High | 1 yes—apology reading; 2 weak—free table is explicit |
+| 3 | 1 | High | 2 yes—“thanks” as completion; 3 weak—closing formula |
+| 4 | 2 | High | 1 yes—ritual reply; 3 weak—jug handoff unsupported |
+| 5 | 3 | High | 1 yes—assumes keys remain lost; 2 weak—ignores visible keys |
+| 6 | 1 | High | 2 yes—permission to eat; 3 yes—permission to continue speaking |
+
+No round had two fitting answers or none. All picks match `fits`.
+
+### MUST-FIX
+
+- **c4-5:** `"Keep looking through the box."` is not a plausible choice for a careful learner when Tom visibly holds up his keys; it ignores both phrase and picture. Replace with `[say] “I'll help you get a new set made.”`, reaction: `"No need — I've found them!"` This plausibly misreads *Never mind* as abandoning an unsuccessful search.
+
+### SHOULD-FIX
+
+- **c4-2:** `"Get up and offer him your seat."` is weak because the free table is explicit. Replace with `"Take his plate so he has a free hand."`, reaction: `"Thanks, but I only need you to move your bags."`
+- **c4-4:** `"Hand her the jug."` is poorly motivated. Replace with `"Put down the jug and bring her the bill."`, reaction: `"Oh — I'm not finished. I only meant enough milk."`
+- **c4-6 drawability:** `"Your phone is ringing on the table."` depends on sound. Replace with `"Your phone screen is lit up on the table, with vibration lines around it."`
+- **Header:** `"(prompts in art/cafe/)"` incorrectly implies the complete prompt set exists. Replace with `"(create prompts under art/cafe/rounds/ and art/cafe/after/)"`.
+
+### NIT
+
+- **c4-2:** `"nobody has done anything wrong"` is debatable when the bags obstruct the aisle. Use `"Tom is not apologising for an accident."`
+- **c4-6:** `"I'll keep an eye on your cake"` sounds contrived. Use `"Take your time. Your cake can wait."`
+
+Verified: PI §21 does contrast “Five slabs” as report/order by its role; §23 lists “asking, thanking, cursing, greeting, praying.” No citation overstatement, stereotypes, format problems, or UI-key collisions. The two identical-word pairs are present. Existing tests should pass by inspection; the `SESSION_SOURCES` crash warning and notebook/minutes notes are accurate.
+
+**Not covered:** Generated art, browser/TTS rendering, and an executed build/test run.● Rubber-duck (model: gpt-5.6-sol) Blind playtest and content review                          9m 28s
+  │ FAIL
+  │ Search (grep)
+  │   │ "cafe:|c1-1|c3-6" (src\content\notebook.ts)
+  │   └ 17 lines found
+  └ Read notebook.ts
+      │ src\content\notebook.ts
+      └ L1:end (43 lines read)
+
+● Edit proposed-cafe-4.ts +1 -1                                                                   5s
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +2 -2                                                                   6s
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +1 -1                                                                   6s
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +1 -1                                                                   6s
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +1 -1                                                                   7s
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +1 -1                                                                   7s
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +2 -2                                                                   7s
+  └ planning\proposed-cafe-4.ts
+
+Edits applied. Re-running the full set: line endings, Prettier, the checker, ESLint and typecheck.
+
+● Recheck endings, prettier, checker, eslint, tsc (shell)                                        12s
+  │ $p = "D:\githubprojects\language-games\planning\proposed-cafe-4.ts"; $b =
+  │ [IO.File]::ReadAllBytes($p); "crlf=" + ([regex]::Matches([Text.Encoding]::UTF8.GetString($b),
+  │ "`r`n").Count) + " bom=" + ($b[0] -eq 0xEF); npx --yes prettier@3 --check
+  │ planning/proposed-cafe-4.ts 2>&1 | Out-String -Width 300; "prettier exit=$LASTEXITCODE"; node
+  │ --no-warnings "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143f…
+  └ 17 lines…
+
+The round count jumped from 24 to 30, and ids now collide. Something changed `src/games/cafe/rounds.ts` since my last run: another agent may have added a session. Checking:
+
+/ Search (grep)
+  │ "id: "cafe-|title:|id: "c4-" (src\games\cafe\rounds.ts)
+  └ 15 lines found
+
+● Check what changed in cafe rounds (shell)
+  │ git --no-pager status --short --untracked-files=all -- src planning | Out-String -Width 300; git
+  │ --no-pager log --oneline -5 -- src/games/cafe/rounds.ts | Out-String -Width 300; git --no-pager
+  │ diff --stat -- src/games/cafe | Out-String -Width 300
+  └ 9 lines…
+
+● Read rounds.ts
+  │ src\games\cafe\rounds.ts
+  └ L314:432 (118 lines read)
+
+● Inspect integration commit (shell)
+  │ git --no-pager show --stat --format="%h %an %ad%n%s%n%b" 5c810ab | Out-String -Width 300
+  └ 10 lines…
+
+● Edit check-cafe4.mts +3 -2
+  └ ~\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143fc09\files\check-cafe4.mts
+
+● Edit check-cafe4.mts +13
+  └ ~\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143fc09\files\check-cafe4.mts
+
+● Rerun checker with merged-session swap and diff (shell)
+  │ node --no-warnings "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa1
+  │ 43fc09\files\check-cafe4.mts"; "checker exit=$LASTEXITCODE"
+  └ 36 lines…
+
+● Run real café test; show SESSION_SOURCES change (shell)
+  │ npx vitest run src/games/cafe 2>&1 | Select-Object -Last 12 | Out-String -Width 300; "vitest
+  │ exit=$LASTEXITCODE"; git --no-pager show 5c810ab -- src/games/cafe/CafeGame.tsx | Select-String
+  │ -Pattern '^[+-][^+-]' | Out-String -Width 300
+  └ 12 lines…
+
+● Read proposed-cafe-4.ts
+  │ planning\proposed-cafe-4.ts
+  └ L1:12 (11 lines read)
+
+/ Search (glob)
+  │ "{art,public/art}/cafe/**/c4-*"
+  └ 55 files found
+
+● Read c4-6.prompt.txt
+  │ art\cafe\rounds\c4-6.prompt.txt
+  └ 3 lines read
+
+● Read c4-6.png
+  │ art\cafe\rounds\c4-6.png
+  └ 1 line read
+
+  [Image: Image file at path D:\githubprojects\language-games\art\cafe\rounds\c4-6.png [image/png]
+  1672x941]
+
+● Edit proposed-cafe-4.ts +1 -1
+  └ planning\proposed-cafe-4.ts
+
+● Edit proposed-cafe-4.ts +9 -10
+  └ planning\proposed-cafe-4.ts
+
+● Final recheck of all gates (shell)                                                             11s
+  │ $p = "D:\githubprojects\language-games\planning\proposed-cafe-4.ts"; $b =
+  │ [IO.File]::ReadAllBytes($p); "crlf=" + ([regex]::Matches([Text.Encoding]::UTF8.GetString($b),
+  │ "`r`n").Count) + " bom=" + ($b[0] -eq 0xEF); npx --yes prettier@3 --check
+  │ planning/proposed-cafe-4.ts 2>&1 | Out-String -Width 300; "prettier exit=$LASTEXITCODE"; node
+  │ --no-warnings "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-f1cfa143f…
+  └ 31 lines…
+
+All gates pass on the final file. The 9 fields that differ from the merged copy are all review fixes, and none is a clue. Sending the revision back to the same reviewer for a final verdict:
+
+● Listing background agents
+
+✗ Write cafe4-bl
+  └ Re-verify, same rules (read-only; do not edit any file). I revised D:\githubp…
+
+✗ Write 6445151f
+  └ Re-verify, same rules (read-only; do not edit any file). I revised D:\githubp…
+
+● Rubber-duck (model: gpt-5.6-sol) Re-verify revised café session
+  └ Agent started in background with agent_id: 65d9ae58-57db-4478-8238-7f7760facf...
+
+While the reviewer works, I'm removing my temp Prettier output and confirming the only repo change from this task is the planning file.
+
+● Clean temp file; check repo status (shell)
+  │ Remove-Item -LiteralPath "C:\Users\Administrator\.copilot\session-state\6ab645e4-a577-4112-baed-
+  │ f1cfa143fc09\files\pretty-cafe4.ts" -ErrorAction SilentlyContinue; git --no-pager status --short
+  │ --untracked-files=all | Where-Object { $_ -notmatch '^\?\? reports/' } | Out-String -Width 300;
+  │ git --no-pager diff --stat -- planning/proposed-cafe-4.ts | Out-String -Width 300
+  └ 8 lines…
+
+The planning file is the only repo change from this task. The other modified files belong to other agents and I left them alone. Waiting for the independent reviewer's verdict on the revision before finishing.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Removed 1 attachment from an oversized request before retrying. The model did not receive it. Try
+  smaller or fewer attachments.
+
+! Timed out after 600s waiting for background tasks to finish; giving up on the wait with work still
+  pending. Set COPILOT_TASK_WAIT_TIMEOUT_SECONDS to change the limit.
+
+
+
+Changes    +246 -24
+AI Credits 924.34 (56m 55s)
+Tokens     ↑ 7.0m (6.2m cached, 608.4k written) • ↓ 201.2k (166.4k reasoning)
+Resume     copilot --resume=6ab645e4-a577-4112-baed-f1cfa143fc09

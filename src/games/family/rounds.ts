@@ -88,7 +88,7 @@ const LANGUAGES: Card[] = [
   lang("roadsigns", "road signs", ["orders", "special"]),
   lang("chemistry", "chemical formulas", ["written", "special"]),
   lang("music", "music notation", ["written", "special"], ["stories"]),
-  lang("morse", "Morse code", ["orders", "special", "hands"], ["spoken"]),
+  lang("morse", "Morse code", ["orders", "special", "hands", "written", "stories"], ["spoken"]),
 ];
 
 export const SESSIONS: Session[] = [
@@ -170,7 +170,7 @@ export const SESSIONS: Session[] = [
       {
         id: "f3-4",
         mode: "newcomer",
-        newcomer: lang("builders", "the builders' language", ["spoken", "orders", "special"]),
+        newcomer: lang("builders", "the builders' language", ["spoken", "orders", "special", "written"]),
         hint: "The builders' four words (§2): they are spoken and they give orders. Which card shares that?",
       },
     ],

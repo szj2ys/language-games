@@ -43,3 +43,4 @@ logs/
 
 # QA captures
 qa/
+__pycache__/

@@ -158,7 +158,7 @@ export const LEVELS_2: Level[] = [
     ways: [
       { id: "always-to", label: "Always “to” + verb" },
       { id: "always-ing", label: "Always -ing" },
-      { id: "looks-ahead", label: "“to” after verbs that look ahead (want, plan); -ing after the others" },
+      { id: "looks-ahead", label: "“to” after verbs of wanting and planning (want, hope, plan); -ing after the others" },
     ],
     exam: [
       patternItem({ word: "enjoy", looksAhead: false }),
@@ -178,7 +178,7 @@ export const LEVELS_2: Level[] = [
     explain: [
       { text: "After a verb, use “to”.", readAs: "always-to" },
       {
-        text: "Verbs about the future (want, plan, hope) take “to”; most others take -ing.",
+        text: "After want, hope, plan and decide, use “to”; after enjoy, finish, mind and avoid, use -ing.",
         readAs: "looks-ahead",
         needs: { ruledOut: "always-to", otherwise: "always-to" },
       },

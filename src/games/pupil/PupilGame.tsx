@@ -62,12 +62,13 @@ function Lesson({
   const exam = sitExam(level, pupil);
   const [changed, setChanged] = useState<string[]>([]);
 
-  const teach = (next: Pupil) => {
+  // Only example cards count against par; an explanation is free, and works only inside a practice.
+  const teach = (next: Pupil, card: boolean) => {
     const before = sitExam(level, pupil).answers;
     const after = sitExam(level, next).answers;
     setChanged(after.filter((a, i) => a.said !== before[i].said).map((a) => a.word));
     setPupil(next);
-    setCards((n) => n + 1);
+    if (card) setCards((n) => n + 1);
   };
 
   const decide = (c: "correct" | "both") => {
@@ -143,7 +144,7 @@ function Lesson({
                   key={it.word}
                   type="button"
                   disabled={shown.has(it.word)}
-                  onClick={() => teach(showExample(pupil, it))}
+                  onClick={() => teach(showExample(pupil, it), true)}
                   className="flex min-h-14 items-center justify-center rounded-xl border-2 border-border bg-card px-2 py-2 font-heading text-[19px] hover:border-ink/30 disabled:border-sage/40 disabled:bg-sage/10 disabled:text-muted-foreground"
                 >
                   {it.correct}
@@ -160,7 +161,7 @@ function Lesson({
                   disabled={explained.includes(i)}
                   onClick={() => {
                     setExplained((x) => [...x, i]);
-                    teach(explain(level, pupil, e));
+                    teach(explain(level, pupil, e), false);
                   }}
                 >
                   <BookOpen className="size-5 shrink-0" aria-hidden /> Explain: “{e.text}”

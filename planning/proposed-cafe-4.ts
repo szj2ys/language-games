@@ -1,13 +1,12 @@
-// Proposal, not wired into the app: a fourth café session. Nothing under src/ has been changed.
-//
-// To ship it:
-// - Append CAFE_4 to SESSIONS in src/games/cafe/rounds.ts. The say/act helpers there are not exported, so this file keeps
-//   local copies; drop them when the rounds move.
-// - Add a fourth entry to SESSION_SOURCES in src/games/cafe/CafeGame.tsx, e.g. ["pi-23", "pi-21"] (the sections the notes cite).
-//   Without it SessionEnd receives undefined, and `const [lead, ...more] = sources` throws on the end card.
-// - Draw public/art/cafe/rounds/c4-1 … c4-6.webp and public/art/cafe/after/c4-1 … c4-6.webp (prompts in art/cafe/).
-//   Each round has one speaker, and every clue can be drawn in one café picture.
-// - Recheck the café's `minutes` in src/content/games.ts. The round list and the notebook pick up the new rounds by themselves.
+// Café session 4, "Sorry, thanks, no problem". An earlier draft of this file was merged in 5c810ab (rounds.ts, SESSION_SOURCES)
+// and drawn (art/cafe/, public/art/cafe/). This version adds the fixes from an independent blind review; port them to cafe-4
+// in src/games/cafe/rounds.ts:
+// - c4-2: misreading "Get up and offer him your seat." becomes "Take his plate so he has a free hand." (new reaction); `use`
+//   drops ", not an apology"; the note no longer says "nobody has done anything wrong" (your bags are in the way).
+// - c4-4: the "Hand her the jug." reaction now says she wasn't reaching for it.
+// - c4-5: "Keep looking through the box." ignored both the words and the picture; it becomes “Oh no — sorry I couldn't find them.”
+// - c4-6: the fitting reaction is "Take your time. Your cake can wait."
+// No clue changed, so the pictures still match. The say/act helpers in rounds.ts are not exported, so this file keeps local copies.
 import type { Option, Session } from "@/games/cafe/rounds";
 
 const say = (text: string, fits: boolean, reaction: string): Option => ({ kind: "say", text, fits, reaction });
@@ -48,12 +47,12 @@ export const CAFE_4 = {
       ],
       options: [
         say("“No problem — don't worry!”", false, "(He waits, holding his plate.) …Could you move your bags, please?"),
-        act("Get up and offer him your seat.", false, "Oh — no, stay there! I just need to get past to the window table."),
+        act("Take his plate so he has a free hand.", false, "Oh — thanks, but I'm fine. I just need to get past your bags."),
         act("Say “Oh, sorry!” and move your bags.", true, "Thanks! (He squeezes past to the window table.)"),
       ],
       ask: { question: "Do you want to get past?", answer: "Yes, please — I'm going to the window table." },
-      use: "a request to get past, not an apology",
-      note: "The same word as before, but nobody has done anything wrong. With his hands full and your bags in the way, 'Sorry!' asks you to make room, as 'Excuse me' can. Wittgenstein: “Five slabs” can be a report or an order — what makes the difference is the part it plays in the language-game (PI §21).",
+      use: "a request to get past",
+      note: "The same word as before, but Tom hasn't knocked anything over. With his hands full and your bags in the way, 'Sorry!' asks you to make room, as 'Excuse me' can. Wittgenstein: “Five slabs” can be a report or an order — what makes the difference is the part it plays in the language-game (PI §21).",
     },
     {
       id: "c4-3",
@@ -84,7 +83,7 @@ export const CAFE_4 = {
       options: [
         say("“My pleasure!” (and keep pouring)", false, "(The coffee runs over into the saucer.) Oh — I meant that's enough!"),
         act("Stop pouring.", true, "Perfect, thanks. Just how I like it."),
-        act("Hand her the jug.", false, "Oh — I don't need the jug. I meant that's enough milk!"),
+        act("Hand her the jug.", false, "Oh — I wasn't reaching for the jug. I meant that's enough milk!"),
       ],
       ask: { question: "Is that enough?", answer: "Yes — that's perfect, thanks." },
       use: "a polite way to say 'stop — that's enough'",
@@ -101,7 +100,7 @@ export const CAFE_4 = {
       ],
       options: [
         say("“Don't worry — I'm sure they'll turn up.”", false, "They already have — look! They were in my pocket."),
-        act("Keep looking through the box.", false, "No need — look, I've found them! (He waves the keys at you.)"),
+        say("“Oh no — sorry I couldn't find them.”", false, "Don't be sorry — I've found them! (He waves the keys at you.)"),
         act("Smile and put the box away.", true, "Sorry for the trouble — and thanks anyway!"),
       ],
       ask: { question: "Have you found them?", answer: "Yes — they were in my pocket all along. Sorry!" },
@@ -118,7 +117,7 @@ export const CAFE_4 = {
         "Rosa is pointing at your phone.",
       ],
       options: [
-        act("Answer it: “Sorry — I'll be quick.”", true, "Take your time. I'll keep an eye on your cake."),
+        act("Answer it: “Sorry — I'll be quick.”", true, "Take your time. Your cake can wait."),
         act("Start eating your cake.", false, "(The phone keeps ringing.) Your phone, dear! It might be important."),
         say("“So, as I was saying…”", false, "(The phone keeps ringing.) Answer it — I don't mind!"),
       ],

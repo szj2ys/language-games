@@ -348,12 +348,12 @@ export const SESSIONS: Session[] = [
         ],
         options: [
           say("“No problem — don't worry!”", false, "(He waits, holding his plate.) …Could you move your bags, please?"),
-          act("Get up and offer him your seat.", false, "Oh — no, stay there! I just need to get past to the window table."),
+          act("Take his plate so he has a free hand.", false, "Oh — thanks, but I'm fine. I just need to get past your bags."),
           act("Say “Oh, sorry!” and move your bags.", true, "Thanks! (He squeezes past to the window table.)"),
         ],
         ask: { question: "Do you want to get past?", answer: "Yes, please — I'm going to the window table." },
-        use: "a request to get past, not an apology",
-        note: "The same word as before, but nobody has done anything wrong. With his hands full and your bags in the way, 'Sorry!' asks you to make room, as 'Excuse me' can. Wittgenstein: “Five slabs” can be a report or an order — what makes the difference is the part it plays in the language-game (PI §21).",
+        use: "a request to get past",
+        note: "The same word as before, but Tom hasn't knocked anything over. With his hands full and your bags in the way, 'Sorry!' asks you to make room, as 'Excuse me' can. Wittgenstein: “Five slabs” can be a report or an order — what makes the difference is the part it plays in the language-game (PI §21).",
       },
       {
         id: "c4-3",
@@ -367,7 +367,7 @@ export const SESSIONS: Session[] = [
         options: [
           act("Keep holding the door and say “No problem!”", true, "You're very kind. There — I'm in."),
           act("Let go of the door.", false, "(The door swings against her bags.) Oh! I wasn't quite through."),
-          say("“Bye! Have a nice day!”", false, "Bye? I've only just come in, dear!"),
+          act("Say “Have a nice day!” and walk off.", false, "(The door swings against her bags.) Oh! I wasn't quite through, dear."),
         ],
         use: "thanking someone for a favour that isn't finished yet",
         note: "Rosa thanks you while she is still in the doorway: thanks often comes before the favour is over, so keep holding the door. 'No problem' and 'You're welcome' are both good answers. Thanking is on Wittgenstein's own list of language-games, next to asking, cursing, greeting and praying (PI §23).",
@@ -384,7 +384,7 @@ export const SESSIONS: Session[] = [
         options: [
           say("“My pleasure!” (and keep pouring)", false, "(The coffee runs over into the saucer.) Oh — I meant that's enough!"),
           act("Stop pouring.", true, "Perfect, thanks. Just how I like it."),
-          act("Hand her the jug.", false, "Oh — I don't need the jug. I meant that's enough milk!"),
+          act("Hand her the jug.", false, "Oh — I wasn't reaching for the jug. I meant that's enough milk!"),
         ],
         ask: { question: "Is that enough?", answer: "Yes — that's perfect, thanks." },
         use: "a polite way to say 'stop — that's enough'",
@@ -401,7 +401,7 @@ export const SESSIONS: Session[] = [
         ],
         options: [
           say("“Don't worry — I'm sure they'll turn up.”", false, "They already have — look! They were in my pocket."),
-          act("Keep looking through the box.", false, "No need — look, I've found them! (He waves the keys at you.)"),
+          say("“Oh no — sorry I couldn't find them.”", false, "Don't be sorry — I've found them! (He waves the keys at you.)"),
           act("Smile and put the box away.", true, "Sorry for the trouble — and thanks anyway!"),
         ],
         ask: { question: "Have you found them?", answer: "Yes — they were in my pocket all along. Sorry!" },
@@ -418,7 +418,7 @@ export const SESSIONS: Session[] = [
           "Rosa is pointing at your phone.",
         ],
         options: [
-          act("Answer it: “Sorry — I'll be quick.”", true, "Take your time. I'll keep an eye on your cake."),
+          act("Answer it: “Sorry — I'll be quick.”", true, "Take your time. Your cake can wait."),
           act("Start eating your cake.", false, "(The phone keeps ringing.) Your phone, dear! It might be important."),
           say("“So, as I was saying…”", false, "(The phone keeps ringing.) Answer it — I don't mind!"),
         ],

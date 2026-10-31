@@ -23,6 +23,8 @@ step = 0
 def shot(page: Page, name: str) -> None:
     global step
     step += 1
+    # Pictures fetched after a click (end cards, next rounds) must be in the evidence, not still loading.
+    page.wait_for_function("[...document.images].every((i) => i.complete)", timeout=10000)
     page.screenshot(path=str(SHOTS / f"{step:03d}-{name}.png"))
 
 

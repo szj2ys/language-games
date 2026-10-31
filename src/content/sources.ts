@@ -93,7 +93,7 @@ export const SOURCES = {
     quote:
       "Our language can be seen as an ancient city: a maze of little streets and squares, of old and new houses, and of houses with additions from various periods; and this surrounded by a multitude of new boroughs with straight regular streets and uniform houses.",
     gloss:
-      "Chemical formulas and music notation are like the new suburbs of a city: built for one job, joined to the old town. Is the town ever complete?",
+      "Wittgenstein compares the symbolism of chemistry and the notation of the calculus to new suburbs of an old city. The game extends the comparison to music notation and road signs: each built for one job, joined to the old town. Is the town ever complete?",
     limits:
       "Wittgenstein asks whether a language of orders alone is 'incomplete'; he does not settle what counts as a language by definition.",
     url: PI_URL,
