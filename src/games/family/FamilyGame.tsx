@@ -298,8 +298,12 @@ function ClaimPlay({ round, session, onDone, onNext }: { round: ClaimRound; sess
 // Thread: one chain through every card, each link a shared feature. ----------------
 
 function ThreadPlay({ round, session, onDone, onNext }: { round: ThreadRound; session: Session; onDone: Done; onNext: () => void }) {
-  const [chain, setChain] = useDraft<{ card: Card; link?: string }[]>(round.id, "chain", []);
-  const [pending, setPending] = useDraft<Card | null>(round.id, "pending", null);
+  // Saved cards are read back through the current card data: a card corrected since it was saved must not keep its old features.
+  const current = (c: Card) => session.cards.find((x) => x.id === c.id) ?? c;
+  const [savedChain, setChain] = useDraft<{ card: Card; link?: string }[]>(round.id, "chain", []);
+  const [savedPending, setPending] = useDraft<Card | null>(round.id, "pending", null);
+  const chain = savedChain.map((s) => ({ ...s, card: current(s.card) }));
+  const pending = savedPending && current(savedPending);
   const [bad, setBad] = useDraft<string | null>(round.id, "bad", null);
   const [misses, setMisses] = useDraft(round.id, "misses", 0);
   const [hint, setHint] = useDraft(round.id, "hint", false);

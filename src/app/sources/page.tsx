@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 /** The English editions quoted, so every quotation can be checked in print; section numbers are the same in every edition. */
 const TRANSLATION: Record<Work, string> = {
-  PI: "Quoted from the English translation by G. E. M. Anscombe (Blackwell, 2nd ed. 1958), Part I; short quotations for teaching. Later editions (Hacker & Schulte, 2009) revise some wording.",
+  PI: "Quoted from the English translation by G. E. M. Anscombe (Blackwell, 2nd ed. 1958), Parts I and II; short quotations for teaching. Later editions (Hacker & Schulte, 2009) revise some wording.",
   TLP: "Quoted from the English translation by C. K. Ogden (Kegan Paul, 1922), public domain; the link opens the full text.",
   OC: "Quoted from the English translation by Denis Paul and G. E. M. Anscombe (Blackwell, 1969); short quotations for teaching.",
 };
@@ -20,7 +20,8 @@ export default function SourcesPage() {
   const all = Object.values(SOURCES) as Source[];
   // In the order he wrote them: Tractatus (1921), Investigations (1953), On Certainty (1969); remarks in number order.
   const works: Work[] = ["TLP", "PI", "OC"];
-  const order = (ref: string) => parseFloat(ref.replace(/[^0-9.]/g, "")) || 9999;
+  // Sort by the first section number; Part II comes after all of Part I.
+  const order = (ref: string) => (ref.startsWith("Part II") ? 100000 : 0) + (parseFloat(ref.match(/\d+(\.\d+)?/)?.[0] ?? "") || 9999);
   return (
     <>
       <SiteHeader />

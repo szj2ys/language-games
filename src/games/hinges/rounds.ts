@@ -12,7 +12,8 @@ export const SESSIONS: ChoiceSession[] = [
     rounds: [
       {
         kind: "checks",
-        id: "h1-0",
+        // A new id: completions and drafts of the earlier circular-check version must not count for this one.
+        id: "h1-checks",
         art: "/art/v2/doubt.webp",
         situation:
           "Check a claim. Each check takes some things for granted while it runs. Check one of those too, and see what that check takes for granted. Then try doubting everything at once.",
