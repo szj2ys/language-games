@@ -17,7 +17,8 @@ STATIC_EXPORT=1 NEXT_PUBLIC_SITE_URL="$SITE_URL" npx next build
 # A static export ignores headers() in next.config.ts: write the same security headers for Pages.
 node --experimental-strip-types --no-warnings -e '
 import("./next.config.ts").then(({ SECURITY_HEADERS }) => {
-  const lines = ["/*", ...SECURITY_HEADERS.map((h) => `  ${h.key}: ${h.value}`), "", "/_next/static/*", "  Cache-Control: public, max-age=31536000, immutable", ""];
+  const lines = ["/*", ...SECURITY_HEADERS.map((h) => `  ${h.key}: ${h.value}`), "",
+    "/", "  Link: </llms.txt>; rel=\"describedby\"; type=\"text/plain\"", "", "/_next/static/*", "  Cache-Control: public, max-age=31536000, immutable", ""];
   require("node:fs").writeFileSync("out/_headers", lines.join("\n"));
 });'
 
