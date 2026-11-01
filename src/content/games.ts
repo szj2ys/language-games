@@ -92,8 +92,8 @@ const CONTENT: Record<GameSlug, Omit<GameInfo, "slug" | "step" | "title" | "work
     source: "pi-293",
     rounds: ids(BEETLE),
     howTo: [
-      "Read the situation and answer the question about it.",
-      "A wrong answer gets a reply explaining why; try again.",
+      "Each session starts with something to do: decide what is in your box and change it, or keep a diary of a sensation and then test it against a gauge.",
+      "Then answer questions about what you saw. A wrong answer gets a reply explaining why; try again.",
       "Each round ends with the point it shows, and each session with the passage it comes from.",
     ],
   },
@@ -103,8 +103,8 @@ const CONTENT: Record<GameSlug, Omit<GameInfo, "slug" | "step" | "title" | "work
     source: "oc-341",
     rounds: ids(HINGES),
     howTo: [
-      "Read the situation and answer the question about it.",
-      "A wrong answer gets a reply explaining why; try again.",
+      "Each session starts with something to do: check a claim and then what the check takes for granted, or sort claims into the water and the river-bed for two different years.",
+      "Then answer questions about what you saw. A wrong answer gets a reply explaining why; try again.",
       "Each round ends with the point it shows, and each session with the passage it comes from.",
     ],
   },

@@ -39,12 +39,17 @@ export type DiaryRound = RoundBase & {
   test: { shape: number; gauge: boolean }[];
 };
 
-/** A claim, the ways to check it, and what each check relies on; the hinges are the checks that rely on themselves. */
+/**
+ * A claim, the ways to check it, and what each check takes for granted while it runs. Nothing is a hinge
+ * by itself: what stands fast depends on the check, and doubting everything at once leaves no check (OC §§115, 341–343).
+ */
 export type ChecksRound = RoundBase & {
   kind: "checks";
   situation: string;
   start: string;
   claims: Record<string, { text: string; checks: { how: string; reliesOn: string[] }[] }>;
+  /** The last step: what to say before the player doubts everything at once. */
+  doubtAll: string;
 };
 
 /** Sort claims into the water (open to checking) and the river-bed (standing fast), then see the bed shift (OC §§96–97). */
@@ -72,11 +77,4 @@ export type ChoiceSession = {
 /** What a round showed, for the end card and the notebook. */
 export function did(r: AnyRound): string {
   return r.point;
-}
-
-/** The claims in a checks round whose every check relies on the claim itself: the hinges (OC §125). */
-export function hingesOf(r: ChecksRound): string[] {
-  return Object.entries(r.claims)
-    .filter(([id, c]) => c.checks.length > 0 && c.checks.every((k) => k.reliesOn.includes(id)))
-    .map(([id]) => id);
 }

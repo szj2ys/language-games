@@ -15,42 +15,46 @@ export const SESSIONS: ChoiceSession[] = [
         id: "h1-0",
         art: "/art/v2/doubt.webp",
         situation:
-          "Check a claim, then check what the check relies on, and so on. Keep going until you reach something that could only be checked by relying on itself.",
+          "Check a claim. Each check takes some things for granted while it runs. Check one of those too, and see what that check takes for granted. Then try doubting everything at once.",
         start: "bakery",
         claims: {
           bakery: {
             text: "The bakery opens at eight on Saturdays.",
             checks: [
-              { how: "Read the sign on the bakery door.", reliesOn: ["sign", "eyes"] },
-              { how: "Phone the bakery and ask.", reliesOn: ["words"] },
+              { how: "Read the sign on the bakery door.", reliesOn: ["sign", "eyes", "words"] },
+              { how: "Phone the bakery and ask.", reliesOn: ["phone", "words"] },
               { how: "Ask a neighbour who shops there.", reliesOn: ["neighbour", "words"] },
             ],
           },
           sign: {
             text: "The sign on the door is up to date.",
-            checks: [{ how: "Ask the baker whether the sign is current.", reliesOn: ["words"] }],
+            checks: [{ how: "Ask the baker whether the sign is current.", reliesOn: ["words", "others"] }],
           },
           neighbour: {
             text: "The neighbour remembers correctly.",
-            checks: [{ how: "Ask a second neighbour.", reliesOn: ["words"] }],
+            checks: [{ how: "Ask a second neighbour.", reliesOn: ["words", "others"] }],
+          },
+          phone: {
+            text: "The number I rang was the bakery's.",
+            checks: [{ how: "Compare it with the number on the bakery's receipt.", reliesOn: ["eyes", "words"] }],
           },
           eyes: {
             text: "My eyes are working.",
-            checks: [
-              { how: "Look at my two hands and see them.", reliesOn: ["eyes"] },
-              { how: "Read the small print on a packet.", reliesOn: ["eyes"] },
-            ],
+            checks: [{ how: "Read the letters on an optician's chart while she checks.", reliesOn: ["words", "others"] }],
           },
           words: {
             text: "Words like “eight” and “open” mean what I take them to mean.",
-            checks: [
-              { how: "Look them up in a dictionary.", reliesOn: ["words"] },
-              { how: "Ask someone what they mean.", reliesOn: ["words"] },
-            ],
+            checks: [{ how: "Ask other people what “eight” and “open” mean.", reliesOn: ["eyes", "others"] }],
+          },
+          others: {
+            text: "Other people are telling me what they think.",
+            checks: [{ how: "Watch whether what people tell you turns out to be true.", reliesOn: ["eyes", "words"] }],
           },
         },
-        point: "Some things are not checked; every check relies on them. They stand fast, like hinges (On Certainty §§125, 341).",
-        source: "oc-125",
+        doubtAll: "Now doubt them all at once: your eyes, what every word means, and everyone you might ask. Which check is left?",
+        point:
+          "Every check takes something for granted while it runs, and what stands fast depends on the check: the eye test takes the words for granted, asking about words takes your eyes for granted. Doubt everything at once, and no check can start (On Certainty §§115, 341–343).",
+        source: "oc-341",
       },
       {
         id: "h1-3",

@@ -530,15 +530,13 @@ def play_choice_games(page: Page) -> None:
 
     page.goto(f"{BASE}/play/hinges")
     expect(page.get_by_role("heading", level=1, name="7. Hinges of certainty")).to_be_visible()
-    # Checks: follow what each check relies on until a check relies on itself.
+    # Checks: each check takes something for granted; check one of those too, then doubt everything at once.
     page.get_by_role("button", name="Read the sign on the bakery door.").click()
     page.get_by_role("button", name=re.compile(r"^My eyes are working.*Check this$")).click()
-    page.get_by_role("button", name="Look at my two hands and see them.").click()
-    expect(page.get_by_text("Hinges found: 1 of 2.")).to_be_visible()
-    page.get_by_role("button", name=re.compile(r"^Back to")).click()
-    page.get_by_role("button", name="Phone the bakery and ask.").click()
-    page.get_by_role("button", name=re.compile(r"^Words like .*Check this$")).click()
-    page.get_by_role("button", name="Look them up in a dictionary.").click()
+    page.get_by_role("button", name="Read the letters on an optician's chart while she checks.").click()
+    expect(page.get_by_text("can be checked, but only with other things standing fast")).to_be_visible()
+    page.get_by_role("button", name="Doubt everything at once").click()
+    expect(page.get_by_text("no check can start")).to_be_visible()
     shot(page, "hinges-checks")
     next_round(page)
     answer_questions(page, "Doubt it")

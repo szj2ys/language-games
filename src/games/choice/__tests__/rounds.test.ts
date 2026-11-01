@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { SESSIONS as BEETLE } from "@/games/beetle/rounds";
 import { SESSIONS as HINGES } from "@/games/hinges/rounds";
 import { SOURCES } from "@/content/sources";
-import { hingesOf, type AnyRound } from "../types";
+import type { AnyRound } from "../types";
 
 const questions = (r: AnyRound) => ("options" in r ? r.options : []);
 
@@ -41,13 +41,17 @@ describe.each([
 
 describe("activities", () => {
   const all = [...BEETLE, ...HINGES].flatMap((s) => s.rounds);
-  it("every check leads somewhere that exists, and the checks round has hinges to find", () => {
+  it("every check takes something else for granted: no check relies on what it checks (OC §§341–343)", () => {
     for (const r of all) {
       if (r.kind !== "checks") continue;
-      for (const c of Object.values(r.claims))
-        for (const k of c.checks) for (const id of k.reliesOn) expect(r.claims[id], id).toBeDefined();
-      expect(hingesOf(r)).toEqual(["eyes", "words"]);
-      expect(hingesOf(r)).not.toContain(r.start);
+      for (const [id, c] of Object.entries(r.claims))
+        for (const k of c.checks) {
+          expect(k.reliesOn.length, k.how).toBeGreaterThan(0);
+          expect(k.reliesOn, k.how).not.toContain(id);
+          for (const dep of k.reliesOn) expect(r.claims[dep], dep).toBeDefined();
+        }
+      // The things the starting claim relies on can themselves be checked: nothing is a hinge in itself.
+      for (const k of r.claims[r.start].checks) for (const dep of k.reliesOn) expect(r.claims[dep].checks.length, dep).toBeGreaterThan(0);
     }
   });
   it("the river-bed shifts: some card changes between the years, and each card has a place in each year", () => {

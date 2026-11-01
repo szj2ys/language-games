@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SceneCanvas } from "@/components/game/chrome";
 import { useDraft } from "@/lib/use-draft";
 import { cn } from "@/lib/utils";
-import { hingesOf, type BoxesRound, type ChecksRound, type DiaryRound, type SortRound } from "./types";
+import { type BoxesRound, type ChecksRound, type DiaryRound, type SortRound } from "./types";
 
 type Done = (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
 
@@ -362,42 +362,30 @@ export function DiaryPlay({ round, onDone, onNext }: { round: DiaryRound; onDone
 }
 
 // ---------------------------------------------------------------------------------------------
-// Checking, and what checking relies on (On Certainty §§125, 341–343).
+// Checking, and what each check takes for granted (On Certainty §§115, 125, 341–343).
+
+/** “My eyes …” → “my eyes …”, leaving “I” and the rest alone. */
+const lowerFirst = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 
 export function ChecksPlay({ round, onDone, onNext }: { round: ChecksRound; onDone: Done; onNext: () => void }) {
-  const hinges = hingesOf(round);
   const [path, setPath] = useDraft<string[]>(round.id, "path", [round.start]);
   const [check, setCheck] = useDraft<number | null>(round.id, "check", null);
-  const [found, setFound] = useDraft<string[]>(round.id, "found", []);
-  const [done, setDone] = useDraft(round.id, "done", false);
+  // Every claim checked so far, and the claims each of those checks took for granted.
+  const [checked, setChecked] = useDraft<Record<string, string[]>>(round.id, "checked", {});
+  const [doubted, setDoubted] = useDraft(round.id, "doubted", false);
   const here = path[path.length - 1];
   const claim = round.claims[here];
   const chosen = check !== null ? claim.checks[check] : null;
-  const circular = chosen?.reliesOn.includes(here) ?? false;
-  const isHinge = hinges.includes(here);
+  // Ready for the last step once the starting claim and one thing it took for granted have both been checked.
+  const ready = !!checked[round.start] && Object.keys(checked).some((id) => id !== round.start);
 
   const choose = (i: number) => {
     setCheck(i);
-    if (claim.checks[i].reliesOn.includes(here) && isHinge && !found.includes(here)) {
-      const next = [...found, here];
-      setFound(next);
-      if (hinges.every((h) => next.includes(h))) {
-        setDone(true);
-        onDone(
-          2,
-          2,
-          true,
-          next.map((h) => `Stands fast: ${round.claims[h].text}`),
-        );
-      }
-    }
+    setChecked({ ...checked, [here]: claim.checks[i].reliesOn });
   };
 
   return (
-    <Layout art={round.art} situation={round.situation} point={done ? round.point : undefined} onNext={onNext}>
-      <p className="text-[15px] text-muted-foreground">
-        Find what your checks rely on. Hinges found: {found.length} of {hinges.length}.
-      </p>
+    <Layout art={round.art} situation={round.situation} point={doubted ? round.point : undefined} onNext={onNext}>
       {path.length > 1 && (
         <ol className="flex flex-wrap items-center gap-1 text-[14px] text-muted-foreground" aria-label="Where you came from">
           {path.slice(0, -1).map((p) => (
@@ -407,61 +395,59 @@ export function ChecksPlay({ round, onDone, onNext }: { round: ChecksRound; onDo
           ))}
         </ol>
       )}
-      <div className="rounded-lg border border-border bg-card p-3">
-        <p className="text-[14px] font-bold tracking-wide text-vermilion uppercase">To check</p>
-        <p className="font-heading text-[21px] leading-snug">{claim.text}</p>
-        <div className="mt-2 flex flex-col gap-2" role="group" aria-label="Ways to check it">
-          {claim.checks.map((k, i) => (
-            <button
-              key={k.how}
-              type="button"
-              aria-pressed={check === i}
-              onClick={() => choose(i)}
-              className={cn(
-                "min-h-12 rounded-lg border-2 px-3 py-2 text-left text-[16px]",
-                check === i ? "border-ink bg-ink text-paper" : "border-border bg-paper hover:border-ink/40",
-              )}
-            >
-              {k.how}
-            </button>
-          ))}
+      {!doubted && (
+        <div className="rounded-lg border border-border bg-card p-3">
+          <p className="text-[14px] font-bold tracking-wide text-vermilion uppercase">To check</p>
+          <p className="font-heading text-[21px] leading-snug">{claim.text}</p>
+          <div className="mt-2 flex flex-col gap-2" role="group" aria-label="Ways to check it">
+            {claim.checks.map((k, i) => (
+              <button
+                key={k.how}
+                type="button"
+                aria-pressed={check === i}
+                onClick={() => choose(i)}
+                className={cn(
+                  "min-h-12 rounded-lg border-2 px-3 py-2 text-left text-[16px]",
+                  check === i ? "border-ink bg-ink text-paper" : "border-border bg-paper hover:border-ink/40",
+                )}
+              >
+                {k.how}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-      {chosen && (
+      )}
+      {chosen && !doubted && (
         <div role="status" ref={(el) => el?.scrollIntoView({ block: "nearest" })} className="rounded-lg border border-border bg-card p-3">
-          {circular ? (
-            <p className="text-[16px] leading-relaxed">
-              <span className="font-bold text-vermilion">This check relies on the very thing it checks.</span> If you doubted it, why trust
-              the check? “What is to be tested by what?” (On Certainty §125). <span className="font-bold">It stands fast.</span>
+          <p className="text-[15px] font-bold">While you check this way, these stand fast:</p>
+          <ul className="mt-1 flex flex-col gap-1.5">
+            {chosen.reliesOn.map((id) => (
+              <li key={id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPath([...path, id]);
+                    setCheck(null);
+                  }}
+                  className="flex min-h-11 w-full items-center justify-between gap-2 rounded-lg bg-paper px-3 py-2 text-left text-[16px] hover:bg-paper-deep"
+                >
+                  <span>
+                    {round.claims[id].text}
+                    {checked[id] && <span className="ml-2 text-[13px] font-bold text-sage">checked</span>}
+                  </span>
+                  <span className="shrink-0 text-[14px] font-bold underline underline-offset-4">Check this</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          {here !== round.start && (
+            <p className="mt-2 text-[15px] text-muted-foreground">
+              So “{claim.text.replace(/\.$/, "")}” can be checked, but only with other things standing fast in the meantime.
             </p>
-          ) : (
-            <>
-              <p className="text-[15px] font-bold">This check relies on:</p>
-              <ul className="mt-1 flex flex-col gap-1.5">
-                {chosen.reliesOn.map((id) => (
-                  <li key={id}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPath([...path, id]);
-                        setCheck(null);
-                      }}
-                      className="flex min-h-11 w-full items-center justify-between gap-2 rounded-lg bg-paper px-3 py-2 text-left text-[16px] hover:bg-paper-deep"
-                    >
-                      <span>
-                        {round.claims[id].text}
-                        {found.includes(id) && <span className="ml-2 text-[13px] font-bold text-sage">stands fast</span>}
-                      </span>
-                      <span className="shrink-0 text-[14px] font-bold underline underline-offset-4">Check this</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </>
           )}
         </div>
       )}
-      {path.length > 1 && (
+      {path.length > 1 && !doubted && (
         <Button
           variant="outline"
           size="lg"
@@ -473,6 +459,40 @@ export function ChecksPlay({ round, onDone, onNext }: { round: ChecksRound; onDo
         >
           <Undo2 className="size-5" aria-hidden /> Back to “{round.claims[path[path.length - 2]].text}”
         </Button>
+      )}
+      {ready && !doubted && (
+        <>
+          <p className="font-heading text-[19px] leading-snug">{round.doubtAll}</p>
+          <Button
+            size="lg"
+            className="h-12 text-lg"
+            onClick={() => {
+              setDoubted(true);
+              onDone(
+                2,
+                2,
+                true,
+                Object.keys(checked).map((id) => `Checked: ${round.claims[id].text}`),
+              );
+            }}
+          >
+            Doubt everything at once
+          </Button>
+        </>
+      )}
+      {doubted && (
+        <ul className="flex flex-col gap-1.5" aria-label="Every check, with everything doubted">
+          {Object.values(round.claims).flatMap((c) =>
+            c.checks.map((k) => (
+              <li key={k.how} className="rounded-lg border border-vermilion/30 bg-card px-3 py-2 text-[15px]">
+                <span className="text-muted-foreground line-through decoration-vermilion/60">{k.how}</span>
+                <span className="block text-[14px] text-vermilion">
+                  Needs what you now doubt: {k.reliesOn.map((id) => lowerFirst(round.claims[id].text.replace(/\.$/, ""))).join("; ")}
+                </span>
+              </li>
+            )),
+          )}
+        </ul>
       )}
     </Layout>
   );

@@ -85,7 +85,7 @@ const lang = (id: string, name: string, on: string[], blurred: string[] = []) =>
 // boroughs" — the symbolism of chemistry, the notation of the calculus. Are these all languages?
 const LANGUAGES: Card[] = [
   lang("english", "English", ["spoken", "written", "orders", "stories"]),
-  lang("signlanguage", "sign language", ["orders", "stories", "hands"]),
+  lang("signlanguage", "sign language", ["orders", "stories", "hands", "written"]),
   lang("roadsigns", "road signs", ["orders", "special"]),
   lang("chemistry", "chemical formulas", ["written", "special"]),
   lang("music", "music notation", ["written", "special"], ["stories"]),
