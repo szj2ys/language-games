@@ -22,6 +22,14 @@ import("./next.config.ts").then(({ SECURITY_HEADERS }) => {
   require("node:fs").writeFileSync("out/_headers", lines.join("\n"));
 });'
 
+# Next writes per-route prefetch data nested (sources/__next.sources/__PAGE__.txt) but the browser asks
+# for it flat (sources/__next.sources.__PAGE__.txt): copy each file to the flat name, or every prefetch 404s.
+find out -type d -name "__next.*" -prune | while read -r dir; do
+  (cd "$dir" && find . -type f) | while read -r f; do
+    cp "$dir/$f" "$dir.$(echo "${f#./}" | tr / .)"
+  done
+done
+
 # Which commit is live: the launch gate compares this with HEAD.
 git rev-parse HEAD > out/version.txt
 

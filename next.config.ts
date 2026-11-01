@@ -25,7 +25,7 @@ const SECURITY_HEADERS = [
 ];
 
 // STATIC_EXPORT=1 builds plain files for Cloudflare Pages (out/): no image optimizer and no headers() there;
-// the same security headers are written to out/_headers by scripts/export-headers.mjs.
+// the same security headers are written to out/_headers by scripts/deploy-pages.sh.
 const STATIC = process.env.STATIC_EXPORT === "1";
 
 export { SECURITY_HEADERS };
