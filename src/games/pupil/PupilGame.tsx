@@ -15,11 +15,11 @@ import { SESSIONS, did } from "./levels";
 
 const GAME = "pupil";
 
-const SESSION_SOURCES: SourceId[][] = [
-  ["pi-185", "pi-198", "pi-202"],
-  ["pi-217", "pi-202"],
-  ["pi-198", "pi-202"],
-];
+/** The passages for each session's end card, by session id so a reordered syllabus cannot shift them. */
+const SESSION_SOURCES: Record<string, SourceId[]> = {
+  "rules-1": ["pi-185", "pi-217", "pi-202"],
+  "rules-2": ["pi-198", "pi-202"],
+};
 
 export function PupilGame() {
   const g = useSessions(GAME, SESSIONS, did);
@@ -31,12 +31,12 @@ export function PupilGame() {
         <SessionEnd
           nextGame={nextGame("pupil")}
           items={g.sessionItems()}
-          art="/art/covers/pupil.webp"
+          art="/art/v2/pupil-cover.webp"
           title={session.title}
           shows={session.shows}
           firstTry={session.rounds.filter((r) => g.save.rounds[r.id]?.firstTry).length}
           total={session.rounds.length}
-          sources={SESSION_SOURCES[g.sessionIndex]}
+          sources={SESSION_SOURCES[session.id]}
           nextTitle={SESSIONS[g.sessionIndex + 1]?.title}
           onNext={g.nextSession}
           onReplay={g.replay}

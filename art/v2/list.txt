@@ -18,3 +18,5 @@ moon|wide|A child and an adult sitting on a hill at night looking up at a large 
 doubt|wide|A person sitting in an armchair surrounded by floating question marks, so many that the chair itself has a question mark on it; gently humorous.
 cover-hinges|wide|A riverside scene: a wooden door with iron hinges standing on its own on the river bank, the river flowing past it; calm and quiet.
 hero|wide|A man in a 1930s tweed suit sitting alone on a large rock beside a calm Norwegian fjord, chin on his hand, thinking; mountains and a small wooden hut far away; generous empty paper on the left half.
+hero-portrait|portrait|A thoughtful man in a 1930s tweed suit sitting on a rock above a calm Norwegian fjord, chin on his hand, seen from the side; the whole figure and rock cut out of paper with a torn, deckled white paper edge around the silhouette, floating on plain paper.
+pupil-cover|wide|A teacher points at a blackboard on which the series 2, 4, 6 … 998, 1000, 1002 is written in chalk; a child at a desk looks up, puzzled; beside the blackboard stands a small wooden signpost with one arrow.

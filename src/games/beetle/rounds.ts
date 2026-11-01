@@ -142,7 +142,13 @@ export const SESSIONS: ChoiceSession[] = [
           { shape: 4, gauge: false },
           { shape: 5, gauge: true },
         ],
-        point: "With no check, whatever seems right is right, so there is no right; tied to the gauge, “S” has a use (§§258, 270).",
+        test: [
+          { shape: 6, gauge: false },
+          { shape: 7, gauge: true },
+          { shape: 8, gauge: true },
+        ],
+        point:
+          "With no check, whatever seems right is right, so there is no right. With the gauge, “S” can be wrong, and so it can be right; if it predicts the gauge, it has a use (§§258, 270).",
         source: "pi-258",
       },
       {

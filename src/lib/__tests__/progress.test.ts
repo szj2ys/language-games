@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { emptySave, mergeSaves, parseSave, recordRound, resetSave, SAVE_VERSION } from "../progress";
+import { emptySave, mergeSaves, parseSave, recordRound, resetSave, resolvePosition, SAVE_VERSION } from "../progress";
+import oldSave from "./old-save.fixture.json";
+import { SESSIONS as PUPIL } from "@/games/pupil/levels";
+import { SESSIONS as BEETLE } from "@/games/beetle/rounds";
+import { SESSIONS as BUILDER } from "@/games/builder/rounds";
 
 describe("progress", () => {
   it("treats missing storage as a fresh save", () => {
@@ -51,5 +55,20 @@ describe("reset across tabs", () => {
     // Progress made after the reset is kept.
     const after = recordRound(reset, "r2", { marks: 1, max: 3, firstTry: false });
     expect(Object.keys(mergeSaves(after, played).rounds)).toEqual(["r2"]);
+  });
+});
+
+describe("resuming after the content changed", () => {
+  // A real save from before the rule-following and beetle sessions were rewritten (Codex review r2, R2-3).
+  const old = oldSave as { positions: Record<string, { session: number; round: number }>; rounds: Record<string, unknown> };
+  it("does not open an end card for rounds that were never played", () => {
+    expect(resolvePosition(PUPIL, old.rounds, old.positions.pupil)).toEqual({ session: 0, round: 0, finished: false });
+    expect(resolvePosition(BEETLE, old.rounds, old.positions.beetle)).toEqual({ session: 0, round: 0, finished: false });
+  });
+  it("keeps the place in a game whose content did not change", () => {
+    expect(resolvePosition(BUILDER, old.rounds, old.positions.builder).finished).toBe(true);
+  });
+  it("starts at the beginning with no save", () => {
+    expect(resolvePosition(BUILDER, {}, undefined)).toEqual({ session: 0, round: 0, finished: false });
   });
 });

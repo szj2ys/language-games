@@ -35,6 +35,8 @@ export type DiaryRound = RoundBase & {
   situation: string;
   /** Each day's sensation, drawn as a shape, and whether the blood-pressure gauge rose that day. */
   days: { shape: number; gauge: boolean }[];
+  /** New days after the gauge is fitted, gauge hidden: does "S" predict it? */
+  test: { shape: number; gauge: boolean }[];
 };
 
 /** A claim, the ways to check it, and what each check relies on; the hinges are the checks that rely on themselves. */

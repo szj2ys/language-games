@@ -1,0 +1,356 @@
+{
+  "positions": {
+    "builder": { "session": 3, "round": 6 },
+    "scene": { "session": 3, "round": 6 },
+    "cafe": { "session": 3, "round": 6 },
+    "pupil": { "session": 2, "round": 2 },
+    "family": { "session": 3, "round": 4 },
+    "beetle": { "session": 1, "round": 5 },
+    "hinges": { "session": 1, "round": 5 }
+  },
+  "rounds": {
+    "b1-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Slab!"] },
+    "b1-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Pillar!"] },
+    "b1-3": { "marks": 3, "max": 3, "firstTry": true, "said": ["Beam!"] },
+    "b1-4": { "marks": 3, "max": 3, "firstTry": true, "said": ["Block!"] },
+    "b1-5": { "marks": 3, "max": 3, "firstTry": true, "said": ["Slab!"] },
+    "b1-6": { "marks": 3, "max": 3, "firstTry": true, "said": ["Beam!"] },
+    "b2-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Two slabs!"] },
+    "b2-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Pillar \u2014 there!"] },
+    "b2-3": { "marks": 3, "max": 3, "firstTry": true, "said": ["Three blocks!"] },
+    "b2-4": { "marks": 3, "max": 3, "firstTry": true, "said": ["Two beams \u2014 there!"] },
+    "b2-5": { "marks": 3, "max": 3, "firstTry": true, "said": ["Three slabs \u2014 there!"] },
+    "b2-6": { "marks": 3, "max": 3, "firstTry": true, "said": ["Two pillars \u2014 there!"] },
+    "b3-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Pillar!"] },
+    "b3-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Two pillar there!"] },
+    "b3-3": { "marks": 3, "max": 3, "firstTry": true, "said": ["One beam there!"] },
+    "b3-4": { "marks": 3, "max": 3, "firstTry": true, "said": ["Three slabs there!"] },
+    "b3-5": { "marks": 3, "max": 3, "firstTry": true, "said": ["This!"] },
+    "b3-6": { "marks": 3, "max": 3, "firstTry": true, "said": ["Arch there!"] },
+    "s1-1": { "marks": 1, "max": 1, "firstTry": true, "said": ["The key is in the box."] },
+    "s1-2": { "marks": 1, "max": 1, "firstTry": true, "said": ["The cup is on the book."] },
+    "s1-3": { "marks": 1, "max": 1, "firstTry": true, "said": ["The lamp is to the left of the cup."] },
+    "s1-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["The ball is to the right of the box.", "The key is in the box."] },
+    "s1-5": {
+      "marks": 2,
+      "max": 2,
+      "firstTry": false,
+      "said": ["The book is next to the lamp.", "The ball is on the book."],
+      "missed": "The book is to the right of the lamp."
+    },
+    "s1-6": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": ["The cup is to the left of the box.", "The key is in the box.", "The lamp is to the right of the box."]
+    },
+    "c1-1": { "marks": 1, "max": 2, "firstTry": false, "said": ["It's a bit cold in here."], "missed": "\u201cYes, it's November.\u201d" },
+    "c1-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["It's a bit cold in here."] },
+    "c1-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["Can you pass the sugar?"] },
+    "c1-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["So \u2014 can you pass the test, do you think?"] },
+    "c1-5": { "marks": 2, "max": 2, "firstTry": true, "said": ["Do you know what time it is?"] },
+    "c1-6": { "marks": 2, "max": 2, "firstTry": true, "said": ["Do you know what time it is?"] },
+    "p-1": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": ["Showed: a cat", "Showed: an egg", "Showed: a unicorn", "Your call on \u201chistoric\u201d: both are in use"]
+    },
+    "p-2": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": ["Showed: cats", "Showed: buses", "Showed: babies", "Showed: keys", "Your call on \u201cchild\u201d: correct it"]
+    },
+    "p-3": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": ["Showed: walked", "Showed: hoped", "Showed: planned", "Showed: opened", "Your call on \u201ctravel\u201d: both are in use"]
+    },
+    "p-4": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": [
+        "Showed: smaller",
+        "Showed: hotter",
+        "Showed: more famous",
+        "Showed: easier",
+        "Your call on \u201cclever\u201d: both are in use"
+      ]
+    },
+    "f1-1": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": ["Most of these games have a winner."],
+      "missed": "All of these games have a winner."
+    },
+    "f1-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Most of these games need skill."] },
+    "f1-3": { "marks": 3, "max": 3, "firstTry": true, "said": ["Some of these games are played with a ball."] },
+    "f1-4": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": [
+        "Both chess and poker need skill.",
+        "Both poker and patience (solitaire) are played with cards.",
+        "Both patience (solitaire) and throwing a ball at a wall can be played alone.",
+        "Both throwing a ball at a wall and football are played with a ball.",
+        "Both football and ring-a-ring-a-roses (a circle game) are played in a group."
+      ]
+    },
+    "f1-5": { "marks": 3, "max": 3, "firstTry": true, "said": ["Both a crossword and patience (solitaire) can be played alone."] },
+    "f1-6": { "marks": 3, "max": 3, "firstTry": true, "said": ["Unlike most of these games, the lottery doesn't need skill."] },
+    "b4-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Three slabs!"] },
+    "b4-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Three slabs."] },
+    "b4-3": { "marks": 3, "max": 3, "firstTry": true, "said": ["Slab?"] },
+    "b4-4": { "marks": 3, "max": 3, "firstTry": true, "said": ["Slab!"] },
+    "b4-5": { "marks": 3, "max": 3, "firstTry": true, "said": ["That slab!"] },
+    "b4-6": { "marks": 3, "max": 3, "firstTry": true, "said": ["Two beams."] },
+    "c2-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["Could I have one of those?"] },
+    "c2-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["I'll have the usual."] },
+    "c2-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["Is this seat free?"] },
+    "c2-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["Could you bring me the other one?"] },
+    "c2-5": { "marks": 2, "max": 2, "firstTry": true, "said": ["That's very kind, but I couldn't possibly."] },
+    "c2-6": { "marks": 2, "max": 2, "firstTry": true, "said": ["That's very kind, but I couldn't possibly."] },
+    "c3-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["Would you like to wipe the tables before you go?"] },
+    "c3-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["Would you like to try my lemon cake?"] },
+    "c3-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["I'm fine, thanks."] },
+    "c3-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["I'm fine, thanks."] },
+    "c3-5": { "marks": 2, "max": 2, "firstTry": true, "said": ["Excuse me."] },
+    "c3-6": { "marks": 2, "max": 2, "firstTry": true, "said": ["Excuse me?"] },
+    "c4-1": { "marks": 1, "max": 2, "firstTry": false, "said": ["Sorry!"], "missed": "\u201cYou're welcome!\u201d" },
+    "c4-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["Sorry!"] },
+    "c4-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["Thank you!"] },
+    "c4-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["Thank you!"] },
+    "c4-5": { "marks": 2, "max": 2, "firstTry": true, "said": ["Never mind!"] },
+    "c4-6": { "marks": 2, "max": 2, "firstTry": true, "said": ["Go ahead."] },
+    "f2-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Most of these tools change the thing they work on."] },
+    "f2-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Most of these tools have a handle."] },
+    "f2-3": { "marks": 3, "max": 3, "firstTry": true, "said": ["Some of these tools are used to cut things."] },
+    "f2-4": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": [
+        "Both the ruler and the hammer are partly made of wood.",
+        "Both the hammer and the glue-pot are used to join things.",
+        "Both the glue-pot and the screwdriver are used to join things.",
+        "Both the screwdriver and the pliers are made of metal.",
+        "Both the pliers and the saw are used to cut things."
+      ]
+    },
+    "f2-5": { "marks": 3, "max": 3, "firstTry": true, "said": ["Both nails and the hammer are used to join things."] },
+    "f3-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Some of these languages can be spoken aloud."] },
+    "f3-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Most of these languages can give orders."] },
+    "f3-3": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": [
+        "Both English and sign language can give orders.",
+        "Both sign language and Morse code are used with the hands.",
+        "Both Morse code and road signs can give orders.",
+        "Both road signs and chemical formulas are used for one special job.",
+        "Both chemical formulas and music notation can be written down."
+      ]
+    },
+    "f3-4": { "marks": 3, "max": 3, "firstTry": true, "said": ["Both the builders' language and English can be spoken aloud."] },
+    "f4-1": { "marks": 3, "max": 3, "firstTry": true, "said": ["Most of these numbers can be added to make a total."] },
+    "f4-2": { "marks": 3, "max": 3, "firstTry": true, "said": ["Some of these numbers can say how many."] },
+    "f4-3": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": [
+        "Both whole numbers and fractions can measure an amount.",
+        "Both fractions and negative numbers can measure an amount.",
+        "Both negative numbers and \u03c0 (pi) can measure an amount.",
+        "Both \u03c0 (pi) and zero can be added to make a total.",
+        "Both zero and bus numbers can be written out in digits."
+      ]
+    },
+    "f4-4": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": ["Both the number on a football shirt and bus numbers can name one thing among many."]
+    },
+    "s2-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["The key is in the box.", "The cup is to the right of the box."] },
+    "s2-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["The lamp is behind the cup.", "The ball is to the right of the cup."] },
+    "s2-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["The ball is on the book.", "The book is to the left of the box."] },
+    "s2-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["The key is in front of the cup.", "The lamp is not next to the key."] },
+    "s2-5": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": ["The cup is in the box.", "The key is on the book.", "The book is next to the box."]
+    },
+    "s2-6": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": ["The ball is in front of the lamp.", "The cup is to the left of the ball.", "The lamp is not on the cup."]
+    },
+    "s3-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["The key is in the box."] },
+    "s3-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["The cup is on the book."] },
+    "s3-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["The lamp is behind the cup."] },
+    "s3-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["The ball is next to the box."] },
+    "s3-5": { "marks": 2, "max": 2, "firstTry": true, "said": ["The key is in front of the cup."] },
+    "s3-6": { "marks": 2, "max": 2, "firstTry": true, "said": ["The ball is in the box."] },
+    "s4-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["The key is not in the box.", "The key is on the book."] },
+    "s4-2": { "marks": 1, "max": 1, "firstTry": true, "said": ["The ball is not next to the box."] },
+    "s4-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["The lamp is to the left of the cup.", "The lamp is not next to the cup."] },
+    "s4-4": {
+      "marks": 2,
+      "max": 2,
+      "firstTry": true,
+      "said": ["The cup is not to the left of the box.", "The cup is not to the right of the box."]
+    },
+    "s4-5": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": ["The key is in the box.", "The box is not next to the book.", "The ball is on the book."]
+    },
+    "s4-6": {
+      "marks": 3,
+      "max": 3,
+      "firstTry": true,
+      "said": ["The ball is not on the book.", "The ball is not in the box.", "The ball is next to the book."]
+    },
+    "p-5": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": ["Showed: want to swim", "Showed: plan to swim", "Showed: mind swimming", "Your call on \u201cstop\u201d: both are in use"]
+    },
+    "p-6": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": [
+        "Showed: two pieces of information",
+        "Showed: two bags",
+        "Showed: two pieces of equipment",
+        "Your call on \u201cdata\u201d: both are in use"
+      ]
+    },
+    "p-7": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": [
+        "Showed: she reads",
+        "Showed: she kisses",
+        "Showed: she tries",
+        "Showed: she stays",
+        "Your call on \u201chave\u201d: correct it"
+      ]
+    },
+    "p-8": {
+      "marks": 2,
+      "max": 3,
+      "firstTry": false,
+      "said": ["Showed: walking", "Showed: hoping", "Showed: running", "Showed: opening", "Your call on \u201csee\u201d: correct it"]
+    },
+    "bb1-1": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["No: nothing anyone could do would settle it."],
+      "missed": "Yes: put the boxes side by side and compare."
+    },
+    "bb1-2": { "marks": 2, "max": 2, "firstTry": true, "said": ["Yes: they can see him put the box on the table."] },
+    "bb1-3": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["Whatever it does, it cannot be naming what is in the boxes."],
+      "missed": "Naming the thing in Cleo's box."
+    },
+    "bb1-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["No: the talk worked without anyone looking."] },
+    "bb1-5": { "marks": 2, "max": 2, "firstTry": true, "said": ["Nothing: the talk worked just the same."] },
+    "bb2-1": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["No: nothing could show that I use \u201cS\u201d the same way next time."],
+      "missed": "Yes: I pointed to the sensation inwardly."
+    },
+    "bb2-2": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["There is nothing independent to check it against."],
+      "missed": "Remember what S felt like last time, and compare."
+    },
+    "bb2-3": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["A new way of expressing pain, in place of crying."],
+      "missed": "A name for an inner object she found by looking inside herself."
+    },
+    "bb2-4": {
+      "marks": 2,
+      "max": 2,
+      "firstTry": true,
+      "said": ["Yes: in the ordinary sense of \u201cknow\u201d, people often know when someone is in pain."]
+    },
+    "bb2-5": {
+      "marks": 2,
+      "max": 2,
+      "firstTry": true,
+      "said": ["Yes: \u201cS\u201d now tells you your blood pressure is rising, without the gauge."]
+    },
+    "h1-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["Look at the sign, phone them, or ask a neighbour."] },
+    "h1-2": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["Nothing would be surer than this: any test would be less certain than what it tested."],
+      "missed": "Look at them."
+    },
+    "h1-3": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["\u201cIt isn't something I found out. It's part of how I find things out.\u201d"],
+      "missed": "\u201cI've looked at a great many trees.\u201d"
+    },
+    "h1-4": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["Not far: doubting itself needs something certain."],
+      "missed": "As far as she likes: doubting is free."
+    },
+    "h1-5": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["The things that stand fast, so that our questions can turn."],
+      "missed": "The things we have checked most carefully."
+    },
+    "h2-1": { "marks": 2, "max": 2, "firstTry": true, "said": ["The questions we argue about and settle."] },
+    "h2-2": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["No: it came with the picture of the world I was given, the background I check things against."],
+      "missed": "Yes: I weighed the evidence first."
+    },
+    "h2-3": { "marks": 2, "max": 2, "firstTry": true, "said": ["No: it stood fast. Nobody thought it needed checking."] },
+    "h2-4": { "marks": 2, "max": 2, "firstTry": true, "said": ["It moved: something hard became open to question, then false."] },
+    "h2-5": {
+      "marks": 1,
+      "max": 2,
+      "firstTry": false,
+      "said": ["No: if everything were up for checking, nothing could be checked."],
+      "missed": "Yes: we just haven't got round to checking them."
+    }
+  }
+}

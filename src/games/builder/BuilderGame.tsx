@@ -4,14 +4,13 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Check, Eye, Hand, Minus, Plus, RotateCcw, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ArtDirected, GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
+import { GameFrame, GameLoading, HintButton, SceneCanvas, SessionEnd } from "@/components/game/chrome";
 import { useSessions } from "@/components/game/use-sessions";
 import { track } from "@/components/analytics";
 import { onRadioKeys, radioTabIndex } from "@/components/game/radio";
 import { cn } from "@/lib/utils";
 import { nextGame } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
-import { useIsPhone } from "@/lib/use-phone";
 import { useShortcuts } from "@/components/game/shortcuts";
 import {
   NUMBER_WORDS,
@@ -49,20 +48,13 @@ const WIDE: Geometry = {
   bg: "/art/builder/site.webp",
   spot: { left: { x: 19, y: 47 }, right: { x: 82, y: 47 }, builder: { x: 60, y: 80 } },
   builder: { left: 36, w: 22, h: 64 },
-  person: { w: 18, h: 58, rest: 88 },
+  person: { w: 18, h: 58, rest: 68 },
   target: { top: 38, h: 24, w: 34 },
 };
 
-const SQUARE: Geometry = {
-  bg: "/art/square/site.webp",
-  spot: { left: { x: 19, y: 52 }, right: { x: 81, y: 52 }, builder: { x: 62, y: 88 } },
-  builder: { left: 30, w: 28, h: 52 },
-  person: { w: 22, h: 46, rest: 76 },
-  target: { top: 42, h: 18, w: 38 },
-};
-
+/** One picture everywhere: a phone sees the middle of the wide scene, which keeps the scene short and leaves room for the choices. */
 function useGeometry(): Geometry {
-  return useIsPhone() ? SQUARE : WIDE;
+  return WIDE;
 }
 
 /** What an unlabelled stone looks like, for people who cannot see the picture. */
@@ -88,7 +80,7 @@ type Outcome = { delivery: Delivery; score: number; marks: Record<"stone" | "cou
 
 export function BuilderGame() {
   const g = useSessions(GAME, SESSIONS, did);
-  if (!g.ready) return <GameLoading slug={GAME} poster="/art/builder/site.webp" posterSquare="/art/square/site.webp" />;
+  if (!g.ready) return <GameLoading slug={GAME} poster="/art/builder/site.webp" />;
   const { round, session, sessionIndex, finished } = g;
   const speak = g.speech.speak;
   return (
@@ -173,7 +165,6 @@ function Site({
   const geo = useGeometry();
   return (
     <SceneCanvas
-      frame="own"
       overlay={
         bubble && (
           <div
@@ -202,7 +193,7 @@ function Site({
         )
       }
     >
-      <ArtDirected wide={WIDE.bg} square={SQUARE.bg} />
+      <Image src={WIDE.bg} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       {/* The builder, A. He turns to point; facing right is his resting pose. */}
       <div
         className="absolute bottom-[3%] transition-transform duration-300"
@@ -456,7 +447,7 @@ function FetchPlay({
       <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
         <fieldset disabled={solved}>
           <legend className="sr-only">Which stone?</legend>
-          <div className={cn("grid gap-2 lg:grid-cols-2", advanced ? "grid-cols-4" : "grid-cols-2 sm:grid-cols-4")}>
+          <div className={cn("grid gap-2 lg:grid-cols-2", "grid-cols-4")}>
             {(["block", "pillar", "slab", "beam"] as const).map((s) => (
               <StoneCard
                 key={s}

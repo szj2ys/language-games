@@ -31,8 +31,8 @@ export default function Home() {
       <SiteHeader />
       <main id="main" className="mx-auto w-full max-w-6xl px-4 pb-12">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-        <section className="grid items-center gap-5 pt-5 sm:pt-8 lg:grid-cols-[150px_minmax(0,1fr)_360px] lg:gap-8">
-          <figure className="order-3 border-t border-border pt-3 lg:order-1 lg:self-start lg:border-t-0 lg:pt-6">
+        <section className="grid items-center gap-5 pt-4 sm:pt-5 lg:grid-cols-[150px_minmax(0,1fr)_210px] lg:gap-8">
+          <figure className="order-3 hidden lg:order-1 lg:block lg:self-start lg:pt-6">
             <p className="hidden font-heading text-lg lg:block" aria-hidden>
               1
             </p>
@@ -56,27 +56,18 @@ export default function Home() {
             </div>
             <p className="text-sm text-muted-foreground">Free. No account: your progress stays in this browser.</p>
           </div>
-          <div className="relative order-2 aspect-[16/10] max-h-[240px] w-full lg:order-3 lg:max-h-none">
-            <Image
-              src="/art/v2/hero.webp"
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1024px) 480px, 100vw"
-              className="object-contain mix-blend-multiply"
-            />
+          {/* The paper cut-out from the chosen design; on a phone the path comes straight after the button instead. */}
+          <div className="relative order-2 hidden aspect-[3/4] w-full lg:order-3 lg:block">
+            <Image src="/art/v2/hero-portrait.webp" alt="" fill priority sizes="230px" className="object-contain" />
           </div>
         </section>
 
         <LadderEnd />
 
-        <section id="path" className="mt-8 scroll-mt-4 sm:mt-10" aria-labelledby="path-title">
-          <h2 id="path-title" className="font-heading text-[30px] font-medium">
-            The path, early to late
+        <section id="path" className="mt-6 scroll-mt-4 sm:mt-8" aria-labelledby="path-title">
+          <h2 id="path-title" className="font-heading text-[28px] font-medium">
+            The path, early to late <span className="font-sans text-[16px] font-normal text-muted-foreground">· start anywhere</span>
           </h2>
-          <p className="mt-1 max-w-prose text-[17px] text-muted-foreground">
-            Start at 1 or anywhere you like. The early Wittgenstein comes first; the later one questions him.
-          </p>
           <ol className="relative mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-7 lg:gap-4 lg:before:absolute lg:before:top-[7px] lg:before:right-[7%] lg:before:left-[7%] lg:before:h-px lg:before:bg-vermilion/50">
             {GAMES.map((g) => (
               <li key={g.slug} className="relative">
@@ -88,16 +79,16 @@ export default function Home() {
                     className="hidden size-3.5 self-center rounded-full border-2 border-paper bg-vermilion ring-1 ring-vermilion lg:block"
                     aria-hidden
                   />
-                  <span className="relative block size-24 shrink-0 overflow-hidden rounded-md bg-paper-deep lg:order-2 lg:aspect-square lg:size-auto lg:bg-transparent">
+                  <span className="relative block size-20 shrink-0 overflow-hidden rounded-md lg:order-2 lg:mx-auto lg:aspect-square lg:size-auto lg:w-[110px] lg:bg-transparent">
                     <Image
                       src={`/art/v2/stop-${g.step}.webp`}
                       alt=""
                       fill
                       sizes="(min-width: 1024px) 150px, 96px"
-                      className="object-contain mix-blend-multiply transition-transform group-hover:scale-[1.03]"
+                      className="object-contain transition-transform group-hover:scale-[1.03]"
                     />
                   </span>
-                  <span className="flex min-w-0 flex-1 flex-col gap-1 lg:order-1 lg:min-h-[112px] lg:text-center">
+                  <span className="flex min-w-0 flex-1 flex-col gap-1 lg:order-1 lg:min-h-[96px] lg:text-center">
                     <span className="font-heading text-[15px] text-vermilion">{g.step}</span>
                     <span className="font-heading text-[21px] leading-tight font-medium">{g.title}</span>
                     <span className="text-[13px] text-muted-foreground italic">{g.work}</span>

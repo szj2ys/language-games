@@ -519,7 +519,12 @@ def play_choice_games(page: Page) -> None:
     page.get_by_role("button", name="A doctor fits a blood-pressure gauge").click()
     expect(page.get_by_text("matched the gauge on 3 of 5 days")).to_be_visible()
     shot(page, "beetle-diary")
-    page.get_by_role("button", name="What changed?").click()
+    # Three new days, gauge hidden: the sharper sensations went with a rising gauge.
+    page.get_by_role("button", name="Three new days, gauge hidden").click()
+    for day, s_ in [(1, False), (2, True), (3, True)]:
+        page.get_by_role("group", name=f"New day {day}: write S?").get_by_role("button", name="Write “S”" if s_ else "Not S").click()
+    page.get_by_role("button", name="Show the gauge").click()
+    expect(page.get_by_text("predicted the gauge on every new day")).to_be_visible()
     next_round(page)
     answer_questions(page, "The diary")
 

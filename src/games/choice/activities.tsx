@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, Check, CornerDownRight, Lock, RotateCcw, Undo2 } from "lucide-react";
+import { Check, CornerDownRight, Lock, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SceneCanvas } from "@/components/game/chrome";
 import { useDraft } from "@/lib/use-draft";
@@ -178,105 +178,182 @@ export function BoxesPlay({ round, onDone, onNext }: { round: BoxesRound; onDone
 // ---------------------------------------------------------------------------------------------
 // The private diary (§258), then the manometer (§270).
 
-const HUES = [12, 22, 8, 30, 16, 26];
-/** A sensation, drawn: never quite the same twice. */
-function Sensation({ shape, label }: { shape: number; label: string }) {
+const HUES = [12, 22, 8, 30, 16, 26, 18, 10, 28];
+/** A sensation, drawn: never quite the same twice. Days when the gauge rises feel sharper. */
+function Sensation({ shape, sharp, label }: { shape: number; sharp: boolean; label: string }) {
   const hue = HUES[shape % HUES.length];
-  const r = 26 + ((shape * 7) % 9);
-  const wobble = 4 + ((shape * 5) % 6);
+  const r = 25 + ((shape * 7) % 7);
+  const wobble = sharp ? 8 + ((shape * 3) % 3) : 2 + ((shape * 5) % 2);
   const d = Array.from({ length: 12 }, (_, i) => {
     const a = (i / 12) * Math.PI * 2;
     const rr = r + (i % 2 ? wobble : -wobble / 2);
     return `${i ? "L" : "M"}${(40 + rr * Math.cos(a)).toFixed(1)},${(40 + rr * Math.sin(a)).toFixed(1)}`;
   }).join(" ");
   return (
-    <svg viewBox="0 0 80 80" className="size-16 shrink-0" role="img" aria-label={label}>
+    <svg viewBox="0 0 80 80" className="size-14 shrink-0" role="img" aria-label={label}>
       <path d={`${d} Z`} fill={`hsl(${hue} 60% 55% / 0.85)`} stroke="#1c2a44" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   );
 }
 
-export function DiaryPlay({ round, onDone, onNext }: { round: DiaryRound; onDone: Done; onNext: () => void }) {
-  const [marks, setMarks] = useDraft<(boolean | null)[]>(round.id, "marks", () => round.days.map(() => null));
-  const [stage, setStage] = useDraft<"write" | "checked" | "gauge" | "done">(round.id, "stage", "write");
-  // Day 1 is the sensation you named S; you mark the days after it.
-  const all = marks.slice(1).every((m) => m !== null);
-  const matches = marks.filter((m, i) => i > 0 && m === round.days[i].gauge).length;
+type DiaryStage = "write" | "checked" | "gauge" | "predict" | "reveal";
+
+function DiaryDay({
+  day,
+  label,
+  mark,
+  locked,
+  gauge,
+  onMark,
+}: {
+  day: { shape: number; gauge: boolean };
+  label: string;
+  mark: boolean | null;
+  locked: boolean;
+  /** Shown once the gauge is fitted. */
+  gauge?: boolean;
+  onMark: (v: boolean) => void;
+}) {
   return (
-    <Layout art={round.art} situation={round.situation} point={stage === "done" ? round.point : undefined} onNext={onNext}>
-      <ol className="flex flex-col gap-2" aria-label="Your diary">
-        {round.days.map((d, i) => (
-          <li key={i} className="flex items-center gap-3 rounded-lg border border-border bg-card p-2">
-            <Sensation shape={d.shape} label={i === 0 ? "Day 1: the sensation you named S" : `Day ${i + 1}: today's sensation`} />
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <p className="text-[15px] font-bold">
-                Day {i + 1}
-                {i === 0 && <span className="font-normal text-muted-foreground"> · the one you called S</span>}
-              </p>
-              {i === 0 ? (
-                <p className="font-heading text-[20px]">S</p>
-              ) : (
-                <div className="flex gap-2" role="group" aria-label={`Day ${i + 1}: write S?`}>
-                  {[true, false].map((v) => (
-                    <button
-                      key={String(v)}
-                      type="button"
-                      aria-pressed={marks[i] === v}
-                      disabled={stage !== "write"}
-                      onClick={() => setMarks(marks.map((m, j) => (j === i ? v : m)))}
-                      className={cn(
-                        "min-h-11 flex-1 rounded-lg border-2 px-2 text-[15px] whitespace-nowrap",
-                        marks[i] === v ? "border-ink bg-ink text-paper" : "border-border bg-paper hover:border-ink/40",
-                      )}
-                    >
-                      {v ? "Write “S”" : "Not S"}
-                    </button>
-                  ))}
-                </div>
+    <li className="flex items-center gap-3 rounded-lg border border-border bg-card p-2">
+      <Sensation shape={day.shape} sharp={day.gauge} label={`${label}: the sensation`} />
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <p className="text-[15px] font-bold">{label}</p>
+        <div className="flex gap-2" role="group" aria-label={`${label}: write S?`}>
+          {[true, false].map((v) => (
+            <button
+              key={String(v)}
+              type="button"
+              aria-pressed={mark === v}
+              disabled={locked}
+              onClick={() => onMark(v)}
+              className={cn(
+                "min-h-11 flex-1 rounded-lg border-2 px-2 text-[15px] whitespace-nowrap",
+                mark === v ? "border-ink bg-ink text-paper" : "border-border bg-paper hover:border-ink/40",
               )}
-            </div>
-            {stage !== "write" && stage !== "checked" && i > 0 && (
-              <span className={cn("shrink-0 text-[14px] font-bold", d.gauge ? "text-vermilion" : "text-muted-foreground")}>
-                {d.gauge ? "Gauge rose" : "Gauge flat"}
-                {marks[i] === d.gauge ? <Check className="ml-1 inline size-4 text-sage" aria-label="matches" /> : null}
-              </span>
-            )}
-          </li>
+            >
+              {v ? "Write “S”" : "Not S"}
+            </button>
+          ))}
+        </div>
+      </div>
+      {gauge !== undefined && (
+        <span className={cn("w-20 shrink-0 text-right text-[14px] font-bold", gauge ? "text-vermilion" : "text-muted-foreground")}>
+          {gauge ? "Gauge rose" : "Gauge flat"}
+          {mark === gauge && <Check className="ml-1 inline size-4 text-sage" aria-label="matches" />}
+        </span>
+      )}
+    </li>
+  );
+}
+
+export function DiaryPlay({ round, onDone, onNext }: { round: DiaryRound; onDone: Done; onNext: () => void }) {
+  const [marks, setMarks] = useDraft<(boolean | null)[]>(round.id, "marks", () => round.days.map((_, i) => (i === 0 ? true : null)));
+  const [test, setTest] = useDraft<(boolean | null)[]>(round.id, "test", () => round.test.map(() => null));
+  const [stage, setStage] = useDraft<DiaryStage>(round.id, "stage", "write");
+  const [done, setDone] = useDraft(round.id, "done", false);
+  const later = round.days.slice(1);
+  const matched = later.filter((d, i) => marks[i + 1] === d.gauge).length;
+  const predicted = round.test.filter((d, i) => test[i] === d.gauge).length;
+  const showGauge = stage === "gauge" || stage === "predict" || stage === "reveal";
+
+  return (
+    <Layout art={round.art} situation={round.situation} point={done ? round.point : undefined} onNext={onNext}>
+      <ol className="flex flex-col gap-2" aria-label="Your diary">
+        <li className="flex items-center gap-3 rounded-lg border border-border bg-card p-2">
+          <Sensation shape={round.days[0].shape} sharp={round.days[0].gauge} label="Day 1: the sensation you named S" />
+          <p className="text-[15px]">
+            <span className="font-bold">Day 1</span> · you felt it and wrote <span className="font-heading text-[19px]">S</span>
+          </p>
+        </li>
+        {later.map((d, i) => (
+          <DiaryDay
+            key={i}
+            day={d}
+            label={`Day ${i + 2}`}
+            mark={marks[i + 1]}
+            locked={stage !== "write"}
+            gauge={showGauge ? d.gauge : undefined}
+            onMark={(v) => setMarks(marks.map((m, j) => (j === i + 1 ? v : m)))}
+          />
         ))}
       </ol>
+      <p className="text-[14px] text-muted-foreground">
+        Where the game stops: here you can look back at the drawings. In Wittgenstein&apos;s diary there is nothing to look back at, only
+        your impression of the sensation; that is the point of §258.
+      </p>
       {stage === "write" && (
-        <Button size="lg" className="h-12 text-lg" disabled={!all} onClick={() => setStage("checked")}>
+        <Button size="lg" className="h-12 text-lg" disabled={marks.some((m) => m === null)} onClick={() => setStage("checked")}>
           Check your diary
         </Button>
       )}
       {stage !== "write" && (
         <p role="status" className="rounded-lg bg-vermilion/10 px-3 py-2 text-[16px] leading-relaxed">
-          Check it against what? There is only your impression of S. Whatever you wrote seems right to you, so it counts as right; “and that
-          only means that here we can&apos;t talk about ‘right’” (§258).
+          Check it against what? There is only your impression of S. Whatever seems right to you counts as right; “and that only means that
+          here we can&apos;t talk about ‘right’” (§258).
         </p>
       )}
       {stage === "checked" && (
         <Button size="lg" variant="outline" className="h-12 text-lg" onClick={() => setStage("gauge")}>
-          <RotateCcw className="size-5" aria-hidden /> A doctor fits a blood-pressure gauge
+          A doctor fits a blood-pressure gauge
         </Button>
       )}
-      {(stage === "gauge" || stage === "done") && (
+      {showGauge && (
+        <p
+          role="status"
+          ref={(el) => el?.scrollIntoView({ block: "nearest" })}
+          className="rounded-lg bg-sage/10 px-3 py-2 text-[16px] leading-relaxed"
+        >
+          Your “S” matched the gauge on {matched} of {later.length} days
+          {matched === later.length ? ": every day." : matched >= 3 ? "." : ", so far it does not track the gauge."} Either way, something
+          has changed: there is now a check that can come out against you, so it makes sense to say you were right or wrong.
+        </p>
+      )}
+      {stage === "gauge" && (
+        <Button size="lg" className="h-12 text-lg" onClick={() => setStage("predict")}>
+          Three new days, gauge hidden
+        </Button>
+      )}
+      {(stage === "predict" || stage === "reveal") && (
         <>
-          <p role="status" className="rounded-lg bg-sage/10 px-3 py-2 text-[16px] leading-relaxed">
-            Now there is something to check against: your “S” matched the gauge on {matches} of {round.days.length - 1} days. You could be
-            wrong, so you can also be right. “S” has a use: it tells you your blood pressure is rising, without the gauge (§270).
-          </p>
-          {stage === "gauge" && (
+          <ol className="flex flex-col gap-2" aria-label="Three new days">
+            {round.test.map((d, i) => (
+              <DiaryDay
+                key={i}
+                day={d}
+                label={`New day ${i + 1}`}
+                mark={test[i]}
+                locked={stage === "reveal"}
+                gauge={stage === "reveal" ? d.gauge : undefined}
+                onMark={(v) => setTest(test.map((m, j) => (j === i ? v : m)))}
+              />
+            ))}
+          </ol>
+          {stage === "predict" && (
             <Button
               size="lg"
               className="h-12 text-lg"
+              disabled={test.some((m) => m === null)}
               onClick={() => {
-                setStage("done");
-                onDone(2, 2, true, [`S matched the gauge on ${matches} of ${round.days.length - 1} days`]);
+                setStage("reveal");
+                const all = predicted === round.test.length;
+                setDone(true);
+                onDone(all ? 2 : 1, 2, all, [`S predicted the gauge on ${predicted} of ${round.test.length} new days`]);
               }}
             >
-              <ArrowRight className="size-5" aria-hidden /> What changed?
+              Show the gauge
             </Button>
+          )}
+          {stage === "reveal" && (
+            <p
+              role="status"
+              ref={(el) => el?.scrollIntoView({ block: "nearest" })}
+              className="rounded-lg bg-sage/10 px-3 py-2 text-[16px] leading-relaxed"
+            >
+              {predicted === round.test.length
+                ? "“S” predicted the gauge on every new day. Now it has a use: it tells you your blood pressure is rising, without the gauge. “And now it seems quite indifferent whether I have recognized the sensation right or not” (§270)."
+                : `“S” predicted the gauge on ${predicted} of ${round.test.length} new days: not yet a reliable sign. But notice who decides: the gauge, not your impression. That is what makes it a check.`}
+            </p>
           )}
         </>
       )}

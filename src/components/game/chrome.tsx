@@ -73,32 +73,26 @@ export function GameHeader({
 }
 
 /**
- * The passage the session is about, one tap away while playing. Closed by default:
- * the game lets you find the point first, then the passage names it.
+ * The passage the session is about, beside the activity: the opening lines only, so the game still lets
+ * you find the point before the passage names it.
  */
 export function IdeaCard({ source }: { source: SourceId }) {
   const s: Source = SOURCES[source];
   return (
-    <details className="group mx-3 my-2 rounded-lg border border-border bg-card lg:mx-6">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3">
-        <span className="font-heading text-[17px] font-medium">The idea behind this game</span>
-        <span className="flex items-center gap-2 text-sm text-muted-foreground">
-          {WORK_TITLE[s.work]} {s.ref}
-          <span aria-hidden className="group-open:rotate-180">
-            ⌄
-          </span>
+    <aside className="mx-3 mb-4 rounded-lg border border-border bg-card px-4 py-3 lg:mx-6" aria-labelledby="idea-title">
+      <p className="flex items-baseline justify-between gap-3">
+        <span id="idea-title" className="font-heading text-[18px] font-medium">
+          The idea
         </span>
-      </summary>
-      <div className="px-4 pb-3">
-        <blockquote className="font-heading text-[18px] leading-snug italic lg:text-[19px]">“{s.quote}”</blockquote>
-        <Link
-          href={`/sources#${s.id}`}
-          className="mt-1 inline-flex min-h-11 items-center text-sm font-bold underline-offset-4 hover:underline"
-        >
-          All the passages
-        </Link>
-      </div>
-    </details>
+        <span className="text-sm text-muted-foreground">
+          {WORK_TITLE[s.work]} {s.ref}
+        </span>
+      </p>
+      <blockquote className="mt-1 line-clamp-2 font-heading text-[17px] leading-snug italic lg:text-[18px]">“{s.quote}”</blockquote>
+      <Link href={`/sources#${s.id}`} className="inline-flex min-h-11 items-center text-sm font-bold underline-offset-4 hover:underline">
+        Read the whole passage
+      </Link>
+    </aside>
   );
 }
 
@@ -310,10 +304,10 @@ export function GameFrame({
           Progress cannot be saved in this browser. You can still play.
         </p>
       )}
-      {!g.finished && <IdeaCard source={g.session.source} />}
-      <main id="main" className="flex flex-1 flex-col pt-1 lg:justify-center lg:pb-6">
+      <main id="main" className="flex flex-1 flex-col pt-3 lg:justify-center lg:pb-4">
         {children}
       </main>
+      {!g.finished && <IdeaCard source={g.session.source} />}
       <ShortcutTip />
     </div>
   );

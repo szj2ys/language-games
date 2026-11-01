@@ -159,3 +159,26 @@ export function writeSave(save: Save): boolean {
 export function resetSave(save: Save): Save {
   return { ...emptySave(), epoch: save.epoch + 1 };
 }
+
+/**
+ * Where to resume a game. A saved place is trusted only if every round before it is recorded as done:
+ * when a game's content changes, an old place could otherwise skip new rounds or open an end card
+ * for rounds never played. Otherwise resume at the first round not yet done.
+ */
+export function resolvePosition(
+  sessions: { rounds: { id: string }[] }[],
+  done: Record<string, unknown>,
+  pos: Position | undefined,
+): Position & { finished: boolean } {
+  const p = pos ?? { session: 0, round: 0 };
+  const s = sessions[p.session];
+  if (s && s.rounds.slice(0, p.round).every((r) => done[r.id])) {
+    return { session: p.session, round: Math.min(p.round, s.rounds.length - 1), finished: p.round >= s.rounds.length };
+  }
+  for (let i = 0; i < sessions.length; i++) {
+    const r = sessions[i].rounds.findIndex((x) => !done[x.id]);
+    if (r >= 0) return { session: i, round: r, finished: false };
+  }
+  const last = sessions.length - 1;
+  return { session: last, round: sessions[last].rounds.length - 1, finished: true };
+}

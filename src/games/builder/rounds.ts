@@ -81,7 +81,7 @@ export const SESSIONS: Session[] = [
         id: "b2-1",
         role: "fetch",
         want: { stone: "slab", count: 2, place: "builder" },
-        hint: "Two means two. Most nouns add -s for the plural: slabs.",
+        hint: "The number word does its own job here: it tells the assistant how many to bring.",
       },
       {
         id: "b2-2",

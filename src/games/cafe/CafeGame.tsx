@@ -201,7 +201,12 @@ function Round({
               </Button>
             )}
             {pick && !pick.fits && lastSaid === pick.reaction && (
-              <p role="status" className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[18px]">
+              <p
+                role="status"
+                // On a phone the correction lands below the answers: bring it into view.
+                ref={(el) => el?.scrollIntoView({ block: "nearest" })}
+                className="flex items-center gap-2 rounded-lg bg-terracotta/10 px-3 py-2 text-[15px] lg:text-[18px]"
+              >
                 <RotateCcw className="size-4 shrink-0" aria-hidden /> Not quite what {NAME[round.speaker]} meant. Look at the clues and try
                 another response.
               </p>

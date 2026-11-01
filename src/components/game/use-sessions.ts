@@ -1,7 +1,7 @@
 "use client";
 
 import { track } from "@/components/analytics";
-import { recordRound } from "@/lib/progress";
+import { recordRound, resolvePosition } from "@/lib/progress";
 import { useSave, useSpeech } from "@/lib/use-save";
 import { clearDrafts } from "@/lib/use-draft";
 
@@ -13,12 +13,9 @@ type SessionLike = { rounds: { id: string }[] };
  */
 export function useSessions<S extends SessionLike>(game: string, sessions: S[], did: (r: S["rounds"][number]) => string) {
   const { save, ready, update, storable } = useSave();
-  const pos = save.positions[game] ?? { session: 0, round: 0 };
-  // Clamp a saved position to the content as it is now: sessions can be added or removed between visits.
-  const sessionIndex = Math.max(0, Math.min(pos.session, sessions.length - 1));
+  // A saved place counts only if the rounds before it were played: content can change between visits.
+  const { session: sessionIndex, round: roundIndex, finished } = resolvePosition(sessions, save.rounds, save.positions[game]);
   const session = sessions[sessionIndex];
-  const finished = pos.round >= session.rounds.length;
-  const roundIndex = Math.max(0, Math.min(pos.round, session.rounds.length - 1));
   const round = session.rounds[roundIndex] as S["rounds"][number];
   const speech = useSpeech(save.settings.speech);
 
