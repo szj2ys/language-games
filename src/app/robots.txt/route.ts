@@ -11,6 +11,7 @@ export function GET() {
     "Content-Signal: search=yes, ai-input=yes, ai-train=no",
     "Allow: /",
     "Disallow: /notebook",
+    "Disallow: /lab",
     "",
     `Sitemap: ${SITE_URL}/sitemap.xml`,
   ];
