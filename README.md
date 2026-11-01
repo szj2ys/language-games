@@ -33,6 +33,13 @@ caused is in `planning/DECISIONS.md`.
 Copilot also authored the café's fourth session (`planning/proposed-cafe-4.ts`), and Codex play-tested the
 newest sessions (`planning/playtest-codex.md`, `planning/playtest-codex-2.md`).
 
+## Live
+
+https://wittgenstein-played.pages.dev — static files on Cloudflare Pages (free plan). Deploy with
+`bash scripts/deploy-pages.sh` (needs `CLOUDFLARE_API_TOKEN` with Pages: Edit and `CLOUDFLARE_ACCOUNT_ID`);
+it builds with `STATIC_EXPORT=1`, writes the security headers to `out/_headers` and the commit to `/version.txt`.
+Roll back in the Cloudflare dashboard (Pages → wittgenstein-played → Deployments → Rollback) or redeploy an older commit.
+
 ## Run
 
 ```bash

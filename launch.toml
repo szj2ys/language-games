@@ -1,0 +1,23 @@
+# launch.toml — what the harness launch gate checks (C:/Users/Administrator/Documents/projects/harness/launch-gate.md).
+# A static site on Cloudflare Pages: no payments, no server data, no server to alert from.
+# [money], [backup] and [alert] are left out on purpose; the gate reports them UNVERIFIED.
+
+[release]
+version_url = "https://wittgenstein-played.pages.dev/version.txt"   # the deployed git SHA
+smoke = [
+  { url = "https://wittgenstein-played.pages.dev/", status = 200 },
+  { url = "https://wittgenstein-played.pages.dev/play/scene", status = 200 },
+  { url = "https://wittgenstein-played.pages.dev/play/hinges", status = 200 },
+  { url = "https://wittgenstein-played.pages.dev/sources", status = 200 },
+  { url = "https://wittgenstein-played.pages.dev/no-such-page", status = 404 },
+]
+
+[l1]
+urls = ["https://wittgenstein-played.pages.dev/", "https://wittgenstein-played.pages.dev/play/beetle"]
+
+[agentready]
+url = "https://wittgenstein-played.pages.dev/"
+
+[secrets]
+rotation_ledger = "rotations.jsonl"
+allow = []

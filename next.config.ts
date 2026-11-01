@@ -24,17 +24,27 @@ const SECURITY_HEADERS = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
 ];
 
+// STATIC_EXPORT=1 builds plain files for Cloudflare Pages (out/): no image optimizer and no headers() there;
+// the same security headers are written to out/_headers by scripts/export-headers.mjs.
+const STATIC = process.env.STATIC_EXPORT === "1";
+
+export { SECURITY_HEADERS };
+
 const nextConfig: NextConfig = {
+  ...(STATIC ? { output: "export" as const } : {}),
   // A second build folder lets a verification server run beside one that a reviewer is using.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
   // AVIF first: the round pictures are the largest thing on every play page.
-  images: { formats: ["image/avif", "image/webp"] },
+  images: STATIC ? { unoptimized: true } : { formats: ["image/avif", "image/webp"] },
   poweredByHeader: false,
-  async headers() {
-    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
-  },
-  cacheComponents: true,
-  partialPrefetching: true,
+  ...(STATIC
+    ? {}
+    : {
+        async headers() {
+          return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+        },
+      }),
+  // No Cache Components: every page is static anyway, and a static export needs route segment config it forbids.
   turbopack: {
     rules: {
       "*.css": {
