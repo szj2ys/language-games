@@ -11,12 +11,13 @@ that on 2026-11-01 — see `planning/BRIEF-v2.md`.)
 | 2 | **The builders** (`/play/builder`) | fetch stones for a four-word language, give the orders, tell orders from reports | PI §§2, 6, 8, 19–21 |
 | 3 | **Meaning is use** (`/play/cafe`) | answer the same words doing different jobs in a café | PI §§21, 23, 43, 87 |
 | 4 | **Family resemblance** (`/play/family`) | test claims about games, tools, languages and numbers; thread them by overlapping features | PI §§11, 18, 66–67 |
-| 5 | **Following a rule** (`/play/pupil`) | teach a pupil a rule with examples and explanations, and see neither fixes it alone | PI §§185, 198–202, 217 |
-| 6 | **The beetle in the box** (`/play/beetle`) | talk about beetles nobody else can see; keep a private diary of “S” | PI §§244–270, 293 |
-| 7 | **Hinges of certainty** (`/play/hinges`) | try to doubt; find what doubting turns on; watch the river-bed shift | On Certainty §§94–125, 282, 341–343 |
+| 5 | **Following a rule** (`/play/pupil`) | teach a pupil “add 2” past 1000, a series that begins 3, 5, 7, and a signpost; see that neither examples nor explanations fix a rule alone | PI §§185, 198–202, 217 |
+| 6 | **The beetle in the box** (`/play/beetle`) | change what is in your own box while the talk stays the same; keep a diary of “S”, then test it against a gauge | PI §§244–270, 293 |
+| 7 | **Hinges of certainty** (`/play/hinges`) | check a claim and what each check takes for granted, then doubt everything at once; sort the river-bed in 1950 and 1970 | On Certainty §§20, 94–125, 282, 341–343 |
 
 Design: "The Notebook" — warm paper, ink-blue type, one vermilion accent, proposition numbers as structure —
-chosen from three gpt-image-2 mock-ups (`art/ui-v2/a.png`, `b.png`, `c.png`).
+chosen from three gpt-image-2 mock-ups (`art/ui-v2/a.png`, `b.png`, `c.png`). Codex reviewed the running site
+round after round until it was satisfied: `planning/codex-review-v2-r1.md` … `r5.md`, decisions V1–V6 in `planning/DECISIONS.md`.
 
 No account and no server state: progress and half-finished rounds are kept in `localStorage`.
 Every quoted passage, with its translation and the limits of each game's analogy, is on `/sources`.

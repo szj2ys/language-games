@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptySave, mergeSaves, parseSave, recordRound, resetSave, resolvePosition, SAVE_VERSION } from "../progress";
+import { emptySave, mergeSaves, parseSave, recordRound, resetSave, resolvePosition, resumeTarget, SAVE_VERSION } from "../progress";
 import oldSave from "./old-save.fixture.json";
 import { SESSIONS as PUPIL } from "@/games/pupil/levels";
 import { SESSIONS as BEETLE } from "@/games/beetle/rounds";
@@ -70,5 +70,13 @@ describe("resuming after the content changed", () => {
   });
   it("starts at the beginning with no save", () => {
     expect(resolvePosition(BUILDER, {}, undefined)).toEqual({ session: 0, round: 0, finished: false });
+  });
+  it("on arrival, does not reopen an end card while a replaced round elsewhere is unplayed", () => {
+    const games = [{ rounds: [{ id: "new" }, { id: "b" }] }, { rounds: [{ id: "c" }] }];
+    // During play the end card of the session just finished still shows...
+    expect(resolvePosition(games, { b: {}, c: {} }, { session: 1, round: 1 }).finished).toBe(true);
+    // ...but a returning player is sent to the unplayed round.
+    expect(resumeTarget(games, { b: {}, c: {} }, { session: 1, round: 1 })).toEqual({ session: 0, round: 0 });
+    expect(resumeTarget(games, { new: {}, b: {}, c: {} }, { session: 1, round: 1 })).toBeNull();
   });
 });

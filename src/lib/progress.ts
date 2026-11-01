@@ -182,3 +182,22 @@ export function resolvePosition(
   const last = sessions.length - 1;
   return { session: last, round: sessions[last].rounds.length - 1, finished: true };
 }
+
+/**
+ * On arrival only: a saved end card is no place to come back to while a round elsewhere in the game is
+ * unplayed (for example one replaced since the last visit). Returns where to go instead, or null.
+ * During play the end card of a session just finished is always shown.
+ */
+export function resumeTarget(
+  sessions: { rounds: { id: string }[] }[],
+  done: Record<string, unknown>,
+  pos: Position | undefined,
+): Position | null {
+  const here = resolvePosition(sessions, done, pos);
+  if (!here.finished) return null;
+  for (let i = 0; i < sessions.length; i++) {
+    const r = sessions[i].rounds.findIndex((x) => !done[x.id]);
+    if (r >= 0) return { session: i, round: r };
+  }
+  return null;
+}

@@ -1,7 +1,8 @@
 "use client";
 
 import { track } from "@/components/analytics";
-import { recordRound, resolvePosition } from "@/lib/progress";
+import { useEffect, useRef } from "react";
+import { recordRound, resolvePosition, resumeTarget } from "@/lib/progress";
 import { useSave, useSpeech } from "@/lib/use-save";
 import { clearDrafts } from "@/lib/use-draft";
 
@@ -16,6 +17,14 @@ export function useSessions<S extends SessionLike>(game: string, sessions: S[], 
   // A saved place counts only if the rounds before it were played: content can change between visits.
   const { session: sessionIndex, round: roundIndex, finished } = resolvePosition(sessions, save.rounds, save.positions[game]);
   const session = sessions[sessionIndex];
+  // On arrival, leave a saved end card for any round still unplayed (content can be replaced between visits).
+  const arrived = useRef(false);
+  useEffect(() => {
+    if (!ready || arrived.current) return;
+    arrived.current = true;
+    const target = resumeTarget(sessions, save.rounds, save.positions[game]);
+    if (target) update((sv) => ({ ...sv, positions: { ...sv.positions, [game]: target } }));
+  }, [ready, sessions, save, game, update]);
   const round = session.rounds[roundIndex] as S["rounds"][number];
   const speech = useSpeech(save.settings.speech);
 
