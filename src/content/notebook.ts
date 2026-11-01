@@ -7,11 +7,21 @@ import { SESSIONS as BEETLE } from "@/games/beetle/rounds";
 import { SESSIONS as HINGES } from "@/games/hinges/rounds";
 import { did as choiceDid } from "@/games/choice/types";
 import type { GameSlug } from "./order";
+import type { SourceId } from "./sources";
 
-export type NotebookSession = { title: string; index: number; rounds: { id: string; did: string }[] };
+export type NotebookSession = { title: string; index: number; shows: string; source: SourceId; rounds: { id: string; did: string }[] };
 
-function sessionsOf<R extends { id: string }>(sessions: { title: string; rounds: R[] }[], did: (r: R) => string): NotebookSession[] {
-  return sessions.map((s, index) => ({ title: s.title, index, rounds: s.rounds.map((r) => ({ id: r.id, did: did(r) })) }));
+function sessionsOf<R extends { id: string }>(
+  sessions: { title: string; shows: string; source: SourceId; rounds: R[] }[],
+  did: (r: R) => string,
+): NotebookSession[] {
+  return sessions.map((s, index) => ({
+    title: s.title,
+    index,
+    shows: s.shows,
+    source: s.source,
+    rounds: s.rounds.map((r) => ({ id: r.id, did: did(r) })),
+  }));
 }
 
 /** For each game: its sessions, and what each round showed. */

@@ -22,6 +22,8 @@ export function useShortcuts(keys: Record<string, (() => void) | undefined>) {
       try {
         if (localStorage.getItem(SHORTCUTS_OFF)) return;
       } catch {}
+      // Enter and Space on a focused control keep their native meaning: press that control.
+      if ((e.key === "Enter" || e.key === " ") && active?.closest("button, a, summary, [role=radio], [role=button]")) return;
       const fn = keys[e.key];
       if (!fn) return;
       e.preventDefault();

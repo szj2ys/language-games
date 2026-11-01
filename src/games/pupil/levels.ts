@@ -1,347 +1,183 @@
 import type { SourceId } from "@/content/sources";
-import { articleItem, comparativeItem, countItem, ingItem, pastItem, patternItem, pluralItem, thirdPersonItem, type Level } from "./engine";
+import { stepItem, type Item, type Level } from "./engine";
+
+// Following a rule (PI §§185–242). Each level is a series or a sign. The pupil keeps the first way of
+// going on that fits every example it has seen; the teacher's job is to find the examples that tell
+// the ways apart — and to notice that, in the end, it is the practice that settles what counts as
+// "going on in the same way".
+
+const n = (x: number) => x.toLocaleString("en-GB");
+
+/** "After 1000 comes …": the §185 pupil adds 2 up to 1000 and 4 after it. */
+function after(k: number): Item {
+  const two = k + 2;
+  const odd = k >= 1000 ? k + 4 : k + 2;
+  return stepItem(
+    `after ${n(k)}`,
+    { "to-1000": `after ${n(k)}: ${n(odd)}`, "add-2": `after ${n(k)}: ${n(two)}` },
+    `after ${n(k)}: ${n(two)}`,
+  );
+}
+
+const PRIMES = [3, 5, 7, 11, 13, 17, 19, 23];
+const ODDS = [3, 5, 7, 9, 11, 13, 15, 17];
+const ORD = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+/** The k-th term of a series that begins 3, 5, 7. */
+function term357(k: number): Item {
+  return stepItem(
+    `${ORD[k - 1]} term`,
+    { primes: `${ORD[k - 1]}: ${PRIMES[k - 1]}`, odd: `${ORD[k - 1]}: ${ODDS[k - 1]}` },
+    `${ORD[k - 1]}: ${ODDS[k - 1]}`,
+  );
+}
+
+const STEPS = [1, 2, 4, 7, 11, 16, 22];
+const DOUBLE = [1, 2, 4, 8, 16, 32, 64];
+/** The k-th term of a series that begins 1, 2, 4. */
+function term124(k: number): Item {
+  return stepItem(
+    `${ORD[k - 1]} term`,
+    { steps: `${ORD[k - 1]}: ${STEPS[k - 1]}`, double: `${ORD[k - 1]}: ${DOUBLE[k - 1]}` },
+    `${ORD[k - 1]}: ${DOUBLE[k - 1]}`,
+  );
+}
+
+const DIRS = {
+  "→": ["right", "left"],
+  "←": ["left", "right"],
+  "↑": ["ahead", "back"],
+  "↓": ["back", "ahead"],
+  "↗": ["ahead and right", "back and left"],
+} as const;
+/** A signpost: the pupil walks the way the tail points until shown otherwise. */
+function sign(arrow: keyof typeof DIRS): Item {
+  const [head, tail] = DIRS[arrow];
+  return stepItem(arrow, { tail: `${arrow} go ${tail}`, head: `${arrow} go ${head}` }, `${arrow} go ${head}`);
+}
 
 export const LEVELS: Level[] = [
   {
-    id: "p-1",
-    title: "A or an?",
-    task: "Teach the pupil when English says “a” and when it says “an”.",
-    rule: "a/an go by the first sound, not the first letter",
+    id: "r-1",
+    title: "Add 2",
+    task: "Teach the pupil to write the series of even numbers: add 2 each time.",
+    rule: "add 2",
     ways: [
-      { id: "always-a", label: "Always “a”" },
-      { id: "letter", label: "“an” before a vowel letter" },
-      { id: "sound", label: "“an” before a vowel sound" },
+      { id: "to-1000", label: "Add 2 up to 1000, then 4" },
+      { id: "add-2", label: "Add 2 every time" },
     ],
-    exam: [
-      articleItem({ word: "hour", vowelSound: true }),
-      articleItem({ word: "university", vowelSound: false }),
-      articleItem({ word: "apple", vowelSound: true }),
-      articleItem({ word: "MBA", vowelSound: true }),
-      articleItem({ word: "horse", vowelSound: false }),
-    ],
-    deck: [
-      articleItem({ word: "cat", vowelSound: false }),
-      articleItem({ word: "egg", vowelSound: true }),
-      articleItem({ word: "unicorn", vowelSound: false }),
-      articleItem({ word: "hotel", vowelSound: false }),
-      articleItem({ word: "umbrella", vowelSound: true }),
-      articleItem({ word: "honest man", vowelSound: true }),
-    ],
+    exam: [after(6), after(100), after(998), after(1000), after(1004)],
+    deck: [after(2), after(50), after(996), after(10), after(1000), after(2000)],
     explain: [
-      { text: "Use “an” before a vowel.", readAs: "letter" },
-      { text: "Use “an” before a vowel sound — listen, don't look.", readAs: "sound", needs: { ruledOut: "letter", otherwise: "letter" } },
+      { text: "Just go on in the same way.", readAs: "to-1000" },
+      { text: "Add 2 every time, however big the number gets.", readAs: "add-2", needs: { ruledOut: "to-1000", otherwise: "to-1000" } },
     ],
     twist: {
-      item: { word: "historic", forms: {}, correct: "a historic" },
-      prompt: "New word: the pupil writes “a historic day”. Your old grammar book says “an historic day”.",
-      answer: "both",
-      why: "Both are in use. Most speakers sound the h and say “a historic”, as the pupil's rule predicts; some, especially in older British English, say “an historic”. The practice of speakers decides, not the rule on paper (§202).",
+      prompt:
+        "Another pupil was taught with numbers below 1000 only. After 1000 it writes 1004, 1008, 1012 and says: “But I went on in the same way!”",
+      options: [
+        { text: "Correct it: 1002 is what “add 2” means here.", right: true },
+        { text: "Accept it: every example it saw fits its way too.", right: false },
+      ],
+      why: "Every example below 1000 did fit its way. What makes 1002 right is not the examples but the practice we were trained in and agree in; inside that practice, 1004 is a mistake, and we correct it (§§185–186).",
     },
   },
   {
-    id: "p-2",
-    title: "One box, two…",
-    task: "Teach the pupil to make plurals.",
-    rule: "Plural spelling: -s, -es after s/x/ch/sh, -ies after a consonant + y",
+    id: "r-2",
+    title: "3, 5, 7, …",
+    task: "Teach the pupil the series that begins 3, 5, 7: the odd numbers.",
+    rule: "the odd numbers from 3",
     ways: [
-      { id: "s", label: "Always add -s" },
-      { id: "es", label: "-es after s, x, ch, sh" },
-      { id: "any-y", label: "…and every -y becomes -ies" },
-      { id: "consonant-y", label: "…but only consonant + y becomes -ies" },
+      { id: "primes", label: "The prime numbers from 3" },
+      { id: "odd", label: "The odd numbers from 3" },
     ],
-    exam: [pluralItem("box"), pluralItem("city"), pluralItem("church"), pluralItem("day"), pluralItem("lady")],
-    deck: [pluralItem("cat"), pluralItem("bus"), pluralItem("baby"), pluralItem("key"), pluralItem("dish"), pluralItem("toy")],
+    exam: [term357(3), term357(4), term357(5), term357(6), term357(7)],
+    deck: [term357(1), term357(2), term357(3), term357(4), term357(8), term357(5)],
     explain: [
-      { text: "When a word ends in -y, change it to -ies.", readAs: "any-y" },
-      {
-        text: "Add -es after s, x, ch or sh; change consonant + y to -ies; otherwise add -s.",
-        readAs: "consonant-y",
-        needs: { ruledOut: "any-y", otherwise: "any-y" },
-      },
+      { text: "Keep the pattern going.", readAs: "primes" },
+      { text: "Each number is 2 more than the one before.", readAs: "odd", needs: { ruledOut: "primes", otherwise: "primes" } },
     ],
     twist: {
-      item: { word: "child", forms: {}, correct: "children" },
-      prompt: "New word: the pupil writes “two childs”. Every rule you taught says just add -s.",
-      answer: "correct",
-      why: "Correct it: the plural is “children”. Irregular plurals (child–children, man–men, mouse–mice) follow no spelling rule; they are simply what English speakers say, learned one by one (§217: “This is simply what I do”).",
+      prompt: "A visitor sees only 3, 5, 7 on the board and goes on: 11, 13, 17. “I thought these were the primes.”",
+      options: [
+        { text: "It's a mistake: the series was the odd numbers.", right: false },
+        { text: "It's not a mistake: 3, 5, 7 begins both series.", right: true },
+      ],
+      why: "The first terms fit both rules. Nothing on the board settled which series was meant; what you go on to do with it does (§§198–201: any course of action can be made to fit a rule on some interpretation).",
     },
   },
   {
-    id: "p-3",
-    title: "Yesterday I…",
-    task: "Teach the pupil to spell the past tense.",
-    rule: "Past -ed spelling: drop silent e; double a final consonant after one vowel letter in a stressed last syllable",
+    id: "r-3",
+    title: "1, 2, 4, …",
+    task: "Teach the pupil the series that begins 1, 2, 4 by doubling.",
+    rule: "double the number each time",
     ways: [
-      { id: "ed", label: "Always add -ed" },
-      { id: "drop-e", label: "After a final e, just add -d" },
-      { id: "double-any", label: "…and double the last consonant after a single vowel letter" },
-      { id: "double-stressed", label: "…but only when that syllable is stressed" },
+      { id: "steps", label: "Add 1, then 2, then 3, …" },
+      { id: "double", label: "Double each time" },
     ],
-    exam: [
-      pastItem({ word: "stop", stressedLast: true }),
-      pastItem({ word: "like", stressedLast: true }),
-      pastItem({ word: "visit", stressedLast: false }),
-      pastItem({ word: "prefer", stressedLast: true }),
-      pastItem({ word: "play", stressedLast: true }),
-    ],
-    deck: [
-      pastItem({ word: "walk", stressedLast: true }),
-      pastItem({ word: "hope", stressedLast: true }),
-      pastItem({ word: "plan", stressedLast: true }),
-      pastItem({ word: "open", stressedLast: false }),
-      pastItem({ word: "admit", stressedLast: true }),
-      pastItem({ word: "listen", stressedLast: false }),
-    ],
+    exam: [term124(3), term124(4), term124(5), term124(6), term124(7)],
+    deck: [term124(1), term124(2), term124(3), term124(6), term124(4), term124(5)],
     explain: [
-      { text: "Double the last letter after a single vowel.", readAs: "double-any" },
-      {
-        text: "Drop a silent e; double a final consonant (never w, x or y) after a single vowel letter, but only when the last syllable is stressed.",
-        readAs: "double-stressed",
-        needs: { ruledOut: "double-any", otherwise: "double-any" },
-      },
+      { text: "Do the same thing each time.", readAs: "steps" },
+      { text: "Each number is twice the one before.", readAs: "double", needs: { ruledOut: "steps", otherwise: "steps" } },
     ],
     twist: {
-      item: { word: "travel", forms: {}, correct: "travelled" },
-      prompt: "The stress in “travel” is on the first syllable, so the pupil writes “traveled”. Your British textbook says “travelled”.",
-      answer: "both",
-      why: "Both are in use: American English writes “traveled”, British English keeps “travelled”. Two communities, two practices; neither is the pupil's mistake.",
+      prompt: "The pupil asks why doubling is the right way to go on. You give a reason; it asks why again; and again.",
+      options: [
+        { text: "Keep giving reasons: there must be a last one that settles it.", right: false },
+        { text: "At some point say: “This is simply what we do.”", right: true },
+      ],
+      why: "“If I have exhausted the justifications I have reached bedrock, and my spade is turned. Then I am inclined to say: ‘This is simply what I do’” (§217). Reasons come to an end in a practice, not in a last reason.",
     },
   },
   {
-    id: "p-4",
-    title: "Bigger, happier…",
-    task: "Teach the pupil to make comparatives.",
-    rule: "Comparatives: -er for short words, -ier for -y words, “more” for longer ones",
+    id: "r-4",
+    title: "Signposts",
+    task: "Teach the pupil to follow a signpost: walk the way the arrow points.",
+    rule: "go the way the head of the arrow points",
     ways: [
-      { id: "always-er", label: "Always add -er" },
-      { id: "syllables", label: "-er for one syllable, otherwise “more”" },
-      { id: "y-too", label: "…and two-syllable -y words take -ier" },
+      { id: "tail", label: "Walk the way the tail points" },
+      { id: "head", label: "Walk the way the head points" },
     ],
-    exam: [
-      comparativeItem({ word: "big", syllables: 1 }),
-      comparativeItem({ word: "happy", syllables: 2 }),
-      comparativeItem({ word: "careful", syllables: 2 }),
-      comparativeItem({ word: "tall", syllables: 1 }),
-      comparativeItem({ word: "modern", syllables: 2 }),
-    ],
-    deck: [
-      comparativeItem({ word: "small", syllables: 1 }),
-      comparativeItem({ word: "hot", syllables: 1 }),
-      comparativeItem({ word: "famous", syllables: 2 }),
-      comparativeItem({ word: "easy", syllables: 2 }),
-      comparativeItem({ word: "nice", syllables: 1 }),
-      comparativeItem({ word: "expensive", syllables: 3 }),
-    ],
+    exam: [sign("→"), sign("←"), sign("↑"), sign("↓"), sign("↗")],
+    deck: [sign("→"), sign("↑"), sign("←"), sign("↓"), sign("↗")],
     explain: [
-      { text: "Long words take “more”.", readAs: "syllables" },
-      {
-        text: "One syllable: -er. Two syllables ending in -y: -ier. Otherwise: more.",
-        readAs: "y-too",
-        needs: { ruledOut: "syllables", otherwise: "syllables" },
-      },
+      { text: "Follow the arrow.", readAs: "tail" },
+      { text: "Go towards the pointed end, away from the feathers.", readAs: "head", needs: { ruledOut: "tail", otherwise: "tail" } },
     ],
     twist: {
-      item: { word: "clever", forms: {}, correct: "cleverer" },
-      prompt: "The pupil writes “more clever”. The rule you taught says two syllables take “more”.",
-      answer: "both",
-      why: "Both are in use: “cleverer” and “more clever” are both common. Here the rule runs out and what speakers actually do decides (PI §84: the application of a word “is not everywhere bounded by rules”).",
-    },
-  },
-];
-
-export const LEVELS_2: Level[] = [
-  {
-    id: "p-5",
-    title: "Enjoy swimming, want to swim",
-    task: "Teach the pupil what comes after a verb: “to swim” or “swimming”.",
-    rule: "verb + -ing (enjoy, finish, mind, avoid) and verb + to (want, hope, decide, plan)",
-    ways: [
-      { id: "always-to", label: "Always “to” + verb" },
-      { id: "always-ing", label: "Always -ing" },
-      { id: "looks-ahead", label: "“to” after verbs of wanting and planning (want, hope, plan); -ing after the others" },
-    ],
-    exam: [
-      patternItem({ word: "enjoy", looksAhead: false }),
-      patternItem({ word: "hope", looksAhead: true }),
-      patternItem({ word: "finish", looksAhead: false }),
-      patternItem({ word: "decide", looksAhead: true }),
-      patternItem({ word: "avoid", looksAhead: false }),
-    ],
-    deck: [
-      patternItem({ word: "want", looksAhead: true }),
-      patternItem({ word: "plan", looksAhead: true }),
-      patternItem({ word: "mind", looksAhead: false }),
-      patternItem({ word: "practise", looksAhead: false }),
-      patternItem({ word: "promise", looksAhead: true }),
-      patternItem({ word: "keep", looksAhead: false }),
-    ],
-    explain: [
-      { text: "After a verb, use “to”.", readAs: "always-to" },
-      {
-        text: "After want, hope, plan and decide, use “to”; after enjoy, finish, mind and avoid, use -ing.",
-        readAs: "looks-ahead",
-        needs: { ruledOut: "always-to", otherwise: "always-to" },
-      },
-    ],
-    twist: {
-      item: { word: "stop", forms: {}, correct: "stop smoking" },
-      prompt: "New verb: the pupil writes “He stopped to smoke.” Is that English — or should it be “He stopped smoking”?",
-      answer: "both",
-      why: "Both are good English — with different meanings. “He stopped smoking” means he gave it up; “He stopped to smoke” means he paused in order to smoke. The form follows what you want to say.",
-    },
-  },
-  {
-    id: "p-6",
-    title: "Two pieces of advice",
-    task: "Teach the pupil which nouns can simply take -s.",
-    rule: "countable and uncountable nouns: two chairs, but two pieces of furniture",
-    ways: [
-      { id: "always-s", label: "Every noun can take -s" },
-      { id: "abstract", label: "Ideas (advice, news) can't be counted; things can" },
-      { id: "listed", label: "Some nouns can't be counted — they have to be learned one by one" },
-    ],
-    exam: [
-      countItem({ word: "advice", abstract: true, uncountable: true }),
-      countItem({ word: "furniture", abstract: false, uncountable: true }),
-      countItem({ word: "chair", abstract: false, uncountable: false }),
-      countItem({ word: "luggage", abstract: false, uncountable: true }),
-      countItem({ word: "idea", abstract: true, uncountable: false }),
-    ],
-    deck: [
-      countItem({ word: "information", abstract: true, uncountable: true }),
-      countItem({ word: "bag", abstract: false, uncountable: false }),
-      countItem({ word: "equipment", abstract: false, uncountable: true }),
-      countItem({ word: "suggestion", abstract: true, uncountable: false }),
-      countItem({ word: "news", abstract: true, uncountable: true }),
-      countItem({ word: "table", abstract: false, uncountable: false }),
-    ],
-    explain: [
-      { text: "You can't count abstract nouns.", readAs: "abstract" },
-      {
-        text: "Learn these as uncountable: advice, information, news, furniture, luggage, equipment.",
-        readAs: "listed",
-        needs: { ruledOut: "abstract", otherwise: "abstract" },
-      },
-    ],
-    twist: {
-      item: { word: "data", forms: {}, correct: "the data is" },
-      prompt: "New word: the pupil writes “The data is clear.” A science textbook says “The data are clear.”",
-      answer: "both",
-      why: "Both are in use. In everyday English “data” is usually uncountable (“the data is”); many scientists still treat it as plural (“the data are”). Different communities, different practices (§§198–202).",
+      prompt: "In another village people are trained to walk the way the tail points. A walker from there goes left at “→”.",
+      options: [
+        { text: "A mistake: the arrow points right.", right: false },
+        { text: "Not a mistake in their practice: a sign means what its regular use makes it mean.", right: true },
+      ],
+      why: "“A person goes by a sign-post only in so far as there exists a regular use of sign-posts, a custom” (§198). Nothing in the shape of the arrow does the work by itself.",
     },
   },
 ];
 
 export type Session = { id: string; title: string; blurb: string; shows: string; source: SourceId; rounds: Level[] };
 
-// Session 3: two spelling rules the learner has met before in another form (plurals, -ed).
-export const LEVELS_3: Level[] = [
-  {
-    id: "p-7",
-    title: "She watches, he tries",
-    task: "Teach the pupil the present simple after he, she or it.",
-    rule: "Present simple -s: -es after s, x, ch, sh; consonant + y becomes -ies",
-    ways: [
-      { id: "s", label: "Always add -s" },
-      { id: "es", label: "-es after s, x, ch, sh" },
-      { id: "any-y", label: "…and every -y becomes -ies" },
-      { id: "consonant-y", label: "…but only consonant + y becomes -ies" },
-    ],
-    exam: [thirdPersonItem("watch"), thirdPersonItem("fly"), thirdPersonItem("play"), thirdPersonItem("wash"), thirdPersonItem("cry")],
-    deck: [
-      thirdPersonItem("read"),
-      thirdPersonItem("kiss"),
-      thirdPersonItem("try"),
-      thirdPersonItem("stay"),
-      thirdPersonItem("fix"),
-      thirdPersonItem("buy"),
-    ],
-    explain: [
-      { text: "When a verb ends in -y, change it to -ies.", readAs: "any-y" },
-      {
-        text: "Add -es after s, x, ch or sh; change consonant + y to -ies; otherwise add -s.",
-        readAs: "consonant-y",
-        needs: { ruledOut: "any-y", otherwise: "any-y" },
-      },
-    ],
-    twist: {
-      item: { word: "have", forms: {}, correct: "she has" },
-      prompt: "New verb: the pupil writes “She haves a dog.” Every rule you taught says just add -s.",
-      answer: "correct",
-      why: "Correct it: “she has”. A few very common verbs are irregular (have → has, be → is); learners pick them up one by one, from use rather than from the rule.",
-    },
-  },
-  {
-    id: "p-8",
-    title: "Making, stopping, visiting",
-    task: "Teach the pupil to spell the -ing form.",
-    rule: "-ing spelling: drop silent e; double a final consonant (not w, x or y) after one vowel letter in a stressed last syllable",
-    ways: [
-      { id: "ing", label: "Always add -ing" },
-      { id: "drop-e", label: "Drop a final e, then add -ing" },
-      { id: "double-any", label: "…and double the last consonant after a single vowel letter" },
-      { id: "double-stressed", label: "…but only when that syllable is stressed" },
-    ],
-    exam: [
-      ingItem({ word: "make", stressedLast: true }),
-      ingItem({ word: "stop", stressedLast: true }),
-      ingItem({ word: "visit", stressedLast: false }),
-      ingItem({ word: "begin", stressedLast: true }),
-      ingItem({ word: "play", stressedLast: true }),
-    ],
-    deck: [
-      ingItem({ word: "walk", stressedLast: true }),
-      ingItem({ word: "hope", stressedLast: true }),
-      ingItem({ word: "run", stressedLast: true }),
-      ingItem({ word: "open", stressedLast: false }),
-      ingItem({ word: "forget", stressedLast: true }),
-      ingItem({ word: "listen", stressedLast: false }),
-    ],
-    explain: [
-      { text: "Double the last letter after a single vowel.", readAs: "double-any" },
-      {
-        text: "Drop a silent e; double a final consonant (never w, x or y) after a single vowel letter, but only when the last syllable is stressed.",
-        readAs: "double-stressed",
-        needs: { ruledOut: "double-any", otherwise: "double-any" },
-      },
-    ],
-    twist: {
-      item: { word: "see", forms: {}, correct: "seeing" },
-      prompt: "New verb: the pupil drops the final e of “see” and writes “seing”.",
-      answer: "correct",
-      why: "Correct it: “seeing”. Only a silent e is dropped (make → making); the e of “see” is part of the long “ee”, so it stays. A rule in words still has to be applied, case by case.",
-    },
-  },
-];
-
 export const SESSIONS: Session[] = [
   {
-    id: "pupil-1",
-    title: "Teach the pupil",
-    blurb: "You know the rule. The pupil only has your examples — and its own ideas about what they mean.",
-    shows: "Every example fits more than one way of going on; the pupil's misreading is not stupidity (§185).",
+    id: "rules-1",
+    title: "Going on",
+    blurb: "Every example you give fits more than one way of going on. Find the ones that tell them apart.",
+    shows:
+      "Examples never fix a rule on their own, and nor do explanations; what settles “the same way” is a shared practice (§§185–202, 217).",
     source: "pi-185",
-    rounds: LEVELS,
+    rounds: LEVELS.slice(0, 3),
   },
   {
-    id: "pupil-2",
-    title: "Rules with no rule",
-    blurb: "Some patterns are nearly rules; some must simply be learned. Teach both.",
-    shows: "A rule is followed in a practice; when justifications run out, “this is simply what I do” (§§198–202, 217).",
-    source: "pi-217",
-    rounds: LEVELS_2,
-  },
-  {
-    id: "pupil-3",
-    title: "Old rules, new words",
-    blurb: "Two rules you have met before, in new clothes. Does the pupil carry them over?",
-    shows: "No explanation fixes a rule on its own: an interpretation hangs in the air along with what it interprets (§198).",
-    source: "pi-185",
-    rounds: LEVELS_3,
+    id: "rules-2",
+    title: "Signposts",
+    blurb: "A sign does not tell you how to follow it. What does?",
+    shows: "A signpost is followed only where there is a regular use of signposts, a custom (§198).",
+    source: "pi-198",
+    rounds: LEVELS.slice(3),
   },
 ];
 
 /** What a round showed, for the end card and the notebook. */
 export function did(r: Level): string {
-  return r.rule;
+  return `taught “${r.rule}”`;
 }

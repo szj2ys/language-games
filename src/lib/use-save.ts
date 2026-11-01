@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { emptySave, loadSave, mergeSaves, writeSave, type Save, SAVE_KEY } from "./progress";
+import { clearDrafts } from "./use-draft";
 
 type State = { save: Save; storable: boolean; ready: boolean };
 
@@ -19,6 +20,8 @@ function init() {
   window.addEventListener("storage", (e) => {
     if (e.key !== SAVE_KEY) return;
     const next = loadSave();
+    // Another tab reset progress: its half-finished rounds go too.
+    if (next.save.epoch > state.save.epoch) clearDrafts();
     // Another tab wrote: keep everything both tabs know, never just the other tab's copy.
     state = { ...state, save: mergeSaves(state.save, next.save) };
     emit();

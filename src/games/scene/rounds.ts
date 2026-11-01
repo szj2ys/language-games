@@ -165,7 +165,8 @@ export const SESSIONS: Session[] = [
     id: "scene-3",
     title: "Say where it is",
     blurb: "Your partner cannot see the stage. One true sentence must be enough for them to put the thing in the right place.",
-    shows: "A proposition fixes reality to a yes or a no: one sentence has to leave one possibility (Tractatus 4.023).",
+    shows:
+      "A proposition fixes the conditions under which it is true; many arrangements can satisfy it (Tractatus 4.023). Your partner needed more: a sentence true of one place only.",
     source: "tlp-4.01",
     rounds: [
       {

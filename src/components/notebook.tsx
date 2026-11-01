@@ -5,7 +5,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GAMES } from "@/content/games";
 import { NOTEBOOK } from "@/content/notebook";
-import { clearSave, emptySave } from "@/lib/progress";
+import { citation } from "@/content/sources";
+import { resetSave } from "@/lib/progress";
 import { useSave } from "@/lib/use-save";
 import { clearDrafts } from "@/lib/use-draft";
 import { SHORTCUTS_OFF } from "@/components/game/shortcuts";
@@ -34,6 +35,7 @@ export function Notebook() {
         >
           Start with the first idea
         </Link>
+        <ShortcutSetting />
       </div>
     );
 
@@ -58,25 +60,40 @@ export function Notebook() {
                     Play again
                   </Link>
                 </div>
-                <ul className="mt-1 flex flex-col gap-1.5">
-                  {s.rounds
-                    .filter((r) => save.rounds[r.id])
-                    .map((r) => {
-                      const rec = save.rounds[r.id];
-                      return (
-                        <li key={r.id} className="rounded-lg border border-border bg-card px-3 py-2">
-                          <p className="font-heading text-[18px] leading-snug">{r.did.charAt(0).toUpperCase() + r.did.slice(1)}</p>
-                          {(rec.said ?? []).map((line) => (
-                            <p key={line} className="text-[15px] text-muted-foreground">
-                              You: {line}
-                            </p>
-                          ))}
-                          {rec.missed && <p className="text-[15px] text-vermilion">You first tried: {rec.missed}</p>}
-                          {rec.firstTry && <p className="text-sm text-sage">Right first time</p>}
-                        </li>
-                      );
-                    })}
-                </ul>
+                <p className="mt-1 font-heading text-[19px] leading-snug">{s.shows}</p>
+                <Link
+                  href={`/sources#${s.source}`}
+                  className="inline-flex min-h-11 items-center text-sm font-bold underline underline-offset-4"
+                >
+                  Read {citation(s.source)}
+                </Link>
+                <details className="group mt-1">
+                  <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-[15px] font-bold">
+                    Your answers ({s.rounds.filter((r) => save.rounds[r.id]).length})
+                    <span aria-hidden className="text-muted-foreground group-open:rotate-180">
+                      ⌄
+                    </span>
+                  </summary>
+                  <ul className="mt-1 flex flex-col gap-1.5">
+                    {s.rounds
+                      .filter((r) => save.rounds[r.id])
+                      .map((r) => {
+                        const rec = save.rounds[r.id];
+                        return (
+                          <li key={r.id} className="rounded-lg border border-border bg-card px-3 py-2">
+                            <p className="font-heading text-[18px] leading-snug">{r.did.charAt(0).toUpperCase() + r.did.slice(1)}</p>
+                            {(rec.said ?? []).map((line) => (
+                              <p key={line} className="text-[15px] text-muted-foreground">
+                                You: {line}
+                              </p>
+                            ))}
+                            {rec.missed && <p className="text-[15px] text-vermilion">You first tried: {rec.missed}</p>}
+                            {rec.firstTry && <p className="text-sm text-sage">Right first time</p>}
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </details>
               </div>
             ))}
         </section>
@@ -90,9 +107,8 @@ export function Notebook() {
               variant="destructive"
               className="h-11"
               onClick={() => {
-                clearSave();
                 clearDrafts();
-                update(() => emptySave());
+                update(resetSave);
                 setConfirm(false);
               }}
             >

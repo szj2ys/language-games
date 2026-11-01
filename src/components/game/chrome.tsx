@@ -79,9 +79,9 @@ export function GameHeader({
 export function IdeaCard({ source }: { source: SourceId }) {
   const s: Source = SOURCES[source];
   return (
-    <details className="group mx-3 mb-4 rounded-lg border border-border bg-card lg:mx-6">
-      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4">
-        <span className="font-heading text-[18px] font-medium">The idea behind this game</span>
+    <details className="group mx-3 my-2 rounded-lg border border-border bg-card lg:mx-6">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3">
+        <span className="font-heading text-[17px] font-medium">The idea behind this game</span>
         <span className="flex items-center gap-2 text-sm text-muted-foreground">
           {WORK_TITLE[s.work]} {s.ref}
           <span aria-hidden className="group-open:rotate-180">
@@ -151,7 +151,7 @@ export function SessionEnd({
   const [lead, ...more] = sources ?? [];
   return (
     <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_460px] lg:items-start lg:gap-10">
-      <div className="flex flex-col gap-4">
+      <div className="order-2 flex flex-col gap-4 lg:order-1">
         {art && (
           <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-paper-deep">
             <Image src={art} alt="" fill sizes="(min-width: 1024px) 700px, 100vw" className="object-cover" />
@@ -162,7 +162,7 @@ export function SessionEnd({
         )}
         {lead && <MarginNote id={lead} />}
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="order-1 flex flex-col gap-4 lg:order-2">
         <p className="text-sm font-bold tracking-wide text-vermilion uppercase">Done · {title}</p>
         <h2 className="font-heading text-[26px] leading-snug font-medium lg:text-[32px]">{shows}</h2>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -281,8 +281,8 @@ export function GameFrame({
         onToggleSpeech={withSpeech && g.speech.available ? g.toggleSpeech : undefined}
       />
       {g.sessions.length > 1 && (
-        <nav aria-label="Sessions" className="px-3 pb-2">
-          <ol className="flex gap-1.5 overflow-x-auto [mask-image:linear-gradient(to_right,black_85%,transparent)] sm:[mask-image:none]">
+        <nav aria-label="Sessions" className="border-b border-border px-3 lg:px-6">
+          <ol className="flex gap-4 overflow-x-auto [mask-image:linear-gradient(to_right,black_85%,transparent)] sm:[mask-image:none]">
             {g.sessions.map((s, i) => {
               const current = i === g.sessionIndex;
               return (
@@ -292,8 +292,8 @@ export function GameFrame({
                     onClick={() => g.goToSession(i)}
                     aria-current={current ? "step" : undefined}
                     className={cn(
-                      "flex h-11 items-center gap-1.5 rounded-full border px-3.5 text-sm font-bold whitespace-nowrap",
-                      current ? "border-ink bg-ink text-paper" : "border-border bg-card hover:bg-paper-deep",
+                      "-mb-px flex h-11 items-center gap-1.5 border-b-2 text-[15px] whitespace-nowrap",
+                      current ? "border-vermilion font-bold text-ink" : "border-transparent text-muted-foreground hover:text-ink",
                     )}
                   >
                     {g.finishedIn(i) ? <Check className="size-4" aria-label="done:" /> : <span aria-hidden>{i + 1}</span>}
@@ -310,10 +310,10 @@ export function GameFrame({
           Progress cannot be saved in this browser. You can still play.
         </p>
       )}
-      <main id="main" className="flex flex-1 flex-col pt-3 lg:justify-center lg:pb-6">
+      {!g.finished && <IdeaCard source={g.session.source} />}
+      <main id="main" className="flex flex-1 flex-col pt-1 lg:justify-center lg:pb-6">
         {children}
       </main>
-      {!g.finished && <IdeaCard source={g.session.source} />}
       <ShortcutTip />
     </div>
   );

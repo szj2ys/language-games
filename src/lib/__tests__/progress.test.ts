@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptySave, mergeSaves, parseSave, recordRound, SAVE_VERSION } from "../progress";
+import { emptySave, mergeSaves, parseSave, recordRound, resetSave, SAVE_VERSION } from "../progress";
 
 describe("progress", () => {
   it("treats missing storage as a fresh save", () => {
@@ -39,5 +39,17 @@ describe("saved positions", () => {
       JSON.stringify({ version: 1, rounds: {}, positions: { builder: { session: -1, round: 0 }, scene: { session: 1, round: 2 } } }),
     );
     expect(r.save.positions).toEqual({ scene: { session: 1, round: 2 } });
+  });
+});
+
+describe("reset across tabs", () => {
+  it("a reset in one tab is not undone by another tab's older save", () => {
+    const played = recordRound(emptySave(), "r1", { marks: 3, max: 3, firstTry: true });
+    const reset = resetSave(played);
+    expect(mergeSaves(played, reset).rounds).toEqual({});
+    expect(mergeSaves(reset, played).rounds).toEqual({});
+    // Progress made after the reset is kept.
+    const after = recordRound(reset, "r2", { marks: 1, max: 3, firstTry: false });
+    expect(Object.keys(mergeSaves(after, played).rounds)).toEqual(["r2"]);
   });
 });

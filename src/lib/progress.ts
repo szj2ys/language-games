@@ -18,6 +18,8 @@ export type RoundRecord = {
 
 export type Save = {
   version: number;
+  /** Bumped by "Reset progress": a save from an older epoch never brings deleted progress back. */
+  epoch: number;
   rounds: Record<string, RoundRecord>;
   /** Words and constructions the player has used, for the notebook. */
   phrases: string[];
@@ -32,6 +34,7 @@ export type Position = { session: number; round: number };
 export function emptySave(): Save {
   return {
     version: SAVE_VERSION,
+    epoch: 0,
     rounds: {},
     phrases: [],
     positions: {},
@@ -72,6 +75,7 @@ export function parseSave(raw: string | null): LoadResult {
     ok: true,
     save: {
       version: SAVE_VERSION,
+      epoch: typeof d.epoch === "number" && d.epoch >= 0 ? d.epoch : 0,
       rounds,
       phrases: Array.isArray(d.phrases) ? d.phrases.filter((p) => typeof p === "string").slice(-200) : [],
       lastGame: typeof d.lastGame === "string" ? d.lastGame : undefined,
@@ -115,6 +119,8 @@ export function recordRound(save: Save, id: string, rec: RoundRecord, phrases: s
 
 /** Merge two saves (e.g. another tab wrote meanwhile) without losing completion. */
 export function mergeSaves(a: Save, b: Save): Save {
+  // After a reset, the newer epoch wins outright: merging would bring the deleted rounds back.
+  if (a.epoch !== b.epoch) return a.epoch > b.epoch ? a : b;
   let out: Save = {
     ...a,
     settings: b.settings,
@@ -149,10 +155,7 @@ export function writeSave(save: Save): boolean {
   }
 }
 
-export function clearSave(): void {
-  try {
-    window.localStorage.removeItem(SAVE_KEY);
-  } catch {
-    // Nothing stored, nothing to clear.
-  }
+/** A fresh save one epoch on from `save`: what "Reset progress" writes, so other tabs drop the old one too. */
+export function resetSave(save: Save): Save {
+  return { ...emptySave(), epoch: save.epoch + 1 };
 }

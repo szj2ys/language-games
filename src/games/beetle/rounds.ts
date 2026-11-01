@@ -11,10 +11,40 @@ export const SESSIONS: ChoiceSession[] = [
     art: "/art/v2/cover-beetle.webp",
     rounds: [
       {
+        kind: "boxes",
+        id: "bb1-0",
+        art: "/art/v2/beetle-friends.webp",
+        situation:
+          "Four friends each have a box with something in it. They call it a “beetle”. No one can look into anyone else's box. You are one of the four.",
+        contents: ["A beetle", "A grey pebble", "Nothing at all", "Something that keeps changing"],
+        talk: [
+          { who: "Ana", line: "Did everyone bring their beetle?" },
+          { who: "You", line: "Mine's right here." },
+          { who: "Ben", line: "Keep your beetle safe on the train home." },
+          { who: "Cleo", line: "Mine has been quiet all day." },
+          { who: "You", line: "So has mine." },
+        ],
+        question: "What difference did the inside of your box make to the talk?",
+        options: [
+          {
+            text: "None: the talk went the same whatever was in the box.",
+            right: true,
+            reply: "Right. “The thing in the box has no place in the language-game at all” (§293).",
+          },
+          {
+            text: "It changed what “beetle” meant when I said it.",
+            right: false,
+            reply: "Nothing anyone said or did changed, and nobody could tell. Where is the difference in meaning supposed to show?",
+          },
+        ],
+        point: "The thing in the box drops out: the word works the same whatever is inside, even nothing.",
+        source: "pi-293",
+      },
+      {
         id: "bb1-1",
         art: "/art/v2/beetle-friends.webp",
         situation:
-          "Four friends each have a box with something in it. They call it a “beetle”. No one can look into anyone else's box. Ana says: “My beetle is bigger than yours.”",
+          "The rules of this game: everyone has a box, and no one can look into anyone else's box, or compare boxes in any way: no scales, no photographs, no X-rays. Ana says: “My beetle is bigger than yours.”",
         question: "Could anyone ever find out whether that is true?",
         options: [
           {
@@ -34,26 +64,6 @@ export const SESSIONS: ChoiceSession[] = [
           },
         ],
         point: "A claim about the inside of someone else's box can never be checked.",
-        source: "pi-293",
-      },
-      {
-        id: "bb1-2",
-        art: "/art/v2/beetle-friends.webp",
-        situation: "Ben puts his box on the table and says: “I've brought my beetle.”",
-        question: "Can the others check what Ben has done?",
-        options: [
-          {
-            text: "Yes: they can see him put the box on the table.",
-            right: true,
-            reply: "Right. The box and what Ben does with it are in plain view.",
-          },
-          {
-            text: "No: everything about beetles is private.",
-            right: false,
-            reply: "Only the inside of the box is hidden. The box, and what Ben says and does, are public.",
-          },
-        ],
-        point: "What people say and do with their boxes is public, and can be checked.",
         source: "pi-293",
       },
       {
@@ -79,27 +89,6 @@ export const SESSIONS: ChoiceSession[] = [
           },
         ],
         point: "If everyone knew “beetle” only from their own case, the word could not be the name of the thing in the box.",
-        source: "pi-293",
-      },
-      {
-        id: "bb1-4",
-        art: "/art/v2/beetle-friends.webp",
-        situation:
-          "The friends talk all evening. “My beetle is quiet today.” “So is mine.” “Keep your beetle safe on the train.” They ask, answer, joke and agree. Nobody misunderstands anybody.",
-        question: "Did they need to see inside the boxes for this to work?",
-        options: [
-          {
-            text: "No: the talk worked without anyone looking.",
-            right: true,
-            reply: "Right. Everything they did with the word happened in the open.",
-          },
-          {
-            text: "Yes: otherwise they are not really talking about anything.",
-            right: false,
-            reply: "They asked, answered and agreed all evening, and nothing went wrong. What would “really” add?",
-          },
-        ],
-        point: "The word did its work in what the friends said and did, not by pointing into the boxes.",
         source: "pi-293",
       },
       {
@@ -140,46 +129,21 @@ export const SESSIONS: ChoiceSession[] = [
     art: "/art/v2/manometer.webp",
     rounds: [
       {
-        id: "bb2-1",
+        kind: "diary",
+        id: "bb2-0",
         art: "/art/v2/diary.webp",
         situation:
-          "You keep a diary about a certain sensation. Each time it comes, you write “S”. You cannot describe it in words, so as you write you concentrate on it hard, pointing to it inwardly.",
-        question: "Have you now fixed what “S” means?",
-        options: [
-          {
-            text: "Yes: I pointed to the sensation inwardly.",
-            right: false,
-            reply:
-              "Nothing would show that next time you use “S” in the same way. Whatever seems right will be right, so there is no right at all.",
-          },
-          {
-            text: "No: nothing could show that I use “S” the same way next time.",
-            right: true,
-            reply: "Right. “I have no criterion of correctness” (§258).",
-          },
+          "You keep a diary of a certain sensation. On day 1 you felt it, concentrated hard, and wrote “S”. Each day after, decide: is today's sensation S again? Then check your diary.",
+        days: [
+          { shape: 0, gauge: true },
+          { shape: 1, gauge: true },
+          { shape: 2, gauge: false },
+          { shape: 3, gauge: true },
+          { shape: 4, gauge: false },
+          { shape: 5, gauge: true },
         ],
-        point: "Without any check, “whatever is going to seem right to me is right”, and so there is no right.",
+        point: "With no check, whatever seems right is right, so there is no right; tied to the gauge, “S” has a use (§§258, 270).",
         source: "pi-258",
-      },
-      {
-        id: "bb2-2",
-        art: "/art/v2/diary.webp",
-        situation: "A week later the sensation comes again, or seems to. You want to be sure it really is S.",
-        question: "How could you check?",
-        options: [
-          {
-            text: "Remember what S felt like last time, and compare.",
-            right: false,
-            reply: "That checks your memory against itself, like buying a second copy of the morning paper to check the first (§265).",
-          },
-          {
-            text: "There is nothing independent to check it against.",
-            right: true,
-            reply: "Right. A check has to be able to come out against you.",
-          },
-        ],
-        point: "Checking a memory against the same memory is not a check.",
-        source: "pi-265",
       },
       {
         id: "bb2-3",
@@ -221,27 +185,6 @@ export const SESSIONS: ChoiceSession[] = [
         ],
         point: "Pain is not locked away: others often know, from what we do and say.",
         source: "pi-246",
-      },
-      {
-        id: "bb2-5",
-        art: "/art/v2/manometer.webp",
-        situation:
-          "Back to your diary. A doctor fits a blood-pressure gauge. It turns out that whenever you write “S”, the needle has risen.",
-        question: "Does “S” have a use now?",
-        options: [
-          {
-            text: "Yes: “S” now tells you your blood pressure is rising, without the gauge.",
-            right: true,
-            reply: "Right. And now “it seems quite indifferent whether I have recognized the sensation right or not” (§270).",
-          },
-          {
-            text: "No: it is still about something private, so it means nothing.",
-            right: false,
-            reply: "Now there is something others can check “S” against. That is what gives it a use.",
-          },
-        ],
-        point: "Tied to something others can check, “S” has a use; the private object does no work.",
-        source: "pi-270",
       },
     ],
   },

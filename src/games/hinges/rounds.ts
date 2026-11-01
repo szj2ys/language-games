@@ -11,39 +11,45 @@ export const SESSIONS: ChoiceSession[] = [
     art: "/art/v2/hinge-door.webp",
     rounds: [
       {
-        id: "h1-1",
+        kind: "checks",
+        id: "h1-0",
         art: "/art/v2/doubt.webp",
-        situation: "A friend says: “The bakery opens at eight on Saturdays.” You are not sure.",
-        question: "What would settle your doubt?",
-        options: [
-          {
-            text: "Look at the sign, phone them, or ask a neighbour.",
-            right: true,
-            reply: "Right. An ordinary doubt comes with ordinary ways of settling it.",
+        situation:
+          "Check a claim, then check what the check relies on, and so on. Keep going until you reach something that could only be checked by relying on itself.",
+        start: "bakery",
+        claims: {
+          bakery: {
+            text: "The bakery opens at eight on Saturdays.",
+            checks: [
+              { how: "Read the sign on the bakery door.", reliesOn: ["sign", "eyes"] },
+              { how: "Phone the bakery and ask.", reliesOn: ["words"] },
+              { how: "Ask a neighbour who shops there.", reliesOn: ["neighbour", "words"] },
+            ],
           },
-          { text: "Nothing could ever settle it.", right: false, reply: "Of course something could: you know exactly how to find out." },
-        ],
-        point: "An ordinary doubt has an ordinary way to settle it.",
-        source: "oc-115",
-      },
-      {
-        id: "h1-2",
-        art: "/art/v2/hands.webp",
-        situation: "Now the claim is: “I have two hands.” Suppose you tried to doubt it.",
-        question: "How would you make sure?",
-        options: [
-          {
-            text: "Look at them.",
-            right: false,
-            reply: "If you doubted that you have hands, why trust your eyes? “What is to be tested by what?” (On Certainty §125)",
+          sign: {
+            text: "The sign on the door is up to date.",
+            checks: [{ how: "Ask the baker whether the sign is current.", reliesOn: ["words"] }],
           },
-          {
-            text: "Nothing would be surer than this: any test would be less certain than what it tested.",
-            right: true,
-            reply: "Right. Some things are more certain than any test you could run on them.",
+          neighbour: {
+            text: "The neighbour remembers correctly.",
+            checks: [{ how: "Ask a second neighbour.", reliesOn: ["words"] }],
           },
-        ],
-        point: "Some things are more certain than any test that could be run on them.",
+          eyes: {
+            text: "My eyes are working.",
+            checks: [
+              { how: "Look at my two hands and see them.", reliesOn: ["eyes"] },
+              { how: "Read the small print on a packet.", reliesOn: ["eyes"] },
+            ],
+          },
+          words: {
+            text: "Words like “eight” and “open” mean what I take them to mean.",
+            checks: [
+              { how: "Look them up in a dictionary.", reliesOn: ["words"] },
+              { how: "Ask someone what they mean.", reliesOn: ["words"] },
+            ],
+          },
+        },
+        point: "Some things are not checked; every check relies on them. They stand fast, like hinges (On Certainty §§125, 341).",
         source: "oc-125",
       },
       {
@@ -76,7 +82,7 @@ export const SESSIONS: ChoiceSession[] = [
             text: "As far as she likes: doubting is free.",
             right: false,
             reply:
-              "To doubt anything at all she must trust that her words mean what they mean, that the things she doubts about exist… Doubt everything and there is nothing left to doubt with.",
+              "To doubt whether the bakery is open, she must take for granted what “bakery” and “open” mean, and how one finds out. Doubt everything, and there is nothing left to doubt with.",
           },
           {
             text: "Not far: doubting itself needs something certain.",
@@ -86,6 +92,26 @@ export const SESSIONS: ChoiceSession[] = [
         ],
         point: "If you tried to doubt everything, you would not get as far as doubting anything.",
         source: "oc-115",
+      },
+      {
+        id: "h1-4b",
+        art: "/art/v2/moon.webp",
+        situation: "An astronomer wonders whether there is another planet beyond the ones we know of.",
+        question: "Is doubting that something exists the kind of doubt that would pull everything down?",
+        options: [
+          {
+            text: "No: it is an ordinary question, settled by looking through telescopes.",
+            right: true,
+            reply: "Right. Doubting whether a planet exists is an ordinary doubt with ordinary ways to settle it (§20).",
+          },
+          {
+            text: "Yes: doubting that something exists is doubting the world.",
+            right: false,
+            reply: "“‘Doubting the existence of the external world’ does not mean for example doubting the existence of a planet” (§20).",
+          },
+        ],
+        point: "Some doubts about what exists are ordinary questions; hinges are not a ban on them.",
+        source: "oc-20",
       },
       {
         id: "h1-5",
@@ -117,6 +143,26 @@ export const SESSIONS: ChoiceSession[] = [
     source: "oc-96",
     art: "/art/v2/cover-hinges.webp",
     rounds: [
+      {
+        kind: "sort",
+        id: "h2-0",
+        art: "/art/v2/moon.webp",
+        situation:
+          "Sort each claim the way people in that year would have treated it: open to checking, or standing fast. Then move on to the next year.",
+        eras: [
+          { year: "1950", note: "when Wittgenstein wrote On Certainty §106" },
+          { year: "1970", note: "a year after the moon landing" },
+        ],
+        cards: [
+          { text: "The bakery opens at eight on Saturdays.", bed: [false, false] },
+          { text: "No one has ever been on the moon.", bed: [true, false] },
+          { text: "The earth existed long before I was born.", bed: [true, true] },
+          { text: "It will rain tomorrow.", bed: [false, false] },
+          { text: "I have two hands.", bed: [true, true] },
+        ],
+        point: "What stands fast can shift: in 1969 a hard certainty became open to checking, then false (§§96–97, 106).",
+        source: "oc-96",
+      },
       {
         id: "h2-1",
         art: "/art/v2/river.webp",
@@ -152,47 +198,6 @@ export const SESSIONS: ChoiceSession[] = [
         ],
         point: "We check things against a background that we did not check.",
         source: "oc-94",
-      },
-      {
-        id: "h2-3",
-        art: "/art/v2/moon.webp",
-        situation:
-          "Around 1950, Wittgenstein imagines a child told by an adult that he had been on the moon. “No one has ever been on the moon,” Wittgenstein answers; it is impossible to fly there (§106).",
-        question: "In 1950, was “No one has been on the moon” a claim people kept checking?",
-        options: [
-          {
-            text: "No: it stood fast. Nobody thought it needed checking.",
-            right: true,
-            reply: "Right. For Wittgenstein and his readers, it was part of the river-bed.",
-          },
-          {
-            text: "Yes: people checked it every day.",
-            right: false,
-            reply: "How would they have? It was simply what everyone took for granted.",
-          },
-        ],
-        point: "In 1950, “no one has been on the moon” was part of the river-bed.",
-        source: "oc-106",
-      },
-      {
-        id: "h2-4",
-        art: "/art/v2/moon.webp",
-        situation: "In July 1969, two people walked on the moon.",
-        question: "What happened to the river-bed?",
-        options: [
-          {
-            text: "It moved: something hard became open to question, then false.",
-            right: true,
-            reply: "Right. “Fluid propositions hardened, and hard ones became fluid” (§96).",
-          },
-          {
-            text: "Nothing: it only shows there were never any hinges.",
-            right: false,
-            reply: "Hinges are not promised to be true for ever. Wittgenstein says himself that the bed can shift.",
-          },
-        ],
-        point: "What stands fast can shift: hard propositions can become fluid.",
-        source: "oc-96",
       },
       {
         id: "h2-5",

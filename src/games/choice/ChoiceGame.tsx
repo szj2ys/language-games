@@ -10,7 +10,8 @@ import { track } from "@/components/analytics";
 import { nextGame, type GameSlug } from "@/content/order";
 import { useDraft } from "@/lib/use-draft";
 import { cn } from "@/lib/utils";
-import { did, type ChoiceRound, type ChoiceSession } from "./types";
+import { did, type AnyRound, type ChoiceRound, type ChoiceSession } from "./types";
+import { BoxesPlay, ChecksPlay, DiaryPlay, SortPlay } from "./activities";
 
 /** A game of situations and questions: answer, hear the reply, see the point. Used by the beetle and the hinges. */
 export function ChoiceGame({ slug, sessions }: { slug: GameSlug; sessions: ChoiceSession[] }) {
@@ -34,10 +35,35 @@ export function ChoiceGame({ slug, sessions }: { slug: GameSlug; sessions: Choic
           onReplay={g.replay}
         />
       ) : (
-        <Round key={round.id} slug={slug} round={round} onDone={g.complete} onNext={g.next} />
+        <Activity key={round.id} slug={slug} round={round} onDone={g.complete} onNext={g.next} />
       )}
     </GameFrame>
   );
+}
+
+function Activity({
+  slug,
+  round,
+  onDone,
+  onNext,
+}: {
+  slug: GameSlug;
+  round: AnyRound;
+  onDone: (marks: number, max: number, firstTry: boolean, phrases: string[], missed?: string) => void;
+  onNext: () => void;
+}) {
+  switch (round.kind) {
+    case "boxes":
+      return <BoxesPlay round={round} onDone={onDone} onNext={onNext} />;
+    case "diary":
+      return <DiaryPlay round={round} onDone={onDone} onNext={onNext} />;
+    case "checks":
+      return <ChecksPlay round={round} onDone={onDone} onNext={onNext} />;
+    case "sort":
+      return <SortPlay round={round} onDone={onDone} onNext={onNext} />;
+    default:
+      return <Round slug={slug} round={round} onDone={onDone} onNext={onNext} />;
+  }
 }
 
 function Round({
@@ -75,7 +101,7 @@ function Round({
 
   return (
     <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start lg:gap-8 lg:px-6">
-      <SceneCanvas label={round.situation}>
+      <SceneCanvas label={round.situation} className="max-sm:aspect-[16/9]">
         <Image src={round.art} alt="" fill priority sizes="(min-width: 1024px) 700px, 133vw" className="object-cover" />
       </SceneCanvas>
       <div className="flex flex-col gap-3 px-3 pb-4 lg:px-0">
@@ -109,12 +135,21 @@ function Round({
           })}
         </div>
         {last && !last.right && !solved && (
-          <p role="status" className="flex items-start gap-2 rounded-lg bg-vermilion/10 px-3 py-2 text-[16px] leading-relaxed">
+          <p
+            role="status"
+            // On a phone the reply lands below the answers: bring it into view.
+            ref={(el) => el?.scrollIntoView({ block: "nearest" })}
+            className="flex items-start gap-2 rounded-lg bg-vermilion/10 px-3 py-2 text-[16px] leading-relaxed"
+          >
             <RotateCcw className="mt-1 size-4 shrink-0" aria-hidden /> {last.reply}
           </p>
         )}
         {solved && last && (
-          <div role="status" className="flex flex-col gap-1.5 rounded-lg bg-sage/15 p-4">
+          <div
+            role="status"
+            ref={(el) => el?.scrollIntoView({ block: "nearest" })}
+            className="flex flex-col gap-1.5 rounded-lg bg-sage/15 p-4"
+          >
             <p className="text-[16px] leading-relaxed">{last.reply}</p>
             <p className="font-heading text-[19px] leading-snug">{round.point}</p>
           </div>

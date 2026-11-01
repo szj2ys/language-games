@@ -777,8 +777,9 @@ function CallPlay({
         )}
         {solved && round.teaches && (
           <p role="status" className="rounded-xl bg-sage/15 p-3 text-[15px] lg:text-[18px]">
-            New word: <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>. You pointed and said “this”; now the
-            builder names it. Next time you can simply call it.
+            You got it with “this” and pointing, a move already in the game. Now the builder points at it and says{" "}
+            <span className="font-heading text-lg font-semibold">“{round.teaches}”</span>: a new name, taught by pointing (§6). The pointing
+            works because you already know what kind of word it is: the name of a stone (§§28–30).
           </p>
         )}
 

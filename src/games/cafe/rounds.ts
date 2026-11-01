@@ -205,7 +205,7 @@ export const SESSIONS: Session[] = [
         ],
         ask: { question: "Is it too sweet for you?", answer: "No, no, it's lovely. I'm just being polite." },
         use: "a polite refusal that invites a second offer",
-        note: "In English a first 'no' usually means no, so check once, lightly, and don't push. Here her smile and her eyes on the cake invite that check. In some cultures a host is expected to insist after a refusal; in English that can feel pushy.",
+        note: "Her first 'no' and her eyes on the cake point different ways. The words alone don't settle what she means; the situation does. Checking once is a move in this game; pushing would be a different game.",
         // Not universal: in other places and with other people the first no means no.
       },
       {
@@ -267,7 +267,7 @@ export const SESSIONS: Session[] = [
           act("Bring her a glass of water and a plaster.", false, "…Thanks? I'm really fine."),
         ],
         use: "a greeting ritual, not a medical report",
-        note: "'How are you?' — 'Fine, thanks' is part of greeting someone in English. It asks for no details.",
+        note: "'How are you?' — 'Fine, thanks' is a greeting, not a report on anyone's health: a language-game with its own moves (greeting is on the list in PI §23).",
       },
       {
         id: "c3-4",
@@ -310,7 +310,7 @@ export const SESSIONS: Session[] = [
           say("“You're excused.”", false, "…I didn't hear you."),
         ],
         use: "a request to repeat",
-        note: "With a rising voice, 'Excuse me?' means 'I didn't hear — please say it again'. 'Sorry?' and 'Pardon?' do the same job and are more usual in Britain. Said sharply, 'Excuse me?!' can mean 'How rude!'. And 'Excuse me!' after you bump into someone is an apology.",
+        note: "With a rising voice, 'Excuse me?' asks you to say it again; said sharply, it protests; after a bump, it apologises. One phrase, several games.",
       },
     ],
   },
@@ -336,7 +336,7 @@ export const SESSIONS: Session[] = [
           say("“You're welcome!”", false, "(She looks puzzled.) …No, I'm saying sorry. I knocked your coffee over!"),
         ],
         use: "an apology",
-        note: "Her bag knocked your cup over, so 'Sorry!' is an apology. 'No problem', 'That's OK' and 'Don't worry' all accept an apology; 'You're welcome' answers 'Thank you', not 'Sorry'.",
+        note: "Her bag knocked your cup over, so 'Sorry!' is an apology, and accepting it is the move that fits. 'You're welcome' belongs to a different game: answering thanks.",
       },
       {
         id: "c4-2",
@@ -371,7 +371,7 @@ export const SESSIONS: Session[] = [
           act("Say “Have a nice day!” and walk off.", false, "(The door swings against her bags.) Oh! I wasn't quite through, dear."),
         ],
         use: "thanking someone for a favour that isn't finished yet",
-        note: "Rosa thanks you while she is still in the doorway: thanks often comes before the favour is over, so keep holding the door. 'No problem' and 'You're welcome' are both good answers. Thanking is on Wittgenstein's own list of language-games, next to asking, cursing, greeting and praying (PI §23).",
+        note: "Rosa thanks you while she is still in the doorway, so the favour is not over: keep holding the door. Thanking is on Wittgenstein's own list of language-games, next to asking, cursing, greeting and praying (PI §23).",
       },
       {
         id: "c4-4",
@@ -389,7 +389,7 @@ export const SESSIONS: Session[] = [
         ],
         ask: { question: "Is that enough?", answer: "Yes — that's perfect, thanks." },
         use: "a polite way to say 'stop — that's enough'",
-        note: "The same words as at the door, but a different job. While someone is pouring or serving, 'Thank you!' often means 'That's enough' — and her raised hand says so too. If you are pouring for someone, 'Say when!' asks them to tell you when to stop.",
+        note: "The same words as at the door, but a different job: while someone is pouring, 'Thank you!' can mean 'That's enough', and her raised hand says so too. The meaning is in the use (PI §43).",
       },
       {
         id: "c4-5",
@@ -425,7 +425,7 @@ export const SESSIONS: Session[] = [
         ],
         ask: { question: "Do you mind if I answer it?", answer: "Not at all. Go on." },
         use: "permission to answer your phone",
-        note: "'Go ahead' gives permission, and what it allows depends on what is in view: she is pointing at your phone, not at your cake. With food on the table, the same words can mean 'Start eating'; when two people start talking at once, they mean 'You speak first'.",
+        note: "'Go ahead' gives permission, and what it permits depends on what is in view: she is pointing at your phone. With food on the table, the same words would mean 'Start eating'.",
       },
     ],
   },

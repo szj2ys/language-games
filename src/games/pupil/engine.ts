@@ -8,7 +8,7 @@ export type Item = {
   word: string;
   /** What each way of going on makes of this word. */
   forms: Record<string, string>;
-  /** What English speakers write. */
+  /** What someone trained in our practice writes. */
   correct: string;
 };
 
@@ -27,10 +27,9 @@ export type Explain = {
 };
 
 export type Twist = {
-  item: Item;
   prompt: string;
-  /** The teacher's call: correct the pupil, or accept that both forms are in use. */
-  answer: "correct" | "both";
+  /** The teacher's possible calls; one is right. */
+  options: { text: string; right: boolean }[];
   why: string;
 };
 
@@ -45,7 +44,7 @@ export type Level = {
   /** A loose explanation the pupil misreads, and a precise one it can follow once it knows the words in it. */
   explain: [Explain, Explain];
   twist: Twist;
-  /** The rule the pupil is being taught (the example practice, not the subject). */
+  /** The rule the pupil is being taught, in the teacher's words. */
   rule: string;
 };
 
@@ -111,120 +110,8 @@ export function par(level: Level): number {
 }
 
 // ---------------------------------------------------------------------------
-// Rules as functions, so every form in the data is generated, not typed by hand.
 
-export type AArticle = { word: string; vowelSound: boolean };
-
-export function articleItem(w: AArticle): Item {
-  const letter = /^[aeiou]/i.test(w.word);
-  return {
-    word: w.word,
-    forms: {
-      "always-a": `a ${w.word}`,
-      letter: `${letter ? "an" : "a"} ${w.word}`,
-      sound: `${w.vowelSound ? "an" : "a"} ${w.word}`,
-    },
-    correct: `${w.vowelSound ? "an" : "a"} ${w.word}`,
-  };
-}
-
-const SIBILANT = /(s|x|z|ch|sh)$/;
-const CONS_Y = /[^aeiou]y$/;
-
-export function pluralItem(word: string, irregular?: string): Item {
-  const s = `${word}s`;
-  const es = SIBILANT.test(word) ? `${word}es` : s;
-  const anyY = /y$/.test(word) ? `${word.slice(0, -1)}ies` : es;
-  const consY = CONS_Y.test(word) ? `${word.slice(0, -1)}ies` : es;
-  return {
-    word,
-    forms: { s, es, "any-y": anyY, "consonant-y": consY },
-    correct: irregular ?? consY,
-  };
-}
-
-/** Present simple after he/she/it: the same spelling choices as plurals (watches, tries, plays). */
-export function thirdPersonItem(word: string, irregular?: string): Item {
-  const plural = pluralItem(word, irregular);
-  const she = (form: string) => `she ${form}`;
-  return {
-    word,
-    forms: Object.fromEntries(Object.entries(plural.forms).map(([way, form]) => [way, she(form)])),
-    correct: she(plural.correct),
-  };
-}
-
-export type Verb = { word: string; stressedLast: boolean };
-
-const CVC = /[^aeiou][aeiou][^aeiouwxy]$/;
-
-export function pastItem(v: Verb): Item {
-  const w = v.word;
-  const plain = `${w}ed`;
-  const dropE = w.endsWith("e") ? `${w}d` : plain;
-  const doubleAny = CVC.test(w) ? `${w}${w.slice(-1)}ed` : dropE;
-  const doubleStressed = CVC.test(w) && v.stressedLast ? `${w}${w.slice(-1)}ed` : dropE;
-  return {
-    word: w,
-    forms: { ed: plain, "drop-e": dropE, "double-any": doubleAny, "double-stressed": doubleStressed },
-    correct: doubleStressed,
-  };
-}
-
-/** -ing spelling: the same choices as -ed (making, stopping, visiting). */
-export function ingItem(v: Verb, irregular?: string): Item {
-  const w = v.word;
-  const plain = `${w}ing`;
-  const dropE = w.endsWith("e") ? `${w.slice(0, -1)}ing` : plain;
-  const doubleAny = CVC.test(w) ? `${w}${w.slice(-1)}ing` : dropE;
-  const doubleStressed = CVC.test(w) && v.stressedLast ? `${w}${w.slice(-1)}ing` : dropE;
-  return {
-    word: w,
-    forms: { ing: plain, "drop-e": dropE, "double-any": doubleAny, "double-stressed": doubleStressed },
-    correct: irregular ?? doubleStressed,
-  };
-}
-
-export type Adjective = { word: string; syllables: number };
-
-export function comparativeItem(a: Adjective): Item {
-  const w = a.word;
-  const er = (x: string) => (x.endsWith("e") ? `${x}r` : `${x}er`);
-  const short = CVC.test(w) ? `${w}${w.slice(-1)}er` : /y$/.test(w) ? `${w.slice(0, -1)}ier` : er(w);
-  const always = er(w);
-  const bySyllable = a.syllables === 1 ? short : `more ${w}`;
-  const correct = a.syllables === 1 || (a.syllables === 2 && /y$/.test(w)) ? short : `more ${w}`;
-  return { word: w, forms: { "always-er": always, syllables: bySyllable, "y-too": correct }, correct };
-}
-
-export type VerbPattern = { word: string; looksAhead: boolean };
-
-/** "I enjoy swimming" / "I want to swim": the pupil's ways of going on after a verb. */
-export function patternItem(v: VerbPattern, next = "swim", ing = "swimming"): Item {
-  return {
-    word: v.word,
-    forms: {
-      "always-to": `${v.word} to ${next}`,
-      "always-ing": `${v.word} ${ing}`,
-      "looks-ahead": v.looksAhead ? `${v.word} to ${next}` : `${v.word} ${ing}`,
-    },
-    correct: v.looksAhead ? `${v.word} to ${next}` : `${v.word} ${ing}`,
-  };
-}
-
-export type Noun = { word: string; abstract: boolean; uncountable: boolean; plural?: string };
-
-/** "two chairs" but "two pieces of furniture". */
-export function countItem(n: Noun): Item {
-  const counted = `two ${n.plural ?? `${n.word}s`}`;
-  const pieces = `two pieces of ${n.word}`;
-  return {
-    word: n.word,
-    forms: {
-      "always-s": counted,
-      abstract: n.abstract ? pieces : counted,
-      listed: n.uncountable ? pieces : counted,
-    },
-    correct: n.uncountable ? pieces : counted,
-  };
+/** One question in a series: what each way of going on writes there, and what our practice writes. */
+export function stepItem(question: string, forms: Record<string, string>, correct: string): Item {
+  return { word: question, forms, correct };
 }

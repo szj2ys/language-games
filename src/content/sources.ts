@@ -45,7 +45,7 @@ export const SOURCES = {
     quote:
       "An important part of the training will consist in the teacher's pointing to the objects, directing the child's attention to them, and at the same time uttering a word; for instance, the word \"slab\" as he points to that shape.",
     gloss:
-      "You had no word for the curved stone, so you pointed and said 'this'. Pointing plus a word is how the builders' vocabulary grows.",
+      "Two different things happened with the curved stone. “This” plus pointing was already a move in the game (§8). Then the builder pointed and said “arch”: that is ostensive teaching, and it works because you already knew the game it belongs to.",
     limits:
       "Wittgenstein adds that pointing only works for someone already trained in the game; a gesture alone does not fix a meaning (§§28–30).",
     url: PI_URL,
@@ -204,7 +204,7 @@ export const SOURCES = {
     ref: "§§201–202",
     quote: "And hence also 'obeying a rule' is a practice.",
     gloss:
-      "What settles the next step is not a formula in the pupil's head but a shared practice. That is why sometimes the right call was “both are in use”.",
+      "What settles the next step is not a formula in the pupil's head but a shared practice. That is why the visitor's 11, 13, 17 was no mistake: it went on in a different practice.",
     limits: "This is not scepticism: Wittgenstein does not say any answer is as good as any other.",
     url: PI_URL,
   },
@@ -367,7 +367,7 @@ export const SOURCES = {
     work: "PI",
     ref: "§270",
     quote:
-      "I discover that whenever I have a particular sensation a manometer shows that my blood-pressure rises. So I shall be able to say that my blood-pressure is rising without using any apparatus. This is a useful result. And now it seems quite indifferent whether I have recognized the sensation right or not.",
+      "I discover that whenever I have a particular sensation a manometer shews that my blood-pressure rises. So I shall be able to say that my blood-pressure is rising without using any apparatus. This is a useful result. And now it seems quite indifferent whether I have recognized the sensation right or not.",
     gloss: "Once “S” is tied to something others can check, it has a use. The private “object” itself does no work.",
     url: PI_URL,
   },
@@ -382,6 +382,15 @@ export const SOURCES = {
     limits:
       "Wittgenstein does not say there are no sensations. He attacks a picture of how words for them get their meaning (§304: “It is not a something, but not a nothing either!”).",
     url: PI_URL,
+  },
+  "oc-20": {
+    id: "oc-20",
+    work: "OC",
+    ref: "§20",
+    quote:
+      "“Doubting the existence of the external world” does not mean for example doubting the existence of a planet, which later observations proved to exist.",
+    gloss: "An ordinary doubt about whether something exists is not the philosopher's doubt about everything.",
+    url: OC_URL,
   },
   "oc-94": {
     id: "oc-94",

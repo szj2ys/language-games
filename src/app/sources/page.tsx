@@ -9,10 +9,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/sources" },
 };
 
+/** The English editions quoted, so every quotation can be checked in print; section numbers are the same in every edition. */
 const TRANSLATION: Record<Work, string> = {
-  PI: "tr. G. E. M. Anscombe (short quotations for teaching)",
-  TLP: "tr. C. K. Ogden, 1922 (public domain)",
-  OC: "tr. Denis Paul and G. E. M. Anscombe (short quotations for teaching)",
+  PI: "Quoted from the English translation by G. E. M. Anscombe (Blackwell, 2nd ed. 1958), Part I; short quotations for teaching. Later editions (Hacker & Schulte, 2009) revise some wording.",
+  TLP: "Quoted from the English translation by C. K. Ogden (Kegan Paul, 1922), public domain; the link opens the full text.",
+  OC: "Quoted from the English translation by Denis Paul and G. E. M. Anscombe (Blackwell, 1969); short quotations for teaching.",
 };
 
 export default function SourcesPage() {
@@ -51,7 +52,7 @@ export default function SourcesPage() {
                       className="mt-1 inline-flex min-h-11 items-center text-sm font-bold underline underline-offset-4"
                       rel="noopener"
                     >
-                      {s.work === "TLP" ? "Read the full text (English)" : "Read the original (German)"}
+                      {s.work === "TLP" ? "Full text in English (Ogden)" : "The German original (Wittgenstein Project)"}
                     </a>
                   </li>
                 ))}

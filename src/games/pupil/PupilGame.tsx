@@ -63,7 +63,7 @@ function Lesson({
   const [cards, setCards] = useDraft(level.id, "cards", 0);
   const [explained, setExplained] = useDraft<number[]>(level.id, "explained", []);
   const [phase, setPhase] = useDraft<Phase>(level.id, "phase", "teach");
-  const [call, setCall] = useDraft<"correct" | "both" | null>(level.id, "call", null);
+  const [call, setCall] = useDraft<number | null>(level.id, "call", null);
   const bestSet = useMemo(() => bestCards(level), [level]);
   const best = bestSet.length;
   const exam = sitExam(level, pupil);
@@ -78,14 +78,12 @@ function Lesson({
     if (card) setCards((n) => n + 1);
   };
 
-  const decide = (c: "correct" | "both") => {
-    setCall(c);
-    const right = c === level.twist.answer;
+  // "Right first time" is the teacher's call on the new case; using few cards earns its own mark.
+  const decide = (i: number) => {
+    setCall(i);
+    const right = level.twist.options[i].right;
     const marks = 1 + (cards <= best ? 1 : 0) + (right ? 1 : 0);
-    onDone(marks, 3, cards <= best && right, [
-      ...pupil.shown.map((i) => `Showed: ${i.correct}`),
-      `Your call on “${level.twist.item.word}”: ${c === "correct" ? "correct it" : "both are in use"}`,
-    ]);
+    onDone(marks, 3, right, [...pupil.shown.map((x) => `Showed ${x.correct}`), `Your call: ${level.twist.options[i].text}`]);
     setPhase("done");
   };
 
@@ -201,7 +199,7 @@ function Lesson({
                 : `. It can be done with ${best}: ${bestSet.map((c) => `“${c.correct}”`).join(" and ")} ${best === 1 ? "rules out every wrong way at once" : "together rule out every wrong way"}.`}
             </p>
             <Button size="lg" className="h-12 text-lg" onClick={() => setPhase("twist")} autoFocus>
-              Now a word it hasn&apos;t seen
+              Now a case it hasn&apos;t seen
             </Button>
           </>
         )}
@@ -210,13 +208,18 @@ function Lesson({
           <div className="flex flex-col gap-3">
             <p className="font-heading text-[19px] leading-snug">{level.twist.prompt}</p>
             {phase === "twist" ? (
-              <div className="grid grid-cols-2 gap-2">
-                <Button size="lg" variant="outline" className="h-14 text-[16px]" onClick={() => decide("correct")}>
-                  Correct it
-                </Button>
-                <Button size="lg" variant="outline" className="h-14 text-[16px]" onClick={() => decide("both")}>
-                  Both are in use
-                </Button>
+              <div className="flex flex-col gap-2" role="group" aria-label="Your call">
+                {level.twist.options.map((o, i) => (
+                  <Button
+                    key={o.text}
+                    size="lg"
+                    variant="outline"
+                    className="h-auto min-h-14 justify-start py-2 text-left text-[16px] whitespace-normal"
+                    onClick={() => decide(i)}
+                  >
+                    {o.text}
+                  </Button>
+                ))}
               </div>
             ) : (
               <>
@@ -224,10 +227,10 @@ function Lesson({
                   role="status"
                   className={cn(
                     "rounded-xl p-3 text-[16px] leading-relaxed",
-                    call === level.twist.answer ? "bg-sage/15" : "bg-terracotta/10",
+                    call !== null && level.twist.options[call].right ? "bg-sage/15" : "bg-vermilion/10",
                   )}
                 >
-                  <span className="font-bold">{call === level.twist.answer ? "Good call. " : "Not this time. "}</span>
+                  <span className="font-bold">{call !== null && level.twist.options[call].right ? "Good call. " : "Not this time. "}</span>
                   {level.twist.why}
                 </p>
                 <p className="text-[15px] text-muted-foreground lg:text-[18px]">The rule you were teaching: {level.rule}.</p>

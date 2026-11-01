@@ -115,7 +115,7 @@ def play_builder(page: Page) -> None:
     say("this")
     page.get_by_role("button", name="Point at the curved stone").click()
     page.get_by_role("button", name=re.compile(r"^Call")).click()
-    expect(page.get_by_text("New word:")).to_be_visible()
+    expect(page.get_by_text("a new name, taught by pointing")).to_be_visible()
     shot(page, "builder-ostension")
     next_round(page)
     say("arch", "there")
@@ -205,17 +205,17 @@ def play_cafe(page: Page) -> None:
 
 # --- Go On! -------------------------------------------------------------------
 
-PUPIL = [
-    ("an honest man", "both"),
-    ("a baby", "correct"),
-    ("opened", "both"),
-    ("easier", "both"),
+# Each level's right call on the new case (§§185, 198–201, 217, 198).
+PUPIL_CALLS = [
+    "Correct it: 1002 is what “add 2” means here.",
+    "It's not a mistake: 3, 5, 7 begins both series.",
+    "At some point say: “This is simply what we do.”",
 ]
 
 
 def show_cards_until_pass(page: Page) -> None:
     """Show example cards until the pupil passes; the first pass is enough for the journey."""
-    passed = page.get_by_role("button", name="Now a word it hasn't seen")
+    passed = page.get_by_role("button", name="Now a case it hasn't seen")
     for _ in range(8):
         if passed.count():
             return
@@ -227,18 +227,25 @@ def show_cards_until_pass(page: Page) -> None:
 def play_pupil(page: Page) -> None:
     page.goto(f"{BASE}/play/pupil")
     expect(page.get_by_role("heading", level=1, name="5. Following a rule")).to_be_visible()
-    # Level 1: the loose explanation is misread first (§198).
-    page.get_by_role("button", name="Explain: “Use “an” before a vowel.”").click()
+    # Level 1: "go on in the same way" is read the pupil's own way (§§185, 198).
+    page.get_by_role("button", name="Explain: “Just go on in the same way.”").click()
     expect(page.get_by_text("reads your sentence its own way")).to_be_visible()
     shot(page, "pupil-misread")
-    for card, call in PUPIL:
+    for call in PUPIL_CALLS:
         show_cards_until_pass(page)
-        page.get_by_role("button", name="Now a word it hasn't seen").click()
-        page.get_by_role("button", name="Correct it" if call == "correct" else "Both are in use").click()
+        page.get_by_role("button", name="Now a case it hasn't seen").click()
+        page.get_by_role("button", name=call).click()
         expect(page.get_by_text("Good call.")).to_be_visible()
-        shot(page, f"pupil-{card.replace(' ', '-')}")
         next_round(page)
-    expect(page.get_by_text(re.compile(r"Done · .*Teach the pupil"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"Done · .*Going on"))).to_be_visible()
+    shot(page, "pupil-end")
+    pick_session(page, "Signposts")
+    show_cards_until_pass(page)
+    page.get_by_role("button", name="Now a case it hasn't seen").click()
+    page.get_by_role("button", name="Not a mistake in their practice: a sign means what its regular use makes it mean.").click()
+    expect(page.get_by_text("Good call.")).to_be_visible()
+    next_round(page)
+    expect(page.get_by_text(re.compile(r"Done · .*Signposts"))).to_be_visible()
 
 
 # --- Family Threads -------------------------------------------------------------
@@ -448,29 +455,6 @@ def play_later_sessions(page: Page) -> None:
     expect(page.get_by_text(re.compile(r"Done · .*Not here"))).to_be_visible()
     shot(page, "later-scene-end")
 
-    # Go On!, session 2: show cards until the pupil passes, then the teacher's call.
-    page.goto(f"{BASE}/play/pupil")
-    pick_session(page, "Rules with no rule")
-    for _ in range(2):
-        show_cards_until_pass(page)
-        page.get_by_role("button", name="Now a word it hasn't seen").click()
-        page.get_by_role("button", name="Both are in use").click()
-        expect(page.get_by_text("Good call.")).to_be_visible()
-        next_round(page)
-    expect(page.get_by_text(re.compile(r"Done · .*Rules with no rule"))).to_be_visible()
-    shot(page, "later-pupil-end")
-
-    # Go On!, session 3: old rules in new clothes; both twists are irregular and must be corrected.
-    pick_session(page, "Old rules, new words")
-    for _ in range(2):
-        show_cards_until_pass(page)
-        page.get_by_role("button", name="Now a word it hasn't seen").click()
-        page.get_by_role("button", name="Correct it").click()
-        expect(page.get_by_text("Good call.")).to_be_visible()
-        next_round(page)
-    expect(page.get_by_text(re.compile(r"Done · .*Old rules, new words"))).to_be_visible()
-    shot(page, "later-pupil3-end")
-
 
 # --- Keyboard only (desktop) -------------------------------------------------------
 
@@ -498,36 +482,77 @@ def play_keyboard(page: Page) -> None:
 
 # --- The beetle in the box, Hinges of certainty -------------------------------------
 
-def solve_choice_session(page: Page, title: str) -> None:
-    """Answer each round by trying options in order; a wrong one shows its reply and stays crossed out."""
-    pick_session(page, title)
+def answer_questions(page: Page, title: str) -> None:
+    """Answer the remaining question rounds by trying options in order; a wrong one shows its reply and stays crossed out."""
     while page.get_by_text(re.compile(r"Done · ")).count() == 0:
-        answers = page.get_by_role("group", name="Answers").get_by_role("button")
-        for b in answers.all():
-            if b.is_enabled():
-                b.click()
-                break
         if page.get_by_role("button", name="Next", exact=True).count():
             next_round(page)
+            continue
+        answers = page.get_by_role("group", name="Answers").get_by_role("button")
+        next(b for b in answers.all() if b.is_enabled()).click()
     expect(page.get_by_text(re.compile(rf"Done · {re.escape(title)}"))).to_be_visible()
 
 
 def play_choice_games(page: Page) -> None:
     page.goto(f"{BASE}/play/beetle")
     expect(page.get_by_role("heading", level=1, name="6. The beetle in the box")).to_be_visible()
-    # A wrong answer first: its reply explains why, and the round stays open.
-    page.get_by_role("button", name="Yes: put the boxes side by side and compare.").click()
-    expect(page.get_by_text("No one can look into anyone else's box. That is the rule here.")).to_be_visible()
-    shot(page, "beetle-wrong")
+    # The boxes: put something in yours, change it, and the talk stays word for word the same.
+    page.get_by_role("button", name="A beetle").click()
+    expect(page.get_by_text("Did everyone bring their beetle?")).to_be_visible()
+    page.get_by_role("button", name="Nothing at all").click()
+    expect(page.get_by_text("word for word the same")).to_be_visible()
     page.reload()
-    expect(page.get_by_text("No one can look into anyone else's box. That is the rule here.")).to_be_visible()
-    solve_choice_session(page, "The beetle")
+    expect(page.get_by_text("word for word the same")).to_be_visible()
+    page.get_by_role("button", name="It changed what “beetle” meant when I said it.").click()
+    expect(page.get_by_text("Where is the difference in meaning supposed to show?")).to_be_visible()
+    shot(page, "beetle-boxes")
+    page.get_by_role("button", name="None: the talk went the same whatever was in the box.").click()
+    next_round(page)
+    answer_questions(page, "The beetle")
     shot(page, "beetle-end")
-    solve_choice_session(page, "The diary")
+    # The diary: no check, then the gauge.
+    pick_session(page, "The diary")
+    for day in range(2, 7):
+        page.get_by_role("group", name=f"Day {day}: write S?").get_by_role("button", name="Write “S”").click()
+    page.get_by_role("button", name="Check your diary").click()
+    expect(page.get_by_role("status").filter(has_text="here we can't talk about")).to_be_visible()
+    page.get_by_role("button", name="A doctor fits a blood-pressure gauge").click()
+    expect(page.get_by_text("matched the gauge on 3 of 5 days")).to_be_visible()
+    shot(page, "beetle-diary")
+    page.get_by_role("button", name="What changed?").click()
+    next_round(page)
+    answer_questions(page, "The diary")
+
     page.goto(f"{BASE}/play/hinges")
     expect(page.get_by_role("heading", level=1, name="7. Hinges of certainty")).to_be_visible()
-    solve_choice_session(page, "Doubt it")
-    solve_choice_session(page, "The river-bed")
+    # Checks: follow what each check relies on until a check relies on itself.
+    page.get_by_role("button", name="Read the sign on the bakery door.").click()
+    page.get_by_role("button", name=re.compile(r"^My eyes are working.*Check this$")).click()
+    page.get_by_role("button", name="Look at my two hands and see them.").click()
+    expect(page.get_by_text("Hinges found: 1 of 2.")).to_be_visible()
+    page.get_by_role("button", name=re.compile(r"^Back to")).click()
+    page.get_by_role("button", name="Phone the bakery and ask.").click()
+    page.get_by_role("button", name=re.compile(r"^Words like .*Check this$")).click()
+    page.get_by_role("button", name="Look them up in a dictionary.").click()
+    shot(page, "hinges-checks")
+    next_round(page)
+    answer_questions(page, "Doubt it")
+    # The river-bed: sort for 1950, then for 1970.
+    pick_session(page, "The river-bed")
+    beds = {
+        "The bakery opens at eight on Saturdays.": [False, False],
+        "No one has ever been on the moon.": [True, False],
+        "The earth existed long before I was born.": [True, True],
+        "It will rain tomorrow.": [False, False],
+        "I have two hands.": [True, True],
+    }
+    for era, button in [(0, re.compile(r"^Check, then go to")), (1, re.compile(r"^Done$"))]:
+        for text, bed in beds.items():
+            label = "Stands fast (the bed)" if bed[era] else "Open to checking (the water)"
+            page.get_by_role("group", name=text).get_by_role("button", name=label).click()
+        page.get_by_role("button", name=button).click()
+    next_round(page)
+    answer_questions(page, "The river-bed")
     expect(page.get_by_role("link", name="Next idea: 1. Pictures of facts")).to_be_visible()
     shot(page, "hinges-end")
 
