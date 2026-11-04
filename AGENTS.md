@@ -23,6 +23,8 @@ philosophy; English is only the site's language, never a learning goal (v1 got t
 - Art: gpt-image-2 via Codex CLI; raw renders and prompts in `art/`, WebP in `public/art/` (`scripts/art.py`).
   Every authored round needs its picture (`src/content/__tests__/art.test.ts`). Run at most three image jobs at once.
 - Decisions and review history: `planning/DECISIONS.md`. One UI language (English).
-- State (2026-11-01, v2): seven idea games, design "The Notebook" (from gpt-image-2 mock-ups in `art/ui-v2/`);
-  Codex reviewed the running site until satisfied (`planning/codex-review-v2-r1..r6.md`, DECISIONS V1–V8). Not deployed.
+- State (2026-11-03, v2): seven idea games, design "The Notebook" (from gpt-image-2 mock-ups in `art/ui-v2/`);
+  Codex reviewed the running site until satisfied (`planning/codex-review-v2-r1..r6.md`, DECISIONS V1–V8).
+  Live on Cloudflare Pages (`https://wittgenstein-played.pages.dev`, commit `2a7786b`); one newer commit
+  (`185a4c7`, the `/lab/dictionary` prototype) is not deployed yet. Source on GitHub: `szj2ys/language-games`.
 - Changing authored rounds: give a replaced round a new id, so old completions and drafts do not count for it.

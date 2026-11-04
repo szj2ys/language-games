@@ -17,7 +17,7 @@ that on 2026-11-01 — see `planning/BRIEF-v2.md`.)
 
 Design: "The Notebook" — warm paper, ink-blue type, one vermilion accent, proposition numbers as structure —
 chosen from three gpt-image-2 mock-ups (`art/ui-v2/a.png`, `b.png`, `c.png`). Codex reviewed the running site
-round after round until it was satisfied: `planning/codex-review-v2-r1.md` … `r5.md`, decisions V1–V6 in `planning/DECISIONS.md`.
+round after round until it was satisfied: `planning/codex-review-v2-r1.md` … `r6.md`, decisions V1–V8 in `planning/DECISIONS.md`.
 
 No account and no server state: progress and half-finished rounds are kept in `localStorage`.
 Every quoted passage, with its translation and the limits of each game's analogy, is on `/sources`.
