@@ -51,3 +51,7 @@ __pycache__/
 # review screenshots and recordings (large); only the verdict log is tracked
 reports/**/round-*/
 /.next-verify/
+
+# Harness launch-gate results (runtime artifacts)
+/.launch-gate/
+/push.log
